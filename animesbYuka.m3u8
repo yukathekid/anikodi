@@ -1,0 +1,6 @@
+#EXTM3U
+#EXTVLCOPT:program-description=Descrição detalhada do Canal 1
+#EXTINF:-1 tvg-id="wind-breaker.leg" tvg-name="Wind Breaker" tvg-logo="https://static.anroll.net/images/animes/capas/wind-breaker.jpg" group-title="Wind Breaker - Leg", Wind Breaker - S1E1
+https://static.anitube.ninja/animes/w/wind-breaker/01.mp4
+#EXTINF:-1 tvg-id="wind-breaker.leg" tvg-name="Wind Breaker" tvg-logo="https://static.anroll.net/images/animes/capas/wind-breaker.jpg" group-title="Wind Breaker - Leg", Wind Breaker - S1E2
+https://static.anitube.ninja/animes/w/wind-breaker/02.mp4
