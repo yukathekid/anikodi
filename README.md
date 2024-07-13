@@ -1,6 +1,6 @@
-# Anikodi
+## Anikodi
 
-Este repositório contém a lista de reprodução m3u8 para animes.
+Anikodi sua lista de animes para iptv.
 
 ## Link m3u8
 
