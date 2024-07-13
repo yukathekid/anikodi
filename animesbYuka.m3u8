@@ -1,5 +1,7 @@
 #EXTM3U
 #EXTINF:-1 tvg-id="wind-breaker.leg" tvg-name="Wind Breaker" tvg-logo="https://static.anroll.net/images/animes/capas/wind-breaker.jpg" group-title="Wind Breaker - Leg", Wind Breaker - S1E01
 https://static.anitube.ninja/animes/w/wind-breaker/01.mp4
+plot="Resumo do episódio 1" genre="Ação, Aventura"
 #EXTINF:-1 tvg-id="wind-breaker.leg" tvg-name="Wind Breaker" tvg-logo="https://static.anroll.net/images/animes/capas/wind-breaker.jpg" group-title="Wind Breaker - Leg", Wind Breaker - S1E02
 https://static.anitube.ninja/animes/w/wind-breaker/02.mp4
+plot="Resumo do episódio 2" genre="Ação, Aventura"
