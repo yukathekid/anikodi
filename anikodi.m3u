@@ -2,12 +2,11 @@
 #EXTINF:-1 tvg-name="Nanatsu no Taizai - Mokushiroku no Yonkishi - S1E1" tvg-logo="https://static.anroll.net/images/animes/capas/nanatsu-no-taizai-mokushiroku-no-yonkishi.jpg" group-title="NANATSU NO TAIZAI: M.Y"
 https://static.anitube.ninja/animes/n/nanatsu-no-taizai-mokushiroku-no-yonkishi/01.mp4
 
-#EXTINF:-1 tvg-name="Episódio 01
-- Sakura e Furin" tvg-logo="https://static.anroll.net/images/animes/capas/wind-breaker.jpg" group-title="WIND BREAKER"
-https://static.anitube.ninja/animes/w/wind-breaker/01.mp4
-#EXTINF:-1 tvg-name="Wind Breaker - S1E2" tvg-logo="https://static.anroll.net/images/animes/capas/wind-breaker.jpg" group-title="WIND BREAKER"
-https://static.anitube.ninja/animes/w/wind-breaker/02.mp4
-#EXTINF:-1 tvg-name="Wind Breaker - S1E3" tvg-logo="https://static.anroll.net/images/animes/capas/wind-breaker.jpg" group-title="WIND BREAKER"
-https://cdn-01.cdn-will-wallpaper-4k.online/stream/w/wind-breaker/03.mp4/index.m3u8
-#EXTINF:-1 tvg-name="Wind Breaker - S1E4" tvg-logo="https://static.anroll.net/images/animes/capas/wind-breaker.jpg" group-title="WIND BREAKER"
-https://cdn-01.cdn-will-wallpaper-4k.online/stream/w/wind-breaker/04.mp4/index.m3u8
+#EXTINF:-1 tvg-name="S1E01 - Sakura e Furin" tvg-logo="https://static.anroll.net/images/animes/capas/wind-breaker.jpg" group-title="WIND BREAKER"
+https://cdn-zenitsu-gamabunta.b-cdn.net/cf/hls/animes/wind-breaker/001.mp4/media-1/stream.m3u8
+#EXTINF:-1 tvg-name="S1E02 - O Herói dos Meus Sonhos" tvg-logo="https://static.anroll.net/images/animes/capas/wind-breaker.jpg" group-title="WIND BREAKER"
+https://cdn-zenitsu-gamabunta.b-cdn.net/cf/hls/animes/wind-breaker/002.mp4/media-1/stream.m3u8
+#EXTINF:-1 tvg-name="S1E03 - O Homem no Topo" tvg-logo="https://static.anroll.net/images/animes/capas/wind-breaker.jpg" group-title="WIND BREAKER"
+https://cdn-zenitsu-gamabunta.b-cdn.net/cf/hls/animes/wind-breaker/003.mp4/media-1/stream.m3u8
+#EXTINF:-1 tvg-name="S1E04 - " tvg-logo="https://static.anroll.net/images/animes/capas/wind-breaker.jpg" group-title="WIND BREAKER"
+https://cdn-zenitsu-gamabunta.b-cdn.net/cf/hls/animes/wind-breaker/004.mp4/media-1/stream.m3u8
