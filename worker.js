@@ -4,20 +4,18 @@ addEventListener('fetch', event => {
 
 async function handleRequest(request) {
   const url = new URL(request.url)
-  let imageUrl = url.pathname
+  const path = url.pathname.replace('/api/v1/', '')
 
-  // Transforma https://anikodi.pages.dev/api/v1/image_id em
-  // https://raw.githubusercontent.com/yukathekid/anikodi/main/api/v1/image_id.png
-  const baseUrl = 'https://raw.githubusercontent.com/yukathekid/anikodi/main/api/v1/'
-  imageUrl = `${baseUrl}${imageUrl.replace('/api/v1/', '')}.png`
+  // Construa o URL da imagem no GitHub
+  const imageUrl = `https://raw.githubusercontent.com/yukathekid/anikodi/main/api/v1/${path}.png`
 
-  // Fetch e retorna a imagem
-  const imageResponse = await fetch(imageUrl)
-  const headers = new Headers(imageResponse.headers)
-  headers.set('Content-Type', imageResponse.headers.get('Content-Type'))
+  // Fetch e retorna a imagem do GitHub
+  const response = await fetch(imageUrl)
+  const headers = new Headers(response.headers)
+  headers.set('Content-Type', 'image/png')
 
-  return new Response(imageResponse.body, {
-    status: imageResponse.status,
+  return new Response(response.body, {
+    status: response.status,
     headers: headers
   })
 }
