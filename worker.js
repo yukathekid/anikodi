@@ -8,7 +8,7 @@ async function handleRequest(request) {
 
   // Transforma https://anikodi.pages.dev/api/v1/image_id em
   // https://raw.githubusercontent.com/seu-usuario/seu-repositorio/main/pasta-imagem/imagem-id
-  imageUrl = `https://raw.githubusercontent.com/yukathekid/anikodi/main/${imageUrl.replace('/api/v1/', '')}`
+  imageUrl = `https://raw.githubusercontent.com/yukathekid/anikodi/main/api/v1/${imageUrl.replace('/api/v1/', '')}`
 
   // Fetch e retorna a imagem
   const imageResponse = await fetch(imageUrl)
