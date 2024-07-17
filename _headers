@@ -9,8 +9,3 @@
 
 https://anikodi.pages.dev/*
   X-Robots-Tag: noindex
-
-/animes
-  content-type: text/html; charset=utf-8
-  status: 200
-  body: /animes.html
