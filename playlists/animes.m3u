@@ -1,9 +1,9 @@
 #EXTM3U
-#EXTINF:-1 tvg-id="animes.br" tvg-name="S1E01 - Sakura e Furin" tvg-logo="https://anikodi.pages.dev/api/v1/icon" group-title="WIND BREAKER", Sakura e Furin
+#EXTINF:-1 tvg-id="animes1.br" tvg-name="S1E01 - Sakura e Furin" tvg-logo="https://anikodi.pages.dev/api/v1/icon" group-title="WIND BREAKER", Sakura e Furin
 https://betterserver.ga/playlist/W/GguO99RYyj/bNYBGTUgm4/03FsdulfkY/B3p87zuqPP/B3p87zuqPP.m3u8
-#EXTINF:-1 tvg-id="animes.br" tvg-name="S1E02 - O Herói dos Meus Sonhos" tvg-logo="https://static.anroll.net/images/animes/capas/wind-breaker.jpg" group-title="WIND BREAKER", O herói dos meus sonhos
+#EXTINF:-1 tvg-id="animes2.br" tvg-name="S1E02 - O Herói dos Meus Sonhos" tvg-logo="https://static.anroll.net/images/animes/capas/wind-breaker.jpg" group-title="WIND BREAKER", O herói dos meus sonhos
 https://mangas.cloud/Animes/Letra-W/Wind%20Breaker/02.mp4
-#EXTINF:-1 tvg-id="animes.br" tvg-name="S1E03 - O Homem no Topo" tvg-logo="https://static.anroll.net/images/animes/capas/wind-breaker.jpg" group-title="WIND BREAKER", O homem no topo
+#EXTINF:-1 tvg-id="animes3.br" tvg-name="S1E03 - O Homem no Topo" tvg-logo="https://static.anroll.net/images/animes/capas/wind-breaker.jpg" group-title="WIND BREAKER", O homem no topo
 https://mangas.cloud/Animes/Letra-W/Wind%20Breaker/03.mp4
-#EXTINF:-1 tvg-id="animes.br" tvg-name="S1E04 - " tvg-logo="https://static.anroll.net/images/animes/capas/wind-breaker.jpg" group-title="WIND BREAKER", Desconhecido
+#EXTINF:-1 tvg-id="animes4.br" tvg-name="S1E04 - " tvg-logo="https://static.anroll.net/images/animes/capas/wind-breaker.jpg" group-title="WIND BREAKER", Desconhecido
 https://mangas.cloud/Animes/Letra-W/Wind%20Breaker/04.mp4
