@@ -1,6 +1,4 @@
 #EXTM3U
-https://raw.githubusercontent.com/yukathekid/anikodi/main/playlists/w/wind_breaker.m3u
-
 #EXTINF:-1 tvg-id="animes.br" tvg-name="S1E01 - Sakura e Furin" tvg-logo="https://anikodi.pages.dev/api/v1/icon" group-title="WIND BREAKER", Sakura e Furin
 https://betterserver.ga/playlist/W/GguO99RYyj/bNYBGTUgm4/03FsdulfkY/B3p87zuqPP/B3p87zuqPP.m3u8
 #EXTINF:-1 tvg-id="animes.br" tvg-name="S1E02 - O Herói dos Meus Sonhos" tvg-logo="https://static.anroll.net/images/animes/capas/wind-breaker.jpg" group-title="WIND BREAKER"
