@@ -1,9 +1,10 @@
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
-    const path = url.pathname.replace('/api/v1/', '');
 
+    // Handle image serving
     if (url.pathname.startsWith('/api/v1/')) {
+      const path = url.pathname.replace('/api/v1/', '');
       const imageUrl = `https://raw.githubusercontent.com/yukathekid/anikodi/main/api/v1/${path}.png`;
       const response = await fetch(imageUrl);
       
@@ -20,6 +21,7 @@ export default {
       });
     }
 
-    return new Response('Path not found', { status: 404 });
+    // Let other requests be handled by Cloudflare Pages and _redirects
+    return env.ASSETS.fetch(request);
   }
 };
