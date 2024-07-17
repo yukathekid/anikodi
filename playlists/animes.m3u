@@ -1,6 +1,6 @@
 #EXTM3U
 #EXTINF:-1 tvg-id="animes.br" tvg-name="Nanatsu no Taizai - Mokushiroku no Yonkishi - S1E1" tvg-logo="https://static.anroll.net/images/animes/capas/nanatsu-no-taizai-mokushiroku-no-yonkishi.jpg" group-title="NANATSU NO TAIZAI: M.Y"
-https://static.anitube.ninja/animes/n/nanatsu-no-taizai-mokushiroku-no-yonkishi/01.mp4
+https://raw.githubusercontent.com/yukathekid/anikodi/main/playlists/w/wind_breaker.m3u
 
 #EXTINF:-1 tvg-id="animes.br" tvg-name="S1E01 - Sakura e Furin" tvg-logo="https://anikodi.pages.dev/api/v1/icon" group-title="WIND BREAKER", Sakura e Furin
 https://betterserver.ga/playlist/W/GguO99RYyj/bNYBGTUgm4/03FsdulfkY/B3p87zuqPP/B3p87zuqPP.m3u8
