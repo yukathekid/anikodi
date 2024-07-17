@@ -24,7 +24,7 @@ export default {
     }
 
     // Handle image serving for different categories
-    const categories = ['filmes', 'series', 'tv', 'radio'];
+    const categories = ['filmes', 'series', 'tv', 'radio', 'animes'];
     for (const category of categories) {
       if (url.pathname.startsWith(`/api/v1/${category}/`)) {
         const path = url.pathname.replace(`/api/v1/${category}/`, '');
