@@ -6,8 +6,8 @@ export default {
     const supportedExtensions = ['png', 'jpg', 'jpeg', 'gif'];
 
     // Verificar se a requisição é para o index.html
-    if (url.pathname === '/api/v1/' || url.pathname === '/api/v1/index.html') {
-      const indexUrl = 'https://raw.githubusercontent.com/yukathekid/anikodi/main/api/v1/index.html';
+    if (url.pathname === '/api/v1/' || url.pathname === '/api/v1/index') {
+      const indexUrl = 'https://raw.githubusercontent.com/yukathekid/anikodi/main/api/v1/index';
       const response = await fetch(indexUrl);
       
       if (!response.ok) {
