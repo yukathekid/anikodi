@@ -3,8 +3,8 @@ addEventListener('fetch', event => {
 });
 
 const videos = [
-  'https://username.github.io/repo-name/video1.mp4',
-  'https://username.github.io/repo-name/video2.mp4',
+  'https://animeflix.blog/Animes/Letra-F/Fairy%20Tail%20100%20Years%20Quest/01.mp4',
+  'https://animeflix.blog/Animes/Letra-F/Fairy%20Tail%20100%20Years%20Quest/02.mp4',
   // Adicione mais URLs de vídeos aqui
 ];
 
