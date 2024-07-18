@@ -1,5 +1,13 @@
-{ 
+{
   "items": [
-    { "id": "wind-breaker", "description": "teste", "eps": ["01": "Sakura e Furin"]}
-  ],
+    {
+      "id": "wind-breaker",
+      "description": "teste",
+      "eps": {
+        "01": "Sakura e Furin",
+        "02": "O herói dos meus sonhos",
+        "03": "O homem no topo"
+      }
+    }
+  ]
 }
