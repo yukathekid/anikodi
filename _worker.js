@@ -56,13 +56,18 @@ export default {
       if (url.pathname.startsWith(`/${category}/`)) {
         const path = url.pathname.replace(`/${category}/`, '');
         const pathSegments = path.split('/');
-        const imageId = pathSegments.pop(); // Get the image ID
-        const categoryPath = pathSegments.join('/'); // Get the category subdirectory
-
-        // Organize files by category and A-Z subdirectories
+        
+        // Adiciona o subdiretório de A a Z
+        const letter = pathSegments.shift(); // Remove o primeiro segmento (A-Z)
+        const imageId = pathSegments.pop(); // Remove o último segmento (ID da imagem)
+        const categoryPath = pathSegments.join('/'); // Junta o restante do caminho
+        
+        // Construir o URL do arquivo
+        const fileUrl = `https://raw.githubusercontent.com/yukathekid/anikodi/main/assets/${category}/${letter}/${categoryPath}/${imageId}`;
+        
         for (const ext of supportedExtensions) {
-          const fileUrl = `https://raw.githubusercontent.com/yukathekid/anikodi/main/assets/${category}/${categoryPath}/${imageId}.${ext}`;
-          const response = await fetch(fileUrl);
+          const imageUrl = `${fileUrl}.${ext}`;
+          const response = await fetch(imageUrl);
           
           if (response.ok) {
             const headers = new Headers(response.headers);
