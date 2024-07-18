@@ -20,7 +20,7 @@ export default {
         let m3uContent = '#EXTM3U\n';
         data.forEach(item => {
           // Adapte de acordo com a estrutura do seu JSON
-          m3uContent += `#EXTINF:-1 tvg-id="${item.id}" tvg-name="${item.name}" tvg-logo="${item.logo}" group-title="${item.group}",${item.title}\n`;
+          m3uContent += `#EXTINF:-1 tvg-id="${item.id}" tvg-name="${item.name}" tvg-logo="${item.logo}" group-title="${item.group}",${item.name}\n`;
           m3uContent += `${item.url}\n`;
         });
 
