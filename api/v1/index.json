@@ -1,5 +1,5 @@
 { 
   "items": [
-    { "id": "wind-breaker", "description": "teste" },
+    { "id": "wind-breaker", "description": "teste", "eps": {"01": "Sakura e Furin"}, }
   ],
 }
