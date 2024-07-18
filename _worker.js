@@ -7,7 +7,7 @@ export default {
 
     // Verificar se a requisição é para o index.html
     if (url.pathname === '/api/v1/' || url.pathname === '/api/v1/index') {
-      const indexUrl = 'https://raw.githubusercontent.com/yukathekid/anikodi/main/api/v1/index.json';
+      const indexUrl = 'https://raw.githubusercontent.com/yukathekid/anikodi/main/api/v1/index.md';
       const response = await fetch(indexUrl);
       
       if (!response.ok) {
@@ -15,7 +15,7 @@ export default {
       }
       
       const headers = new Headers(response.headers);
-      headers.set('Content-Type', 'application/json');
+      headers.set('Content-Type', 'text/markdown');
       
       return new Response(response.body, {
         status: response.status,
