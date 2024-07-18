@@ -46,7 +46,7 @@ async function handleRequest(request) {
   }
 
   // Verificar se a requisição é para a lista M3U8 ao vivo
-  if (path === '/live.m3u8') {
+  if (path === '/live') {
     // Gera o arquivo M3U8 em loop contínuo
     let m3u8Content = '#EXTM3U\n';
     for (let i = 0; i < 100; i++) { // Faz um loop para simular transmissão contínua
