@@ -4,30 +4,24 @@ export default {
 
     // Verificar se a requisição é para a lista m3u
     if (url.pathname === '/m3u') {
-      // URL do seu arquivo JSON no GitHub Pages
       const jsonUrl = 'https://yukathekid.github.io/anikodi/channels.json';
 
       try {
-        // Faz a requisição para o JSON
         const response = await fetch(jsonUrl);
         if (!response.ok) {
           return new Response('Erro ao buscar dados do JSON', { status: 500 });
         }
         
         const data = await response.json();
-
-        // Formata o conteúdo do JSON para o formato m3u
         let m3uContent = '#EXTM3U\n';
         data.forEach(item => {
-          // Adapte de acordo com a estrutura do seu JSON
           m3uContent += `#EXTINF:-1 tvg-id="${item.id}" tvg-name="${item.name}" tvg-logo="${item.logo}" group-title="${item.group}",${item.name}\n`;
           m3uContent += `${item.url}\n`;
         });
 
-        // Retorna a lista m3u
         return new Response(m3uContent, {
           headers: {
-            'Content-Type': 'audio/mpegurl', // Define o tipo de conteúdo como m3u
+            'Content-Type': 'audio/mpegurl',
           },
         });
       } catch (error) {
@@ -39,8 +33,8 @@ export default {
     const supportedExtensions = ['png', 'jpg', 'jpeg', 'gif'];
 
     // Verificar se a requisição é para o index.html
-    if (url.pathname === '/api/v1/' || url.pathname === '/api/v1/index') {
-      const indexUrl = 'https://raw.githubusercontent.com/yukathekid/anikodi/main/api/v1/index.md';
+    if (url.pathname === '/index.html') {
+      const indexUrl = 'https://raw.githubusercontent.com/yukathekid/anikodi/main/index.html';
       const response = await fetch(indexUrl);
       
       if (!response.ok) {
@@ -48,7 +42,7 @@ export default {
       }
       
       const headers = new Headers(response.headers);
-      headers.set('Content-Type', 'text/markdown');
+      headers.set('Content-Type', 'text/html');
       
       return new Response(response.body, {
         status: response.status,
@@ -56,14 +50,19 @@ export default {
       });
     }
 
-    // Handle image serving for different categories
-    const categories = ['filmes', 'series', 'tv', 'radio', 'animes'];
+    // Handle image serving for different categories and types
+    const categories = ['capas', 'logos'];
     for (const category of categories) {
-      if (url.pathname.startsWith(`/api/v1/${category}/`)) {
-        const path = url.pathname.replace(`/api/v1/${category}/`, '');
+      if (url.pathname.startsWith(`/${category}/`)) {
+        const path = url.pathname.replace(`/${category}/`, '');
+        const categoryPath = path.split('/')[0];
+        const imagePath = path.split('/').slice(1).join('/');
+
+        // Organize files by category and A-Z subdirectories
+        const fileUrl = `https://raw.githubusercontent.com/yukathekid/anikodi/main/assets/${category}/${categoryPath}/${imagePath}`;
         
         for (const ext of supportedExtensions) {
-          const imageUrl = `https://raw.githubusercontent.com/yukathekid/anikodi/main/api/v1/${category}/${path}.${ext}`;
+          const imageUrl = `${fileUrl}.${ext}`;
           const response = await fetch(imageUrl);
           
           if (response.ok) {
