@@ -20,7 +20,7 @@ if (url.pathname === '/paste') {
       return new Response('Erro ao baixar o conteúdo do Pastebin', { status: 500 })
     }
 }
-    const baseJsonUrls = ['animes', 'tv'];
+    const baseJsonUrls = ['animes', 'tv', 'test'];
 for (const jsonCategory of baseJsonUrls) {
 if (url.pathname === `/playlist/${jsonCategory}`) {
       const jsonUrl = `https://yukathekid.github.io/anikodi/api/v1/${jsonCategory}.base64`;
