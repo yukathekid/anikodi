@@ -2,9 +2,10 @@ export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
 
-    // Verificar se a requisição é para a lista m3u
-    if (url.pathname === '/m3u') {
-      const jsonUrl = 'https://yukathekid.github.io/anikodi/channels.json';
+    const baseJsonUrls = ['animes', 'tv'];
+for (const jsonCategory of baseJsonUrls) {
+if (url.pathname === `/${jsonCategory}`) {
+      const jsonUrl = `https://yukathekid.github.io/anikodi/api/v1/${jsonCategory}/api.json`;
 
       try {
         const response = await fetch(jsonUrl);
@@ -28,6 +29,7 @@ export default {
         return new Response('Erro ao processar a lista m3u', { status: 500 });
       }
     }
+}
 
     // Suporte a múltiplas extensões de imagem
     const supportedExtensions = ['png', 'jpg', 'jpeg', 'gif'];
