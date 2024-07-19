@@ -1,8 +1,8 @@
 export default {
   async fetch(request, env, ctx) {
     try {
-      const USERNAME = 'seu-usuario'; // Defina seu nome de usuário
-      const PASSWORD = 'sua-senha';   // Defina sua senha
+      const USERNAME = 'teste'; // Defina seu nome de usuário
+      const PASSWORD = 'teste123';   // Defina sua senha
 
       const authHeader = request.headers.get('Authorization');
 
