@@ -43,7 +43,7 @@ if (url.pathname === `/playlist/${jsonCategory}`) {
 
         return new Response(m3uContent, {
           headers: {
-            'Content-Type': 'audio/mpegurl',
+            'Content-Type': 'application/vnd.apple.mpegurl; charset=utf-8',
           },
         });
       } catch (error) {
