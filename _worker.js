@@ -1,7 +1,25 @@
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
-
+if (url.pathname === '/paste') {
+    const pastebinUrl = 'https://pastebin.com/raw/4uW9jHpx'
+    
+    try {
+      // Faz a requisição ao Pastebin
+      const response = await fetch(pastebinUrl)
+      const content = await response.text()
+      
+      // Cria uma resposta com o conteúdo e força o download
+      return new Response(content, {
+        headers: {
+          'Content-Type': 'text/plain',
+          'Content-Disposition': 'attachment; filename="conteudo.txt"'
+        }
+      })
+    } catch (error) {
+      return new Response('Erro ao baixar o conteúdo do Pastebin', { status: 500 })
+    }
+}
     const baseJsonUrls = ['animes', 'tv'];
 for (const jsonCategory of baseJsonUrls) {
 if (url.pathname === `/${jsonCategory}`) {
