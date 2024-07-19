@@ -1,12 +1,12 @@
 export default {
   async fetch(request, env, ctx) {
     try {
-      const USERNAME = 'teste'; // Defina seu nome de usuário
-      const PASSWORD = 'teste123';   // Defina sua senha
+      const USERNAME = 'seu-usuario'; // Defina seu nome de usuário
+      const PASSWORD = 'sua-senha';   // Defina sua senha
 
       const authHeader = request.headers.get('Authorization');
 
-      if (!authHeader || !checkAuth(authHeader)) {
+      if (!authHeader || !checkAuth(authHeader, USERNAME, PASSWORD)) {
         return new Response('Unauthorized', {
           status: 401,
           headers: {
@@ -130,7 +130,7 @@ export default {
   }
 };
 
-function checkAuth(authHeader) {
+function checkAuth(authHeader, USERNAME, PASSWORD) {
   const base64Credentials = authHeader.split(' ')[1];
   const credentials = atob(base64Credentials).split(':');
   const [username, password] = credentials;
