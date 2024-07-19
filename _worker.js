@@ -23,7 +23,7 @@ if (url.pathname === '/paste') {
     const baseJsonUrls = ['animes', 'tv', 'test'];
 for (const jsonCategory of baseJsonUrls) {
 if (url.pathname === `/playlist/${jsonCategory}`) {
-      const jsonUrl = `https://yukathekid.github.io/anikodi/api/v1/${jsonCategory}.base64`;
+      const jsonUrl = `https://yukathekid.github.io/anikodi/api/v1/${jsonCategory}.txt`;
 
       try {
         const response = await fetch(jsonUrl);
