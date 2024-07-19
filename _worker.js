@@ -23,15 +23,18 @@ if (url.pathname === '/paste') {
     const baseJsonUrls = ['animes', 'tv'];
 for (const jsonCategory of baseJsonUrls) {
 if (url.pathname === `/playlist/${jsonCategory}`) {
-      const jsonUrl = `https://yukathekid.github.io/anikodi/api/v1/${jsonCategory}.json`;
+      const jsonUrl = `https://yukathekid.github.io/anikodi/api/v1/${jsonCategory}.base64`;
 
       try {
         const response = await fetch(jsonUrl);
         if (!response.ok) {
           return new Response('Erro ao buscar dados do JSON', { status: 500 });
         }
-        
-        const data = await response.json();
+          const base64Data = await response.text();
+          const jsonString = atob(base64Data); // Decodifica de base64 para string JSON
+          const data = JSON.parse(jsonString);
+      
+        //const data = await response.json();
         let m3uContent = '#EXTM3U\n';
         data.forEach(item => {
           m3uContent += `#EXTINF:-1 tvg-id="${item.id}" tvg-name="${item.name}" tvg-logo="${item.logo}" group-title="${item.group}",${item.name}\n`;
