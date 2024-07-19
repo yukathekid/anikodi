@@ -41,11 +41,16 @@ if (url.pathname === `/playlist/${jsonCategory}`) {
           m3uContent += `${item.url}\n`;
         });
 
-        return new Response(m3uContent, {
-          headers: {
-            'Content-Type': 'application/vnd.apple.mpegurl; charset=utf-8',
-          },
-        });
+        // Encode the M3U content to ensure it is UTF-8
+  const utf8Encoder = new TextEncoder();
+  const encodedContent = utf8Encoder.encode(m3uContent);
+
+  // Return M3U response with correct content type and UTF-8 encoding
+  return new Response(encodedContent, {
+    headers: {
+      'Content-Type': 'application/vnd.apple.mpegurl; charset=utf-8'
+    }
+  });
       } catch (error) {
         return new Response('Erro ao processar a lista m3u', { status: 500 });
       }
