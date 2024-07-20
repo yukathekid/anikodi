@@ -2,7 +2,7 @@ export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
 if (url.pathname === '/paste') {
-    const pastebinUrl = 'https://pastebin.com/raw/4uW9jHpx'
+    const pastebinUrl = 'https://raw.githubusercontent.com/Ramys/Iptv-Brasil-2024/master/Iptv3.m3u8'
     
     try {
       // Faz a requisição ao Pastebin
