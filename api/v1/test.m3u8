@@ -1,0 +1,15 @@
+#EXTM3U
+#EXT-X-VERSION:3
+#EXT-X-TARGETDURATION:4500
+#EXT-X-MEDIA-SEQUENCE:0
+
+#EXTINF:4500.0,
+https://firebasestorage.googleapis.com/v0/b/hwfilm23.appspot.com/o/Anikodi%2FLDJPDIDUB-BAIXO.ts?alt=media&token=652ef1ea-1b22-4a9c-a731-c443b41df2c1
+#EXTINF:4500.0,
+https://firebasestorage.googleapis.com/v0/b/hwfilm23.appspot.com/o/Anikodi%2FLDJPDIDUB-BAIXO.ts?alt=media&token=652ef1ea-1b22-4a9c-a731-c443b41df2c1
+#EXTINF:4500.0,
+https://firebasestorage.googleapis.com/v0/b/hwfilm23.appspot.com/o/Anikodi%2FLDJPDIDUB-BAIXO.ts?alt=media&token=652ef1ea-1b22-4a9c-a731-c443b41df2c1
+#EXTINF:4500.0,
+https://firebasestorage.googleapis.com/v0/b/hwfilm23.appspot.com/o/Anikodi%2FLDJPDIDUB-BAIXO.ts?alt=media&token=652ef1ea-1b22-4a9c-a731-c443b41df2c1
+
+#EXT-X-ENDLIST
