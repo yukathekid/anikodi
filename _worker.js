@@ -20,9 +20,9 @@ if (url.pathname === '/paste') {
       return new Response('Erro ao baixar o conteúdo do Pastebin', { status: 500 })
     }
 }
-    const baseJsonUrls = ['animes', 'tv', 'test'];
+    const baseJsonUrls = ['animes', 'tv', 'live'];
 for (const jsonCategory of baseJsonUrls) {
-if (url.pathname === `/playlist/${jsonCategory}`) {
+if (url.pathname === `/playlist/${jsonCategory}.m3u8`) {
       const userAgent = request.headers.get('User-Agent');
           const isBrowser = userAgent && /Mozilla|Chrome|Safari|Firefox|Edge/i.test(userAgent);
 
