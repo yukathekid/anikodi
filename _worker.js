@@ -46,9 +46,9 @@ if (url.pathname === `/playlist/${jsonCategory}`) {
           const data = JSON.parse(jsonString);
       
         //const data = await response.json();
-        let m3uContent = '#PLAYLISTV: pltv-logo="https://s-media-cache-ak0.pinimg.com/736x/4a/19/6f/4a196f62a1e814c60d05a64152596f16.jpg" pltv-name="Anikodi - Animes" pltv-description="Animes" pltv-cover="http://s3.foxmovies.com/foxmovies/production/films/108/images/feature/home-page-feature-thumbnail-image-front-featured-films-slider-3.jpg" pltv-author="Anikodi" pltv-site="www.superiptv.com.br" pltv-email="contato@anikodi.xyz"';
+        let m3uContent = '#EXTM3U\n';
         data.forEach(item => {
-          m3uContent += `#EXTM3U\n#EXTINF:-1 tvg-id="${item.id}" tvg-name="${item.name}" tvg-logo="${item.logo}" group-title="${item.group}",${item.name}\n`;
+          m3uContent += `#EXTINF:-1 tvg-id="${item.id}" tvg-name="${item.name}" tvg-logo="${item.logo}" group-title="${item.group}",${item.name}\n`;
           m3uContent += `${item.url}\n`;
         });
 
