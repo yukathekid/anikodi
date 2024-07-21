@@ -23,11 +23,8 @@ export default {
       }
     }
 
-    // Extrai a categoria da URL
-    const pathSegments = url.pathname.split('/');
-    const category = pathSegments[2];
-
-    if (['channels', 'animes'].includes(category)) {
+    // Verifica se o caminho é para live/stream
+    if (url.pathname === '/live/stream') {
       const indexUrl = 'https://cloud.anikodi.xyz/data/index.json'; // URL para o índice principal
 
       try {
@@ -37,20 +34,21 @@ export default {
         }
 
         const indexData = await indexResponse.json();
-        const jsonFiles = indexData[category];
-        if (!jsonFiles) {
-          return new Response('Categoria não encontrada', { status: 404 });
-        }
+        const m3uContent = '#EXTM3U\n';
 
-        // Buscar e processar todos os arquivos JSON
-        const jsonUrls = jsonFiles.map(file => `https://cloud.anikodi.xyz/data/${category}/${file}`);
-        const jsonData = await Promise.all(jsonUrls.map(url => fetch(url).then(res => res.json())));
-        
-        let m3uContent = '#EXTM3U\n';
-        jsonData.flat().forEach(item => {
-          m3uContent += `#EXTINF:-1 tvg-id="${item.id}" tvg-name="${item.name}" tvg-logo="${item.logo}" group-title="${item.group}",${item.name}\n`;
-          m3uContent += `${item.url}\n`;
-        });
+        // Processar categorias: channels e animes
+        for (const category of ['channels', 'animes']) {
+          const jsonFiles = indexData[category];
+          if (jsonFiles) {
+            const jsonUrls = jsonFiles.map(file => `https://cloud.anikodi.xyz/data/${category}/${file}`);
+            const jsonData = await Promise.all(jsonUrls.map(url => fetch(url).then(res => res.json())));
+
+            jsonData.flat().forEach(item => {
+              m3uContent += `#EXTINF:-1 tvg-id="${item.id}" tvg-name="${item.name}" tvg-logo="${item.logo}" group-title="${item.group}",${item.name}\n`;
+              m3uContent += `${item.url}\n`;
+            });
+          }
+        }
 
         return new Response(m3uContent, {
           headers: {
