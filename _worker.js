@@ -34,7 +34,7 @@ if (url.pathname === `/playlist/${jsonCategory}`) {
               }
             });
           }
-      const jsonUrl = `https://yukathekid.github.io/anikodi/api/v1/${jsonCategory}.txt`;
+      const jsonUrl = `https://cloud.anikodi.xyz/api/v1/${jsonCategory}.txt`;
 
       try {
         const response = await fetch(jsonUrl);
