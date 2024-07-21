@@ -29,10 +29,11 @@ export default {
     for (const jsonCategory of baseJsonUrls) {
       if (url.pathname === `/playlist/${jsonCategory}.m3u8`) {
         const userAgent = request.headers.get('User-Agent');
-        const isBrowser = userAgent && /Mozilla|Chrome|Safari|Firefox|Edge/i.test(userAgent);
-        const allowParam = url.searchParams.get('animes');
+        // Atualiza para verificar Kodi 21.0
+        const isKodi = userAgent && /Kodi\/21\.0/i.test(userAgent);
 
-        if (isBrowser && !allowParam) {
+        // Permite acesso para Kodi e outros dispositivos de IPTV
+        if (!isKodi) {
           return new Response('Access to this resource is restricted.', {
             status: 403,
             headers: {
@@ -124,6 +125,7 @@ export default {
       }
     }
 
+    // Let other requests be handled by Cloudflare Pages and _redirects
     return env.ASSETS.fetch(request);
   }
 };
