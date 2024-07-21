@@ -3,7 +3,7 @@ export default {
     const url = new URL(request.url);
     
     // URL do vídeo de "Canal fora do Ar"
-    const backupVideoUrl = "https://seu_dominio.com/canal_fora_do_ar.mp4";
+    const backupVideoUrl = "https://github.com/yukathekid/anikodi/blob/main/assets/TV%20Fora%20do%20Ar%20%5BHD%5D.mp4";
     const timeout = 5000; // Timeout de 5 segundos
 
     // Função para criar uma requisição com timeout
