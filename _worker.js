@@ -31,10 +31,10 @@ export default {
         const userAgent = request.headers.get('User-Agent');
         const isBrowser = userAgent && /Mozilla|Chrome|Safari|Firefox|Edge/i.test(userAgent);
         const isKodi = userAgent && /Kodi\/21\.0/i.test(userAgent);
-        const isIPTV = userAgent && /IPTV/i.test(userAgent); // Ajuste o padrão conforme necessário
+        
 
         // Permite acesso para Kodi e outros aplicativos de IPTV
-        if (isKodi || isIPTV) {
+        if (isKodi) {
           const jsonUrl = `https://cloud.anikodi.xyz/data/live/${jsonCategory}.txt`;
 
           try {
