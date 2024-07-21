@@ -19,6 +19,7 @@
         }
         body {
             background-color: #f8f9fa;
+            flex: 1;
         }
         .trial {
             font-family: Akira;
@@ -54,7 +55,7 @@
             }
         }
         .content-section {
-            padding: 40px 20px;
+            padding: 20px 20px;
             flex: 1;
         }
         .footer {
@@ -67,7 +68,7 @@
             display: flex;
             align-items: center;
             gap: 10px;
-            margin-bottom: 10px; /* Reduz a margem inferior */
+            margin-bottom: 10px; /* Ajusta o espaço entre o input e o próximo conteúdo */
         }
         .copy-container input {
             flex: 1;
@@ -148,7 +149,6 @@
         <div class="copy-container">
             <input type="text" id="m3uLink" class="form-control" value="https://anikodi.xyz/playlist/live" readonly onclick="copyLink()">
         </div>
-        <div id="message" class="mt-2"></div>
     </div>
 
     <!-- Seção de Conteúdo -->
