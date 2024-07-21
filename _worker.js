@@ -1,16 +1,19 @@
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
+    
+    // URL do vídeo de "Canal fora do Ar"
+    const backupVideoUrl = "https://seu_dominio.com/canal_fora_do_ar.mp4";
 
     // Verifica se a requisição é para o conteúdo do Pastebin
     if (url.pathname === '/paste') {
       const pastebinUrl = 'https://piroplay.xyz/cdn/hls/1f3225e82ea03a704c3a0f93272468d0/master.txt?s=4';
-
+      
       try {
         // Faz a requisição ao Pastebin
         const response = await fetch(pastebinUrl);
         const content = await response.text();
-
+        
         // Cria uma resposta com o conteúdo e força o download
         return new Response(content, {
           headers: {
@@ -41,10 +44,21 @@ export default {
           const data = JSON.parse(jsonString);
 
           let m3uContent = '#EXTM3U\n';
-          data.forEach(item => {
-            m3uContent += `#EXTINF:-1 tvg-id="${item.id}" tvg-name="${item.name}" tvg-logo="${item.logo}" group-title="${item.group}",${item.name}\n`;
-            m3uContent += `https://anikodi.xyz/worker?url=${encodeURIComponent(item.url)}\n`;
-          });
+          for (const item of data) {
+            try {
+              // Verifica se o link está disponível
+              const linkResponse = await fetch(item.url);
+              if (!linkResponse.ok) {
+                throw new Error('Link não disponível');
+              }
+              m3uContent += `#EXTINF:-1 tvg-id="${item.id}" tvg-name="${item.name}" tvg-logo="${item.logo}" group-title="${item.group}",${item.name}\n`;
+              m3uContent += `${item.url}\n`;
+            } catch (error) {
+              // Se o link não estiver disponível, usa o vídeo de backup
+              m3uContent += `#EXTINF:-1 tvg-id="${item.id}" tvg-name="${item.name}" tvg-logo="${item.logo}" group-title="${item.group}",${item.name}\n`;
+              m3uContent += `${backupVideoUrl}\n`;
+            }
+          }
 
           const utf8Encoder = new TextEncoder();
           const encodedContent = utf8Encoder.encode(m3uContent);
@@ -66,14 +80,14 @@ export default {
     if (url.pathname === '/index.html') {
       const indexUrl = 'https://raw.githubusercontent.com/yukathekid/anikodi/main/index.html';
       const response = await fetch(indexUrl);
-
+      
       if (!response.ok) {
         return new Response('Index file not found', { status: 404 });
       }
-
+      
       const headers = new Headers(response.headers);
       headers.set('Content-Type', 'text/html');
-
+      
       return new Response(response.body, {
         status: response.status,
         headers: headers
@@ -85,7 +99,7 @@ export default {
       if (url.pathname.startsWith(`/${category}/`)) {
         const path = url.pathname.replace(`/${category}/`, '');
         const pathSegments = path.split('/');
-
+        
         const letter = pathSegments.shift();
         const imageId = pathSegments.pop();
         const categoryPath = pathSegments.join('/');
@@ -111,49 +125,7 @@ export default {
       }
     }
 
-    // Lógica para verificar a disponibilidade dos links M3U e redirecionar para o vídeo de backup
-    if (url.pathname === '/worker') {
-      const originalLink = url.searchParams.get('url');
-      if (!originalLink) {
-        return new Response('Missing URL parameter', { status: 400 });
-      }
-
-      const cacheKey = `status:${originalLink}`;
-      const cache = caches.default;
-
-      let response = await cache.match(cacheKey);
-      if (response) {
-        const cachedData = await response.json();
-        if (cachedData.status === 'ok') {
-          return fetch(originalLink);
-        } else {
-          return fetch(offlineVideoURL);
-        }
-      }
-
-      try {
-        response = await fetch(originalLink, { method: 'HEAD' });
-
-        if (response.ok) {
-          const newResponse = new Response(JSON.stringify({ status: 'ok' }), { status: 200 });
-          newResponse.headers.append('Cache-Control', `max-age=${CACHE_TTL}`);
-          ctx.waitUntil(cache.put(cacheKey, newResponse.clone()));
-          return fetch(originalLink);
-        } else {
-          throw new Error('Link is down');
-        }
-      } catch (err) {
-        const newResponse = new Response(JSON.stringify({ status: 'down' }), { status: 200 });
-        newResponse.headers.append('Cache-Control', `max-age=${CACHE_TTL}`);
-        ctx.waitUntil(cache.put(cacheKey, newResponse.clone()));
-        return fetch(offlineVideoURL);
-      }
-    }
-
     // Let other requests be handled by Cloudflare Pages and _redirects
     return env.ASSETS.fetch(request);
   }
 };
-
-const CACHE_TTL = 300; // Tempo de cache em segundos (5 minutos)
-const offlineVideoURL = 'https://github.com/yukathekid/anikodi/blob/main/assets/TV%20Fora%20do%20Ar%20%5BHD%5D.mp4'; // URL do vídeo de backup
