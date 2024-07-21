@@ -4,7 +4,7 @@ export default {
     
     // Verifica se a requisição é para o conteúdo do Pastebin
     if (url.pathname === '/paste') {
-      const pastebinUrl = 'https://raw.githubusercontent.com/Ramys/Iptv-Brasil-2024/master/Iptv3.m3u8';
+      const pastebinUrl = 'https://piroplay.xyz/cdn/hls/1f3225e82ea03a704c3a0f93272468d0/master.txt?s=4';
       
       try {
         // Faz a requisição ao Pastebin
