@@ -24,10 +24,10 @@ export default {
     }
 
     // Define as categorias base para as URLs JSON
-    const baseJsonUrls = ['animes', 'tv', 'live'];
+    const baseJsonUrls = ['stream'];
 
     for (const jsonCategory of baseJsonUrls) {
-      if (url.pathname === `/playlist/${jsonCategory}.m3u8`) {
+      if (url.pathname === `/live/${jsonCategory}.m3u8`) {
         const jsonUrl = `https://cloud.anikodi.xyz/api/v1/${jsonCategory}.txt`;
 
         try {
