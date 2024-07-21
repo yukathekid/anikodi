@@ -3,7 +3,7 @@ export default {
     const url = new URL(request.url);
     
     // URL do vídeo de "Canal fora do Ar"
-    const backupVideoUrl = "https://github.com/yukathekid/anikodi/blob/main/assets/TV%20Fora%20do%20Ar%20%5BHD%5D.mp4";
+    const backupVideoUrl = "https://seu_dominio.com/canal_fora_do_ar.mp4";
 
     // Verifica se a requisição é para o conteúdo do Pastebin
     if (url.pathname === '/paste') {
@@ -36,7 +36,7 @@ export default {
         try {
           const response = await fetch(jsonUrl);
           if (!response.ok) {
-            return new Response('Erro ao buscar dados do JSON', { status: 500 });
+            throw new Error('Erro ao buscar dados do JSON');
           }
 
           const base64Data = await response.text();
@@ -47,7 +47,7 @@ export default {
           for (const item of data) {
             try {
               // Verifica se o link está disponível
-              const linkResponse = await fetch(item.url);
+              const linkResponse = await fetch(item.url, { method: 'HEAD' });
               if (!linkResponse.ok) {
                 throw new Error('Link não disponível');
               }
@@ -60,16 +60,13 @@ export default {
             }
           }
 
-          const utf8Encoder = new TextEncoder();
-          const encodedContent = utf8Encoder.encode(m3uContent);
-
-          return new Response(encodedContent, {
+          return new Response(m3uContent, {
             headers: {
               'Content-Type': 'application/vnd.apple.mpegurl; charset=utf-8'
             }
           });
         } catch (error) {
-          return new Response('Erro ao processar a lista m3u', { status: 500 });
+          return new Response(error.message, { status: 500 });
         }
       }
     }
