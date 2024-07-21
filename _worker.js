@@ -27,8 +27,8 @@ export default {
     const baseJsonUrls = ['stream'];
 
     for (const jsonCategory of baseJsonUrls) {
-      if (url.pathname === `/live/${jsonCategory}.m3u8`) {
-        const jsonUrl = `https://cloud.anikodi.xyz/api/v1/${jsonCategory}.txt`;
+      if (url.pathname === `/live/${jsonCategory}`) {
+        const jsonUrl = `https://cloud.anikodi.xyz/data/live/${jsonCategory}.txt`;
 
         try {
           const response = await fetch(jsonUrl);
@@ -90,7 +90,7 @@ export default {
         const imageId = pathSegments.pop();
         const categoryPath = pathSegments.join('/');
 
-        const fileUrl = `https://raw.githubusercontent.com/yukathekid/anikodi/main/assets/${category}/${letter}/${categoryPath}/${imageId}`;
+        const fileUrl = `https://anikodi.xyz/assets/${category}/${letter}/${categoryPath}/${imageId}`;
 
         for (const ext of supportedExtensions) {
           const imageUrl = `${fileUrl}.${ext}`;
