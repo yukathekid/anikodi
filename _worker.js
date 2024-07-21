@@ -1,7 +1,7 @@
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
-
+    
     // Verifica se a requisição é para o conteúdo do Pastebin
     if (url.pathname === '/paste') {
       const pastebinUrl = 'https://raw.githubusercontent.com/Ramys/Iptv-Brasil-2024/master/Iptv3.m3u8';
@@ -23,40 +23,40 @@ export default {
       }
     }
 
-    // Verifica se o caminho é para live/stream
-    if (url.pathname === '/live/stream') {
-      const indexUrl = 'https://cloud.anikodi.xyz/data/index.json'; // URL para o índice principal
+    // Define as categorias base para as URLs JSON
+    const baseJsonUrls = ['stream'];
 
-      try {
-        const indexResponse = await fetch(indexUrl);
-        if (!indexResponse.ok) {
-          return new Response('Erro ao buscar índice principal', { status: 500 });
-        }
+    for (const jsonCategory of baseJsonUrls) {
+      if (url.pathname === `/live/${jsonCategory}.m3u8`) {
+        const jsonUrl = `https://cloud.anikodi.xyz/api/v1/${jsonCategory}.txt`;
 
-        const indexData = await indexResponse.json();
-        const m3uContent = '#EXTM3U\n';
-
-        // Processar categorias: channels e animes
-        for (const category of ['channels', 'animes']) {
-          const jsonFiles = indexData[category];
-          if (jsonFiles) {
-            const jsonUrls = jsonFiles.map(file => `https://cloud.anikodi.xyz/data/${category}/${file}`);
-            const jsonData = await Promise.all(jsonUrls.map(url => fetch(url).then(res => res.json())));
-
-            jsonData.flat().forEach(item => {
-              m3uContent += `#EXTINF:-1 tvg-id="${item.id}" tvg-name="${item.name}" tvg-logo="${item.logo}" group-title="${item.group}",${item.name}\n`;
-              m3uContent += `${item.url}\n`;
-            });
+        try {
+          const response = await fetch(jsonUrl);
+          if (!response.ok) {
+            return new Response('Erro ao buscar dados do JSON', { status: 500 });
           }
-        }
 
-        return new Response(m3uContent, {
-          headers: {
-            'Content-Type': 'application/vnd.apple.mpegurl'
-          }
-        });
-      } catch (error) {
-        return new Response('Erro ao processar a lista M3U', { status: 500 });
+          const base64Data = await response.text();
+          const jsonString = atob(base64Data); // Decodifica de base64 para string JSON
+          const data = JSON.parse(jsonString);
+
+          let m3uContent = '#EXTM3U\n';
+          data.forEach(item => {
+            m3uContent += `#EXTINF:-1 tvg-id="${item.id}" tvg-name="${item.name}" tvg-logo="${item.logo}" group-title="${item.group}",${item.name}\n`;
+            m3uContent += `${item.url}\n`;
+          });
+
+          const utf8Encoder = new TextEncoder();
+          const encodedContent = utf8Encoder.encode(m3uContent);
+
+          return new Response(encodedContent, {
+            headers: {
+              'Content-Type': 'application/vnd.apple.mpegurl; charset=utf-8'
+            }
+          });
+        } catch (error) {
+          return new Response('Erro ao processar a lista m3u', { status: 500 });
+        }
       }
     }
 
