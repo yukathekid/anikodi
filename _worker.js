@@ -28,20 +28,6 @@ export default {
 
     for (const jsonCategory of baseJsonUrls) {
       if (url.pathname === `/playlist/${jsonCategory}.m3u8`) {
-        const userAgent = request.headers.get('User-Agent');
-        // Atualiza para verificar Kodi 21.0
-        const isKodi = userAgent && /Kodi\/21\.0/i.test(userAgent);
-
-        // Permite acesso para Kodi e outros dispositivos de IPTV
-        if (!isKodi) {
-          return new Response('Access to this resource is restricted.', {
-            status: 403,
-            headers: {
-              'Content-Type': 'text/plain'
-            }
-          });
-        }
-
         const jsonUrl = `https://cloud.anikodi.xyz/api/v1/${jsonCategory}.txt`;
 
         try {
