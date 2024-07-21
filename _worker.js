@@ -1,14 +1,17 @@
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
-
+    
+    // Verifica se a requisição é para o conteúdo do Pastebin
     if (url.pathname === '/paste') {
       const pastebinUrl = 'https://raw.githubusercontent.com/Ramys/Iptv-Brasil-2024/master/Iptv3.m3u8';
       
       try {
+        // Faz a requisição ao Pastebin
         const response = await fetch(pastebinUrl);
         const content = await response.text();
         
+        // Cria uma resposta com o conteúdo e força o download
         return new Response(content, {
           headers: {
             'Content-Type': 'text/plain',
@@ -20,15 +23,16 @@ export default {
       }
     }
 
+    // Define as categorias base para as URLs JSON
     const baseJsonUrls = ['animes', 'tv', 'live'];
-    
+
     for (const jsonCategory of baseJsonUrls) {
       if (url.pathname === `/playlist/${jsonCategory}.m3u8`) {
         const userAgent = request.headers.get('User-Agent');
         const isBrowser = userAgent && /Mozilla|Chrome|Safari|Firefox|Edge/i.test(userAgent);
-        const isKodi = userAgent && /Kodi|XBMC/i.test(userAgent);
+        const allowParam = url.searchParams.get('animes');
 
-        if (isBrowser && !isKodi) {
+        if (isBrowser && !allowParam) {
           return new Response('Access to this resource is restricted.', {
             status: 403,
             headers: {
@@ -69,6 +73,7 @@ export default {
       }
     }
 
+    // Suporte a múltiplas extensões de imagem
     const supportedExtensions = ['png', 'jpg', 'jpeg', 'gif'];
 
     if (url.pathname === '/index.html') {
