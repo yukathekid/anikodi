@@ -15,12 +15,15 @@
             background-color: #f8f9fa;
             flex: 1;
         }
+        h1, h2{
+            font-size: 20pt;
+        }
         .trial {
             font-family: Akira;
             font-size: 20pt;
         }
         .content-section {
-            padding: 10px 20px;
+            padding: 10px 20px;         
         }
         .footer {
             background-color: #343a40;
@@ -74,24 +77,25 @@
     <!-- Seção de Link para Cópia -->
     <div class="container content-section">
         <div class="copy-container">
-            <input type="text" id="m3uLink" class="form-control" value="https://example.com/lista.m3u" readonly onclick="copyLink()">
+            <input type="text" id="m3uLink" class="form-control" value="https://anikodi.xyz/playlist/test" readonly onclick="copyLink()">
         </div>
         <div id="message" class="mt-2 text-success"></div>
     </div>
 
     <!-- Seção de Conteúdo -->
     <div class="container content-section">
-        <h2 class="text-dark">Sobre Nós</h2>
+        <h1 class="text-dark">Sobre Nós</h1>
         <p class="text-justify text-dark">O <span class="text-dark font-weight-bold">Anikodi</span> é a sua fonte confiável para a melhor lista de animes em formato M3U. Aqui, você pode encontrar uma variedade de animes para assistir diretamente no seu dispositivo preferido. Nossa lista é constantemente atualizada para garantir que você tenha acesso aos últimos lançamentos e séries populares.</p>
-        <h4 class="text-dark">Responsabilidade de Conteúdo</h4>
+        <h2 class="text-dark">Responsabilidade de Conteúdo</h2>
         <p class="text-dark text-justify">O Anikodi se dedica a fornecer uma lista de animes em formato M3U, que são indexados a partir de links disponíveis publicamente na web. Não hospeda ou armazena nenhum conteúdo diretamente. Todo o material listado é acessível através de links externos e é de responsabilidade dos respectivos proprietários. O Anikodi não se responsabiliza por qualquer conteúdo externo acessado através desses links.</p>
     </div>
     <hr>
     <!-- Rodapé -->
+   <footer>
     <div class="footer bg-dark">
         <span class="text-white">© 2024 Anikodi. Todos os direitos reservados.</span>
     </div>
-
+   </footer>
     <!-- Scripts -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
