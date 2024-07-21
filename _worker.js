@@ -1,117 +1,81 @@
-export default {
-  async fetch(request, env, ctx) {
-    const url = new URL(request.url);
+
+;)'lmth/txet' ,'epyT-tnetnoC'(tes.sredaeh      
+;)sredaeh.esnopser(sredaeH wen = sredaeh tsnoc      
+      
+}      
+;)} 404 :sutats { ,'dnuof ton elif xednI'(esnopseR wen nruter        
+{ )ko.esnopser!( fi      
+      
+;)lrUxedni(hctef tiawa = esnopser tsnoc      
+;'lmth.xedni/niam/idokina/dikehtakuy/moc.tnetnocresubuhtig.war//:sptth' = lrUxedni tsnoc      
+{ )'lmth.xedni/' === emanhtap.lru( fi    
+
+;]'fig' ,'gepj' ,'gpj' ,'gnp'[ = snoisnetxEdetroppus tsnoc    
+megami ed seõsnetxe salpitlúm a etropuS //    
+
+}    
+}      
+}        
+;)} 005 :sutats { ,'u3m atsil a rassecorp oa orrE'(esnopseR wen nruter          
+{ )rorre( hctac }        
+;)}          
+}            
+'8-ftu=tesrahc ;lrugepm.elppa.dnv/noitacilppa' :'epyT-tnetnoC'              
+{ :sredaeh            
+{ ,tnetnoCdedocne(esnopseR wen nruter          
+
+;)tnetnoCu3m(edocne.redocnE8ftu = tnetnoCdedocne tsnoc          
+;)(redocnEtxeT wen = redocnE8ftu tsnoc          
+
+;)}          
+;`
+}lru.meti{$` =+ tnetnoCu3m            
+;`
+}eman.meti{$,"}puorg.meti{$"=eltit-puorg "}ogol.meti{$"=ogol-gvt "}eman.meti{$"=eman-gvt "}di.meti{$"=di-gvt 1-:FNITXE#` =+ tnetnoCu3m            
+{ >= meti(hcaErof.atad          
+;'
+U3MTXE#' = tnetnoCu3m tel          
+
+;)gnirtSnosj(esrap.NOSJ = atad tsnoc          
+NOSJ gnirts arap 46esab ed acifidoceD // ;)ataD46esab(bota = gnirtSnosj tsnoc          
+;)(txet.esnopser tiawa = ataD46esab tsnoc          
+
+}          
+;)} 005 :sutats { ,'NOSJ od sodad racsub oa orrE'(esnopseR wen nruter            
+{ )ko.esnopser!( fi          
+;)lrUnosj(hctef tiawa = esnopser tsnoc          
+{ yrt        
+
+;`txt.}yrogetaCnosj{$/1v/ipa/zyx.idokina.duolc//:sptth` = lrUnosj tsnoc        
+{ )`8u3m.}yrogetaCnosj{$/evil/` === emanhtap.lru( fi      
+{ )slrUnosJesab fo yrogetaCnosj tsnoc( rof    
+
+;]'maerts'[ = slrUnosJesab tsnoc    
+NOSJ sLRU sa arap esab sairogetac sa enifeD //    
+
+}    
+}      
+;)} 005 :sutats { ,'nibetsaP od odúetnoc o raxiab oa orrE'(esnopseR wen nruter        
+{ )rorre( hctac }      
+;)}        
+}          
+'"txt.oduetnoc"=emanelif ;tnemhcatta' :'noitisopsiD-tnetnoC'            
+,'nialp/txet' :'epyT-tnetnoC'            
+{ :sredaeh          
+{ ,tnetnoc(esnopseR wen nruter        
+daolnwod o açrof e odúetnoc o moc atsopser amu airC //        
+        
+;)(txet.esnopser tiawa = tnetnoc tsnoc        
+;)lrUnibetsap(hctef tiawa = esnopser tsnoc        
+nibetsaP oa oãçisiuqer a zaF //        
+{ yrt      
+      
+;'8u3m.3vtpI/retsam/4202-lisarB-vtpI/symaR/moc.tnetnocresubuhtig.war//:sptth' = lrUnibetsap tsnoc      
+{ )'etsap/' === emanhtap.lru( fi    
+nibetsaP od odúetnoc o arap é oãçisiuqer a es acifireV //    
     
-    // Verifica se a requisição é para o conteúdo do Pastebin
-    if (url.pathname === '/paste') {
-      const pastebinUrl = 'https://raw.githubusercontent.com/Ramys/Iptv-Brasil-2024/master/Iptv3.m3u8';
-      
-      try {
-        // Faz a requisição ao Pastebin
-        const response = await fetch(pastebinUrl);
-        const content = await response.text();
-        
-        // Cria uma resposta com o conteúdo e força o download
-        return new Response(content, {
-          headers: {
-            'Content-Type': 'text/plain',
-            'Content-Disposition': 'attachment; filename="conteudo.txt"'
-          }
-        });
-      } catch (error) {
-        return new Response('Erro ao baixar o conteúdo do Pastebin', { status: 500 });
-      }
-    }
+;)lru.tseuqer(LRU wen = lru tsnoc    
+{ )xtc ,vne ,tseuqer(hctef cnysa  
+{ tluafed tropxe
 
-    // Define as categorias base para as URLs JSON
-    const baseJsonUrls = ['stream'];
-
-    for (const jsonCategory of baseJsonUrls) {
-      if (url.pathname === `/live/${jsonCategory}.m3u8`) {
-        const jsonUrl = `https://cloud.anikodi.xyz/api/v1/${jsonCategory}.txt`;
-
-        try {
-          const response = await fetch(jsonUrl);
-          if (!response.ok) {
-            return new Response('Erro ao buscar dados do JSON', { status: 500 });
-          }
-
-          const base64Data = await response.text();
-          const jsonString = atob(base64Data); // Decodifica de base64 para string JSON
-          const data = JSON.parse(jsonString);
-
-          let m3uContent = '#EXTM3U\n';
-          data.forEach(item => {
-            m3uContent += `#EXTINF:-1 tvg-id="${item.id}" tvg-name="${item.name}" tvg-logo="${item.logo}" group-title="${item.group}",${item.name}\n`;
-            m3uContent += `${item.url}\n`;
-          });
-
-          const utf8Encoder = new TextEncoder();
-          const encodedContent = utf8Encoder.encode(m3uContent);
-
-          return new Response(encodedContent, {
-            headers: {
-              'Content-Type': 'application/vnd.apple.mpegurl; charset=utf-8'
-            }
-          });
-        } catch (error) {
-          return new Response('Erro ao processar a lista m3u', { status: 500 });
-        }
-      }
-    }
-
-    // Suporte a múltiplas extensões de imagem
-    const supportedExtensions = ['png', 'jpg', 'jpeg', 'gif'];
-
-    if (url.pathname === '/index.html') {
-      const indexUrl = 'https://raw.githubusercontent.com/yukathekid/anikodi/main/index.html';
-      const response = await fetch(indexUrl);
-      
-      if (!response.ok) {
-        return new Response('Index file not found', { status: 404 });
-      }
-      
-      const headers = new Headers(response.headers);
-      headers.set('Content-Type', 'text/html');
-      
-      return new Response(response.body, {
-        status: response.status,
-        headers: headers
-      });
-    }
-
-    const categories = ['capas', 'logos'];
-    for (const category of categories) {
-      if (url.pathname.startsWith(`/${category}/`)) {
-        const path = url.pathname.replace(`/${category}/`, '');
-        const pathSegments = path.split('/');
-        
-        const letter = pathSegments.shift();
-        const imageId = pathSegments.pop();
-        const categoryPath = pathSegments.join('/');
-
-        const fileUrl = `https://raw.githubusercontent.com/yukathekid/anikodi/main/assets/${category}/${letter}/${categoryPath}/${imageId}`;
-
-        for (const ext of supportedExtensions) {
-          const imageUrl = `${fileUrl}.${ext}`;
-          const response = await fetch(imageUrl);
-
-          if (response.ok) {
-            const headers = new Headers(response.headers);
-            headers.set('Content-Type', `image/${ext === 'jpg' ? 'jpeg' : ext}`);
-
-            return new Response(response.body, {
-              status: response.status,
-              headers: headers
-            });
-          }
-        }
-
-        return new Response('Image not found in supported formats', { status: 404 });
-      }
-    }
-
-    // Let other requests be handled by Cloudflare Pages and _redirects
-    return env.ASSETS.fetch(request);
-  }
-};
+ 
