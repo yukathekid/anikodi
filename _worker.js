@@ -156,4 +156,4 @@ export default {
 };
 
 const CACHE_TTL = 300; // Tempo de cache em segundos (5 minutos)
-const offlineVideoURL = 'https://example.com/backup-video.mp4'; // URL do vídeo de backup
+const offlineVideoURL = 'https://github.com/yukathekid/anikodi/blob/main/assets/TV%20Fora%20do%20Ar%20%5BHD%5D.mp4'; // URL do vídeo de backup
