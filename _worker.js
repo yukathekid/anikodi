@@ -26,14 +26,14 @@ if (url.pathname === `/playlist/${jsonCategory}.m3u8`) {
       const userAgent = request.headers.get('User-Agent');
           const isBrowser = userAgent && /Mozilla|Chrome|Safari|Firefox|Edge/i.test(userAgent);
 
-          if (isBrowser) {
+          /*if (isBrowser) {
             return new Response('Access to this resource is restricted.', {
               status: 403,
               headers: {
                 'Content-Type': 'text/plain'
               }
             });
-          }
+          }*/
       const jsonUrl = `https://cloud.anikodi.xyz/api/v1/${jsonCategory}.txt`;
 
       try {
