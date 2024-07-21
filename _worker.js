@@ -2,13 +2,16 @@ export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
     
+    // Verifica se a requisição é para o conteúdo do Pastebin
     if (url.pathname === '/paste') {
       const pastebinUrl = 'https://piroplay.xyz/cdn/hls/1f3225e82ea03a704c3a0f93272468d0/master.txt?s=4';
       
       try {
+        // Faz a requisição ao Pastebin
         const response = await fetch(pastebinUrl);
         const content = await response.text();
         
+        // Cria uma resposta com o conteúdo e força o download
         return new Response(content, {
           headers: {
             'Content-Type': 'text/plain',
@@ -20,6 +23,7 @@ export default {
       }
     }
 
+    // Define as categorias base para as URLs JSON
     const baseJsonUrls = ['stream'];
 
     for (const jsonCategory of baseJsonUrls) {
@@ -33,29 +37,19 @@ export default {
           }
 
           const base64Data = await response.text();
-          const jsonString = atob(base64Data);
+          const jsonString = atob(base64Data); // Decodifica de base64 para string JSON
           const data = JSON.parse(jsonString);
 
           let m3uContent = '#EXTM3U\n';
-          const offlineVideoUrl = 'https://example.com/offline-video.mp4'; // URL do vídeo alternativo
-
-          for (const item of data) {
-            let isLinkAvailable = true;
-
-            try {
-              const linkResponse = await fetch(item.url, { method: 'HEAD' });
-              if (!linkResponse.ok) {
-                isLinkAvailable = false;
-              }
-            } catch (error) {
-              isLinkAvailable = false;
-            }
-
+          data.forEach(item => {
             m3uContent += `#EXTINF:-1 tvg-id="${item.id}" tvg-name="${item.name}" tvg-logo="${item.logo}" group-title="${item.group}",${item.name}\n`;
-            m3uContent += `${isLinkAvailable ? item.url : offlineVideoUrl}\n`;
-          }
+            m3uContent += `${item.url}\n`;
+          });
 
-          return new Response(m3uContent, {
+          const utf8Encoder = new TextEncoder();
+          const encodedContent = utf8Encoder.encode(m3uContent);
+
+          return new Response(encodedContent, {
             headers: {
               'Content-Type': 'application/vnd.apple.mpegurl; charset=utf-8'
             }
@@ -66,6 +60,7 @@ export default {
       }
     }
 
+    // Suporte a múltiplas extensões de imagem
     const supportedExtensions = ['png', 'jpg', 'jpeg', 'gif'];
 
     if (url.pathname === '/index.html') {
@@ -116,6 +111,7 @@ export default {
       }
     }
 
+    // Let other requests be handled by Cloudflare Pages and _redirects
     return env.ASSETS.fetch(request);
   }
 };
