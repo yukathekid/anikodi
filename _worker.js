@@ -28,9 +28,9 @@ export default {
 
     for (const jsonCategory of baseJsonUrls) {
       if (url.pathname === `/live/${jsonCategory}`) {
-      /*const userAgent = request.headers.get('User-Agent');
+        const userAgent = request.headers.get('User-Agent');
         const isBrowser = userAgent && /Mozilla|Chrome|Safari|Firefox|Edge/i.test(userAgent);
-        const isKodi = userAgent && /Kodi\/21\.0/i.test(userAgent);
+        const isKodi = userAgent && /Kodi\16/\.1/i.test(userAgent);
         // Permite acesso para Kodi e outros aplicativos de IPTV (ou por parâmetros, se necessário)
         if (isBrowser && !isKodi) {
           return new Response('Access to this resource is restricted.', {
@@ -39,7 +39,7 @@ export default {
               'Content-Type': 'text/plain'
             }
           });
-        }*/
+        }
         const jsonUrl = `https://cloud.anikodi.xyz/data/live/${jsonCategory}.txt`;
 
         try {
