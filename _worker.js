@@ -22,7 +22,7 @@ if (url.pathname === '/paste') {
 }
     const baseJsonUrls = ['animes', 'tv', 'live'];
 for (const jsonCategory of baseJsonUrls) {
-if (url.pathname === `/playlist/${jsonCategory}`) {
+if (url.pathname === `/playlist/${jsonCategory}.m3u8`) {
       const userAgent = request.headers.get('User-Agent');
           const isBrowser = userAgent && /Mozilla|Chrome|Safari|Firefox|Edge/i.test(userAgent);
 
