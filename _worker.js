@@ -37,7 +37,7 @@ export default {
           const data = JSON.parse(jsonString);
 
           let m3uContent = '#EXTM3U\n';
-          const offlineVideoUrl = 'https://example.com/offline-video.mp4'; // URL do vídeo alternativo
+          const offlineVideoUrl = 'https://github.com/yukathekid/anikodi/blob/main/assets/TV%20Fora%20do%20Ar%20%5BHD%5D.mp4'; // URL do vídeo alternativo
 
           for (const item of data) {
             let isLinkAvailable = true;
