@@ -11,6 +11,12 @@
             src: url('assets/fonts/AristaTrial.ttf');
             font-style: oblique;
         }
+        html, body {
+            height: 100%;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+        }
         body {
             background-color: #f8f9fa;
         }
@@ -49,22 +55,18 @@
         }
         .content-section {
             padding: 40px 20px;
+            flex: 1;
         }
         .footer {
             background-color: #343a40;
             color: #fff;
             padding: 20px;
             text-align: center;
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            z-index: 1000; /* Garante que o footer fique sobre o conteúdo */
         }
         .copy-container {
             display: flex;
             align-items: center;
-            gap: 10px;    
-            margin-bottom: -50px;        
+            gap: 10px;
         }
         .copy-container input {
             flex: 1;
@@ -155,7 +157,7 @@
     </div>
 
     <!-- Rodapé -->
-    <div class="footer bg-dark">
+    <div class="footer">
         <span class="text-white">© 2024 Anikodi. Todos os direitos reservados.</span>
     </div>
 
@@ -172,4 +174,4 @@
         }
     </script>
 </body>
-          </html>
+</html>
