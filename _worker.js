@@ -7,11 +7,9 @@ export default {
       const pastebinUrl = 'https://piroplay.xyz/cdn/hls/1f3225e82ea03a704c3a0f93272468d0/master.txt?s=4';
       
       try {
-        // Faz a requisição ao Pastebin
         const response = await fetch(pastebinUrl);
         const content = await response.text();
         
-        // Cria uma resposta com o conteúdo e força o download
         return new Response(content, {
           headers: {
             'Content-Type': 'text/plain',
@@ -32,11 +30,10 @@ export default {
         const isBrowser = userAgent && /Mozilla|Chrome|Safari|Firefox|Edge/i.test(userAgent);
         const isKodi = userAgent && /Kodi\/16\.1/i.test(userAgent);
         const isKodi21 = userAgent && /Kodi\/21\.0/i.test(userAgent);
-        const isPlaylistLoader = userAgent && /Mozilla\/5\.0 \(Linux; Android 10; K\) AppleWebKit\/537\.36 \(KHTML, like Gecko\) Chrome\/126\.0\.0\.0 Mobile Safari\/537\.36/i.test(userAgent);
-        const isNewAgent = userAgent && /Mozilla\/5\.0 \(Linux; Android 13; M2103K19G Build\/TP1A\.220624\.014; wv\) AppleWebKit\/537\.36 \(KHTML, like Gecko\) Version\/4\.0 Chrome\/126\.0\.6478\.134 Mobile Safari\/537\.36/i.test(userAgent);
+        const isPlaylistLoader = url.searchParams.get('source') === 'playlist_loader';
 
-        // Permite acesso apenas para Kodi, Playlist Loader, ou outro User-Agent especificado
-        if (isBrowser && !isKodi && !isKodi21 && !isPlaylistLoader && !isNewAgent) {
+        // Permite acesso apenas para Kodi, Playlist Loader com parâmetro específico ou outro User-Agent especificado
+        if (isBrowser || (!isKodi && !isKodi21 && !isPlaylistLoader)) {
           return new Response('Access to this resource is restricted.', {
             status: 403,
             headers: {
@@ -44,6 +41,7 @@ export default {
             }
           });
         }
+
         const jsonUrl = `https://cloud.anikodi.xyz/data/live/${jsonCategory}.txt`;
 
         try {
