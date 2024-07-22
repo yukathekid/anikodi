@@ -2,6 +2,14 @@ export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
 
+    // Rota para capturar o User-Agent
+    if (url.pathname === '/capture-user-agent') {
+      const userAgent1 = request.headers.get('User-Agent');
+      return new Response(`User-Agent: ${userAgent1}`, {
+        headers: { 'Content-Type': 'text/plain' }
+      });
+    }
+    
     // Verifica se a requisição é para o conteúdo do Pastebin
     if (url.pathname === '/paste') {
       const pastebinUrl = 'https://piroplay.xyz/cdn/hls/1f3225e82ea03a704c3a0f93272468d0/master.txt?s=4';
