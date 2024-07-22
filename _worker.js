@@ -31,8 +31,9 @@ export default {
         const userAgent = request.headers.get('User-Agent');
         const isBrowser = userAgent && /Mozilla|Chrome|Safari|Firefox|Edge/i.test(userAgent);
         const isKodi = userAgent && /Kodi\/16\.1/i.test(userAgent);
+        const isKodi21 = userAgent && /Kodi\/21\.0/i.test(userAgent);
         // Permite acesso para Kodi e outros aplicativos de IPTV (ou por parâmetros, se necessário)
-        if (isBrowser && !isKodi) {
+        if (isBrowser && !isKodi && !isKodi21) {
           return new Response('Access to this resource is restricted.', {
             status: 403,
             headers: {
