@@ -29,7 +29,7 @@ export default {
     for (const jsonCategory of baseJsonUrls) {
       if (url.pathname === `/live/${jsonCategory}`) {
         const userAgent = request.headers.get('User-Agent');
-        const isBrowser = userAgent && /Chrome|Safari|Firefox|Edge/i.test(userAgent);
+        const isBrowser = userAgent && /Mozilla/Chrome|Safari|Firefox|Edge/i.test(userAgent);
         const isKodi = userAgent && /Kodi\/16\.1/i.test(userAgent);
         const isKodi21 = userAgent && /Kodi\/21\.0/i.test(userAgent);
 
