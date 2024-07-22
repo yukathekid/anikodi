@@ -102,7 +102,7 @@ export default {
         const imageId = pathSegments.pop();
         const categoryPath = pathSegments.join('/');
 
-        const fileUrl = `https://anikodi.xyz/${category}/${letter}/${categoryPath}/${imageId}`;
+        const fileUrl = `https://raw.githubusercontent.com/yukathekid/anikodi/main/assets/${category}/${letter}/${categoryPath}/${imageId}`;
 
         for (const ext of supportedExtensions) {
           const imageUrl = `${fileUrl}.${ext}`;
