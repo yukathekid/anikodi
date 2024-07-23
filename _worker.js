@@ -40,6 +40,7 @@ export default {
         const isBrowser = userAgent && /Mozilla|Chrome|Safari|Firefox|Edge/i.test(userAgent);
         const isKodi = userAgent && /Kodi\/\d+\.\d+/i.test(userAgent);
         const isSpecificUserAgent = userAgent === 'Mozilla/5.0 (Linux; Android 13; M2103K19G Build/TP1A.220624.014; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/126.0.6478.134 Mobile Safari/537.36';
+        
         // Permite acesso para Kodi e outros aplicativos de IPTV (ou por parâmetros, se necessário)
         if (isBrowser && !isKodi && !isSpecificUserAgent) {
           return new Response('Access to this resource is restricted.', {
@@ -130,6 +131,33 @@ export default {
         }
 
         return new Response('Image not found in supported formats', { status: 404 });
+      }
+    }
+
+    // Novo bloco para camuflagem de URL
+    if (url.pathname === '/cdn/hls') {
+      const ep = url.searchParams.get('ep');
+      const token = url.searchParams.get('token');
+
+      if (ep && token) {
+        const realUrl = `https://firebasestorage.googleapis.com/v0/b/hwfilm23.appspot.com/o/Anikodi%2Fwind-breaker%2F${ep}.mp4?alt=media&token=${token}`;
+
+        try {
+          const response = await fetch(realUrl, {
+            method: request.method,
+            headers: request.headers,
+          });
+
+          return new Response(response.body, {
+            status: response.status,
+            statusText: response.statusText,
+            headers: response.headers
+          });
+        } catch (error) {
+          return new Response('Erro ao acessar o conteúdo.', { status: 500 });
+        }
+      } else {
+        return new Response('Parâmetros inválidos', { status: 400 });
       }
     }
 
