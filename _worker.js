@@ -3,20 +3,19 @@ export default {
     const url = new URL(request.url);
 
     // Verifique o caminho da URL
-    if (url.pathname === '/api/lista.m3u') {
-      const authorization = request.headers.get('Authorization');
+    if (url.pathname === '/acess') {
+      // Extraia parâmetros da URL
+      const username = url.searchParams.get('username');
+      const password = url.searchParams.get('password');
 
-      if (!authorization) {
-        return new Response('Unauthorized', { status: 401, headers: { 'WWW-Authenticate': 'Basic' } });
+      if (!username || !password) {
+        return new Response('Bad Request', { status: 400 });
       }
-
-      const auth = authorization.split(' ')[1];
-      const [username, password] = atob(auth).split(':');
 
       const isAuthenticated = await checkCredentials(username, password);
 
       if (!isAuthenticated) {
-        return new Response('Unauthorized', { status: 401, headers: { 'WWW-Authenticate': 'Basic' } });
+        return new Response('Unauthorized', { status: 401 });
       }
 
       // Substitua a URL abaixo pela URL real da lista M3U
