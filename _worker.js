@@ -37,11 +37,13 @@ async function checkCredentials(username, password) {
 
   const storedUsername = data.fields.username.stringValue;
   const storedPassword = data.fields.password.stringValue;
-  const expiryDateStr = data.fields.expiryDate?.stringValue;
+  const expiryDateTimestamp = data.fields.expiryDate?.timestampValue;
 
   // Verificar se a senha está correta e se a data de expiração é válida
   const isPasswordCorrect = storedUsername === username && storedPassword === password;
-  const isExpired = expiryDateStr ? new Date(expiryDateStr) < new Date() : false;
+  
+  // Converter o timestamp do Firestore para um objeto Date
+  const isExpired = expiryDateTimestamp ? new Date(expiryDateTimestamp.seconds * 1000) < new Date() : false;
 
   return isPasswordCorrect && !isExpired;
 }
