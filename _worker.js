@@ -2,9 +2,7 @@ export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
 
-    // Verifique o caminho da URL
     if (url.pathname === '/acess') {
-      // Extraia parâmetros da URL
       const username = url.searchParams.get('username');
       const password = url.searchParams.get('password');
 
@@ -22,7 +20,6 @@ export default {
       return fetch('https://cloud.anikodi.xyz/data/live/testan.m3u8');
     }
 
-    // Manipule recursos estáticos, se necessário
     return env.ASSETS.fetch(request);
   }
 }
@@ -40,6 +37,11 @@ async function checkCredentials(username, password) {
 
   const storedUsername = data.fields.username.stringValue;
   const storedPassword = data.fields.password.stringValue;
+  const expiryDateStr = data.fields.expiryDate?.stringValue;
 
-  return storedUsername === username && storedPassword === password;
+  // Verificar se a senha está correta e se a data de expiração é válida
+  const isPasswordCorrect = storedUsername === username && storedPassword === password;
+  const isExpired = expiryDateStr ? new Date(expiryDateStr) < new Date() : false;
+
+  return isPasswordCorrect && !isExpired;
 }
