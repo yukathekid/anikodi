@@ -29,7 +29,7 @@ export default {
 }
 
 async function checkCredentials(username, password) {
-  const firestoreProjectId = 'Ozp1AoWezW9agFQ9IoYJ';
+  const firestoreProjectId = 'hwfilm23';
   const firestoreUrl = `https://firestore.googleapis.com/v1/projects/${firestoreProjectId}/databases/(default)/documents/users/${username}`;
 
   const response = await fetch(firestoreUrl);
