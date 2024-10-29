@@ -13,7 +13,7 @@ export default {
       const isAuthenticated = await checkCredentials(username, password);
 
       if (!isAuthenticated) {
-        return new Response('Seção expirada, entre em contato lara renovar.', { status: 401 });
+        return new Response('Unauthorized', { status: 401 });
       }
 
       // Substitua a URL abaixo pela URL real da lista M3U
