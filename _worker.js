@@ -74,7 +74,7 @@ async function checkCredentials(username, password) {
   const expiryDate = new Date(expiryDateTimestamp).getTime();
   
   // Verificar se a data de expiração é válida
-  const isExpired = expiryDate < Date.now();
+  const isExpired = expiryDate < new Date().getTime();
 
   // Se a senha estiver correta, mas a sessão estiver expirada
   if (isPasswordCorrect && isExpired) {
