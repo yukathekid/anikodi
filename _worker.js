@@ -1,7 +1,7 @@
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
-//teste
+
     if (url.pathname === '/acess') {
       const username = url.searchParams.get('username');
       const password = url.searchParams.get('password');
@@ -10,10 +10,10 @@ export default {
         return new Response('Bad Request', { status: 400 });
       }
 
-      const isAuthenticated = await checkCredentials(username, password);
+      const { isAuthenticated, message } = await checkCredentials(username, password);
 
       if (!isAuthenticated) {
-        return new Response('Unauthorized', { status: 401 });
+        return new Response(message, { status: message === 'Session expired' ? 403 : 401 });
       }
 
       // Substitua a URL abaixo pela URL real da lista M3U
@@ -32,7 +32,7 @@ async function checkCredentials(username, password) {
   const data = await response.json();
 
   if (!data || !data.fields) {
-    return false;
+    return { isAuthenticated: false, message: 'Unauthorized' };
   }
 
   const storedUsername = data.fields.username.stringValue;
@@ -40,7 +40,7 @@ async function checkCredentials(username, password) {
   const expiryDateTimestamp = data.fields.expiryDate?.timestampValue;
 
   if (!storedUsername || !storedPassword || !expiryDateTimestamp) {
-    return false;
+    return { isAuthenticated: false, message: 'Unauthorized' };
   }
 
   // Verificar se a senha está correta
@@ -52,5 +52,13 @@ async function checkCredentials(username, password) {
   // Verificar se a data de expiração é válida
   const isExpired = expiryDate < new Date();
 
-  return isPasswordCorrect && !isExpired;
-}
+  if (!isPasswordCorrect) {
+    return { isAuthenticated: false, message: 'Unauthorized' };
+  }
+
+  if (isExpired) {
+    return { isAuthenticated: false, message: 'Session expired' };
+  }
+
+  return { isAuthenticated: true, message: 'Authenticated' };
+      }
