@@ -1,5 +1,16 @@
+const users = {
+  "daniel": {
+    "password": "teste123",
+    "expiryDate": "2024-10-30T16:15:00.293Z"
+  },
+  "outro_usuario": {
+    "password": "senha456",
+    "expiryDate": "2024-12-31T16:15:00.293Z"
+  }
+};
+
 export default {
-  async fetch(request, env, ctx) {
+  async fetch(request) {
     const url = new URL(request.url);
 
     if (url.pathname === '/acess') {
@@ -10,31 +21,33 @@ export default {
         return new Response('Bad Request', { status: 400 });
       }
 
-      const firestoreProjectId = 'hwfilm23';
-      const firestoreUrl = `https://firestore.googleapis.com/v1/projects/${firestoreProjectId}/databases/(default)/documents/users/${username}`;
+      const isAuthenticated = checkCredentials(username, password);
 
-      // Testa a conexão com o Firestore e a leitura dos dados
-      const response = await fetch(firestoreUrl);
-      if (!response.ok) {
-        return new Response('Firestore document not found', { status: 404 });
-      }
-
-      const data = await response.json();
-      if (!data || !data.fields) {
-        return new Response('Invalid document format', { status: 500 });
-      }
-
-      const storedUsername = data.fields.username?.stringValue;
-      const storedPassword = data.fields.password?.stringValue;
-
-      if (storedUsername === username && storedPassword === password) {
-        // Substitua pela URL da lista M3U se autenticado com sucesso
-        return fetch('https://cloud.anikodi.xyz/data/live/testan.m3u8');
-      } else {
+      if (!isAuthenticated) {
         return new Response('Unauthorized', { status: 401 });
       }
+
+      // Substitua a URL abaixo pela URL real da lista M3U
+      return fetch('https://cloud.anikodi.xyz/data/live/testan.m3u8');
     }
 
-    return env.ASSETS.fetch(request);
+    return new Response('Not Found', { status: 404 });
   }
+}
+
+function checkCredentials(username, password) {
+  const user = users[username];
+
+  if (!user) {
+    return false; // Usuário não encontrado
+  }
+
+  // Verificar se a senha está correta
+  const isPasswordCorrect = user.password === password;
+
+  // Verificar se a data de expiração é válida
+  const expiryDate = new Date(user.expiryDate);
+  const isExpired = expiryDate < new Date();
+
+  return isPasswordCorrect && !isExpired;
 }
