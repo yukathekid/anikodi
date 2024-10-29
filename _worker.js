@@ -13,9 +13,10 @@ export default {
       const isAuthenticated = await checkCredentials(username, password);
 
       if (!isAuthenticated) {
-        return new Response('Unauthorized: Invalid credentials or expired account', { status: 401 });
+        return new Response('Unauthorized: Invalid credentials', { status: 401 });
       }
 
+      // URL da lista M3U se as credenciais estiverem corretas
       return fetch('https://cloud.anikodi.xyz/data/live/testan.m3u8');
     }
 
@@ -39,23 +40,11 @@ async function checkCredentials(username, password) {
 
   const storedUsername = data.fields.username?.stringValue;
   const storedPassword = data.fields.password?.stringValue;
-  const expiryDateTimestamp = data.fields.expiryDate?.timestampValue;
 
-  if (!storedUsername || !storedPassword || !expiryDateTimestamp) {
+  if (!storedUsername || !storedPassword) {
     return false;  // Dados ausentes no documento Firestore
   }
 
-  const isPasswordCorrect = storedUsername === username && storedPassword === password;
-  const expiryDate = new Date(expiryDateTimestamp);
-  const isExpired = expiryDate < new Date();
-
-  if (!isPasswordCorrect) {
-    return false;  // Senha incorreta
-  }
-
-  if (isExpired) {
-    return false;  // Conta expirada
-  }
-
-  return isPasswordCorrect && !isExpired;
+  // Verificar se a senha está correta
+  return storedUsername === username && storedPassword === password;
 }
