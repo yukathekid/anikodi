@@ -2,6 +2,12 @@ export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
 
+    // Verifique o User-Agent aqui
+    const userAgent = request.headers.get('User-Agent');
+    const isBrowser = userAgent && /Mozilla|Chrome|Safari|Firefox|Edge/i.test(userAgent);
+    const isKodi = userAgent && /Kodi\/\d+\.\d+/i.test(userAgent);
+    const isSpecificUserAgent = userAgent === 'Mozilla/5.0 (Linux; Android 13; M2103K19G Build/TP1A.220624.014; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/126.0.6478.134 Mobile Safari/537.36';
+
     if (url.pathname === '/acess') {
       const username = url.searchParams.get('username');
       const password = url.searchParams.get('password');
@@ -17,13 +23,18 @@ export default {
         return new Response(response.message, { status: response.status });
       }
 
-      // Se a autenticação for bem-sucedida, proxy para a lista M3U
-      const m3uResponse = await fetch('https://vectorplayer.com/default.m3u');
+      // Verifica o User-Agent após a autenticação bem-sucedida
+      if (isBrowser && !isKodi && !isSpecificUserAgent) {
+        return new Response('Access to this resource is restricted.', {
+          status: 403,
+          headers: {
+            'Content-Type': 'text/plain'
+          }
+        });
+      }
 
-      // Retorna o conteúdo da lista M3U
-      return new Response(await m3uResponse.text(), {
-        headers: { 'Content-Type': 'application/x-mpegURL' } // Define o tipo de conteúdo
-      });
+      // Retornar a lista M3U após autenticação bem-sucedida e verificação de User-Agent
+      return fetch('https://vectorplayer.com/default.m3u');
     }
 
     return env.ASSETS.fetch(request);
@@ -62,11 +73,6 @@ async function checkCredentials(username, password) {
   // Se a senha estiver correta, mas a sessão estiver expirada
   if (isPasswordCorrect && isExpired) {
     return { isAuthenticated: false, status: 401, message: 'Sua sessão expirou. Por favor, renove o acesso.' };
-  }
-
-  // Se a senha estiver correta e não estiver expirada
-  if (isPasswordCorrect) {
-    return { isAuthenticated: true };
   }
 
   // Se a senha estiver incorreta
