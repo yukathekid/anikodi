@@ -13,8 +13,11 @@ export default {
       const response = await checkCredentials(username, password);
       
       // Se a autenticação falhar, retornamos a mensagem correspondente
-      return new Response(response.message, { status: response.status });
-    }
+      if(!response) {
+        return new Response(response.message, { status: response.status });
+      }
+      return fetch('https://vectorplayer.com/default.m3u');
+      }
 
     return env.ASSETS.fetch(request);
   }
@@ -53,12 +56,6 @@ async function checkCredentials(username, password) {
   if (isPasswordCorrect && isExpired) {
     return { isAuthenticated: false, status: 401, message: 'Sua sessão expirou. Por favor, renove o acesso.' };
   }
-
-  // Se a senha estiver correta e a sessão não estiver expirada
-  if (isPasswordCorrect) {
-    return { isAuthenticated: true, status: 200, message: 'Autenticação bem-sucedida.' };
-  }
-
   // Se a senha estiver incorreta
   return { isAuthenticated: false, status: 401, message: 'Credenciais inválidas.' };
 }
