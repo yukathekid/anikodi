@@ -7,20 +7,20 @@ export default {
       const password = url.searchParams.get('password');
 
       if (!username || !password) {
-        return new Response('Bad Request', { status: 400 });
+        return new Response('Missing username or password', { status: 400 });
       }
 
       const isAuthenticated = await checkCredentials(username, password);
 
       if (!isAuthenticated) {
-        return new Response('Unauthorized', { status: 401 });
+        return new Response('Authentication failed', { status: 401 });
       }
 
-      // Substitua a URL abaixo pela URL real da lista M3U
-      return fetch('https://cloud.anikodi.xyz/data/live/testan.m3u8');
+      // Se passar pela autenticação, tenta retornar a lista M3U
+      return new Response('Authentication successful. Fetching M3U8...', { status: 200 });
     }
 
-    return env.ASSETS.fetch(request);
+    return new Response('Not Found', { status: 404 });
   }
 }
 
@@ -28,11 +28,17 @@ async function checkCredentials(username, password) {
   const firestoreProjectId = 'hwfilm23';
   const firestoreUrl = `https://firestore.googleapis.com/v1/projects/${firestoreProjectId}/databases/(default)/documents/users/${username}`;
 
+  // Tenta buscar o documento do Firestore
   const response = await fetch(firestoreUrl);
+  
+  if (!response.ok) {
+    return false;  // Falha ao buscar documento (404 ou outro erro)
+  }
+
   const data = await response.json();
 
   if (!data || !data.fields) {
-    return false;
+    return false;  // Documento não encontrado ou mal formatado
   }
 
   const storedUsername = data.fields.username.stringValue;
@@ -40,16 +46,12 @@ async function checkCredentials(username, password) {
   const expiryDateTimestamp = data.fields.expiryDate?.timestampValue;
 
   if (!storedUsername || !storedPassword || !expiryDateTimestamp) {
-    return false;
+    return false;  // Dados ausentes no Firestore
   }
 
-  // Verificar se a senha está correta
+  // Verifica a senha e a data de expiração
   const isPasswordCorrect = storedUsername === username && storedPassword === password;
-
-  // Converter o timestamp do Firestore para um objeto Date
-  const expiryDate = new Date(expiryDateTimestamp.seconds * 1000);
-
-  // Verificar se a data de expiração é válida
+  const expiryDate = new Date(expiryDateTimestamp);
   const isExpired = expiryDate < new Date();
 
   return isPasswordCorrect && !isExpired;
