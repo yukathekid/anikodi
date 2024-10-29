@@ -19,10 +19,12 @@ export default {
       }
       
       // Verifica se o parâmetro `expire` da URL é menor ou igual ao `expireTimestamp` do Firestore
-      const isSessionExpired = expireParam === response.expiryDate && expireParam < Date.now();
-      if (isSessionExpired) {
-         return new Response('Sua sessão expirou. Por favor, renove o acesso.', { status: 403 });
-      }
+      // Verifica se o expireParam é igual ao expiryDate e se não está no passado
+const isSessionExpired = expireParam !== response.expiryDate || expireParam < Date.now();
+
+if (isSessionExpired) {
+  return new Response('Sua sessão expirou. Por favor, renove o acesso.', { status: 403 });
+}
 
       // Verifica o User-Agent após a autenticação bem-sucedida
       /*const userAgent = request.headers.get('User-Agent');
