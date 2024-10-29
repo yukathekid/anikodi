@@ -32,7 +32,7 @@ async function checkCredentials(username, password) {
   const data = await response.json();
 
   if (!data || !data.fields) {
-    return { isAuthenticated: false, message: 'Unauthorized' }; // Se não encontrar o usuário
+    return { isAuthenticated: false, message: 'Invalid credentials' }; // Mensagem para credenciais inválidas
   }
 
   const storedUsername = data.fields.username.stringValue;
@@ -40,7 +40,7 @@ async function checkCredentials(username, password) {
   const expiryDateTimestamp = data.fields.expiryDate?.timestampValue;
 
   if (!storedUsername || !storedPassword || !expiryDateTimestamp) {
-    return { isAuthenticated: false, message: 'Unauthorized' }; // Se campos essenciais estiverem faltando
+    return { isAuthenticated: false, message: 'Invalid credentials' };
   }
 
   // Verificar se a senha está correta
@@ -48,17 +48,18 @@ async function checkCredentials(username, password) {
 
   // Converter o timestamp do Firestore para um objeto Date
   const expiryDate = new Date(expiryDateTimestamp);
-
+  
   // Verificar se a data de expiração é válida
   const isExpired = expiryDate < new Date();
 
   if (!isPasswordCorrect) {
-    return { isAuthenticated: false, message: 'Unauthorized' }; // Senha incorreta
+    return { isAuthenticated: false, message: 'Invalid credentials' }; // Mensagem para credenciais inválidas
   }
 
+  // Se a senha estiver correta, mas a sessão estiver expirada
   if (isExpired) {
-    return { isAuthenticated: false, message: 'Session expired' }; // Sessão expirada
+    return { isAuthenticated: false, message: 'Session expired' };
   }
 
-  return { isAuthenticated: true, message: 'Authenticated' }; // Autenticação bem-sucedida
+  return { isAuthenticated: true, message: '' };
 }
