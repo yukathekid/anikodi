@@ -19,7 +19,7 @@ export default {
       }
 
       // Verifica se `expireParam` é igual a `expiryDate` e se a sessão não expirou
-      const isSessionExpired = expireParam == response.expire;
+      const isSessionExpired = expireParam === response.expire && response.expire > new Date().getTime();
 
       if (!isSessionExpired) {
         return new Response(`Sua sessão expirou. Por favor, renove o acesso.: ${response.expire}`, { status: 403 });
