@@ -19,9 +19,9 @@ export default {
       }
 
       // Verifica se `expireParam` é igual a `expiryDate` e se a sessão não expirou
-      const isSessionExpired = expireParam !== response.expiryDate || expireParam < Date.now();
+      const isSessionExpired = expireParam === response.expire && expireParam < Date.now();
 
-      if (isSessionExpired) {
+      if (!isSessionExpired) {
         return new Response('Sua sessão expirou. Por favor, renove o acesso.', { status: 403 });
       }
 
@@ -61,7 +61,7 @@ async function checkCredentials(username, password) {
 
   // Se a senha estiver correta, retorna o status e a data de expiração
   if (isPasswordCorrect) {
-    return { isAuthenticated: true, expiryDate }; // Autenticação bem-sucedida
+    return { isAuthenticated: true, expire: expiryDate }; // Autenticação bem-sucedida
   }
 
   // Se a senha estiver incorreta
