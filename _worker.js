@@ -32,7 +32,7 @@ async function checkCredentials(username, password) {
   const data = await response.json();
 
   if (!data || !data.fields) {
-    return { isAuthenticated: false, message: 'Unauthorized' };
+    return { isAuthenticated: false, message: 'Unauthorized' }; // Se não encontrar o usuário
   }
 
   const storedUsername = data.fields.username.stringValue;
@@ -40,7 +40,7 @@ async function checkCredentials(username, password) {
   const expiryDateTimestamp = data.fields.expiryDate?.timestampValue;
 
   if (!storedUsername || !storedPassword || !expiryDateTimestamp) {
-    return { isAuthenticated: false, message: 'Unauthorized' };
+    return { isAuthenticated: false, message: 'Unauthorized' }; // Se campos essenciais estiverem faltando
   }
 
   // Verificar se a senha está correta
@@ -53,12 +53,12 @@ async function checkCredentials(username, password) {
   const isExpired = expiryDate < new Date();
 
   if (!isPasswordCorrect) {
-    return { isAuthenticated: false, message: 'Unauthorized' };
+    return { isAuthenticated: false, message: 'Unauthorized' }; // Senha incorreta
   }
 
   if (isExpired) {
-    return { isAuthenticated: false, message: 'Session expired' };
+    return { isAuthenticated: false, message: 'Session expired' }; // Sessão expirada
   }
 
-  return { isAuthenticated: true, message: 'Authenticated' };
-      }
+  return { isAuthenticated: true, message: 'Authenticated' }; // Autenticação bem-sucedida
+}
