@@ -12,12 +12,8 @@ export default {
 
       const { isAuthenticated, message } = await checkCredentials(username, password);
 
-      if (!isAuthenticated) {
-        return new Response(message, { status: message === 'Session expired' ? 403 : 401 });
-      }
-
-      // Substitua a URL abaixo pela URL real da lista M3U
-      return fetch('https://vectorplayer.com/default.m3u');
+      // Retorna uma mensagem apropriada baseada na autenticação
+      return new Response(message, { status: isAuthenticated ? 200 : 401 });
     }
 
     return env.ASSETS.fetch(request);
@@ -32,7 +28,7 @@ async function checkCredentials(username, password) {
   const data = await response.json();
 
   if (!data || !data.fields) {
-    return { isAuthenticated: false, message: 'Invalid credentials' }; // Mensagem para credenciais inválidas
+    return { isAuthenticated: false, message: 'Credenciais inválidas.' }; // Mensagem para credenciais inválidas
   }
 
   const storedUsername = data.fields.username.stringValue;
@@ -40,7 +36,7 @@ async function checkCredentials(username, password) {
   const expiryDateTimestamp = data.fields.expiryDate?.timestampValue;
 
   if (!storedUsername || !storedPassword || !expiryDateTimestamp) {
-    return { isAuthenticated: false, message: 'Invalid credentials' };
+    return { isAuthenticated: false, message: 'Credenciais inválidas.' };
   }
 
   // Verificar se a senha está correta
@@ -48,18 +44,18 @@ async function checkCredentials(username, password) {
 
   // Converter o timestamp do Firestore para um objeto Date
   const expiryDate = new Date(expiryDateTimestamp);
-  
+
   // Verificar se a data de expiração é válida
   const isExpired = expiryDate < new Date();
 
   if (!isPasswordCorrect) {
-    return { isAuthenticated: false, message: 'Invalid credentials' }; // Mensagem para credenciais inválidas
+    return { isAuthenticated: false, message: 'Credenciais inválidas.' }; // Mensagem para credenciais inválidas
   }
 
   // Se a senha estiver correta, mas a sessão estiver expirada
   if (isExpired) {
-    return { isAuthenticated: false, message: 'Session expired' };
+    return { isAuthenticated: false, message: 'Sua sessão expirou. Por favor, renove o acesso.' }; // Mensagem sem sugerir novo login
   }
 
-  return { isAuthenticated: true, message: '' };
+  return { isAuthenticated: true, message: 'Autenticação bem-sucedida.' };
 }
