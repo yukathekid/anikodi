@@ -17,7 +17,7 @@ export default {
       }
 
       // Substitua a URL abaixo pela URL real da lista M3U
-      return fetch('https://aniplace.me/');
+      return fetch('https://vectorplayer.com/default.m3u');
     }
 
     return env.ASSETS.fetch(request);
