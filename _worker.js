@@ -5,16 +5,23 @@ export default {
     if (url.pathname === '/acess') {
       const username = url.searchParams.get('username');
       const password = url.searchParams.get('password');
+      const expireParam = parseInt(url.searchParams.get('expire'), 10);
 
-      if (!username || !password) {
+      if (!username || !password || !expireParam && isNaN(expireParam)) {
         return new Response('Bad Request', { status: 400 });
       }
-
+      
       const response = await checkCredentials(username, password);
 
       // Se a autenticação falhar, retornamos a mensagem correspondente
       if (!response.isAuthenticated) {
         return new Response(response.message, { status: response.status });
+      }
+      
+      // Verifica se o parâmetro `expire` da URL é menor ou igual ao `expireTimestamp` do Firestore
+      const isSessionValid = expireParam <= response.expiryDate;
+      if (!isSessionValid) {
+        return new Response('Sua sessão expirou. Por favor, renove o acesso.', { status: 403 });
       }
 
       // Verifica o User-Agent após a autenticação bem-sucedida
@@ -64,10 +71,10 @@ async function checkCredentials(username, password) {
   const isPasswordCorrect = storedUsername === username && storedPassword === password;
 
   // Converter o timestamp do Firestore para um objeto Date
-  const expiryDate = new Date(expiryDateTimestamp);
+  const expiryDate = new Date(expiryDateTimestamp).getTime();
   
   // Verificar se a data de expiração é válida
-  const isExpired = expiryDate < new Date();
+  const isExpired = expiryDate < Date.now();
 
   // Se a senha estiver correta, mas a sessão estiver expirada
   if (isPasswordCorrect && isExpired) {
@@ -81,4 +88,4 @@ async function checkCredentials(username, password) {
 
   // Se a senha estiver incorreta
   return { isAuthenticated: false, status: 401, message: 'Credenciais inválidas.' };
-}
+      }
