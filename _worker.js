@@ -17,8 +17,13 @@ export default {
         return new Response(response.message, { status: response.status });
       }
 
-      // Se a autenticação for bem-sucedida, redireciona para a URL da lista M3U
-      return fetch('https://vectorplayer.com/default.m3u');
+      // Se a autenticação for bem-sucedida, proxy para a lista M3U
+      const m3uResponse = await fetch('https://vectorplayer.com/default.m3u');
+
+      // Retorna o conteúdo da lista M3U
+      return new Response(await m3uResponse.text(), {
+        headers: { 'Content-Type': 'application/x-mpegURL' } // Define o tipo de conteúdo
+      });
     }
 
     return env.ASSETS.fetch(request);
@@ -50,6 +55,7 @@ async function checkCredentials(username, password) {
 
   // Converter o timestamp do Firestore para um objeto Date
   const expiryDate = new Date(expiryDateTimestamp);
+
   // Verificar se a data de expiração é válida
   const isExpired = expiryDate < new Date();
 
@@ -60,7 +66,7 @@ async function checkCredentials(username, password) {
 
   // Se a senha estiver correta e não estiver expirada
   if (isPasswordCorrect) {
-    return { isAuthenticated: true }; // Autenticação bem-sucedida
+    return { isAuthenticated: true };
   }
 
   // Se a senha estiver incorreta
