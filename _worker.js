@@ -1,7 +1,7 @@
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
-
+   //teste
     // Verifica se a rota é '/acess'
     if (url.pathname === '/acess') {
       const username = url.searchParams.get('username');
