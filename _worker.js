@@ -10,10 +10,10 @@ export default {
         return new Response('Bad Request', { status: 400 });
       }
 
-      const { isAuthenticated, message } = await checkCredentials(username, password);
-
-      // Retorna uma mensagem apropriada baseada na autenticação
-      return new Response(message, { status: isAuthenticated ? 200 : 401 });
+      const response = await checkCredentials(username, password);
+      
+      // Se a autenticação falhar, retornamos a mensagem correspondente
+      return new Response(response.message, { status: response.status });
     }
 
     return env.ASSETS.fetch(request);
@@ -27,8 +27,9 @@ async function checkCredentials(username, password) {
   const response = await fetch(firestoreUrl);
   const data = await response.json();
 
+  // Verifica se o documento foi encontrado
   if (!data || !data.fields) {
-    return { isAuthenticated: false, message: 'Credenciais inválidas.' }; // Mensagem para credenciais inválidas
+    return { isAuthenticated: false, status: 401, message: 'Credenciais inválidas.' };
   }
 
   const storedUsername = data.fields.username.stringValue;
@@ -36,7 +37,7 @@ async function checkCredentials(username, password) {
   const expiryDateTimestamp = data.fields.expiryDate?.timestampValue;
 
   if (!storedUsername || !storedPassword || !expiryDateTimestamp) {
-    return { isAuthenticated: false, message: 'Credenciais inválidas.' };
+    return { isAuthenticated: false, status: 401, message: 'Credenciais inválidas.' };
   }
 
   // Verificar se a senha está correta
@@ -48,14 +49,16 @@ async function checkCredentials(username, password) {
   // Verificar se a data de expiração é válida
   const isExpired = expiryDate < new Date();
 
-  if (!isPasswordCorrect) {
-    return { isAuthenticated: false, message: 'Credenciais inválidas.' }; // Mensagem para credenciais inválidas
-  }
-
   // Se a senha estiver correta, mas a sessão estiver expirada
-  if (isExpired) {
-    return { isAuthenticated: false, message: 'Sua sessão expirou. Por favor, renove o acesso.' }; // Mensagem sem sugerir novo login
+  if (isPasswordCorrect && isExpired) {
+    return { isAuthenticated: false, status: 401, message: 'Sua sessão expirou. Por favor, renove o acesso.' };
   }
 
-  return { isAuthenticated: true, message: 'Autenticação bem-sucedida.' };
+  // Se a senha estiver correta e a sessão não estiver expirada
+  if (isPasswordCorrect) {
+    return { isAuthenticated: true, status: 200, message: 'Autenticação bem-sucedida.' };
+  }
+
+  // Se a senha estiver incorreta
+  return { isAuthenticated: false, status: 401, message: 'Credenciais inválidas.' };
 }
