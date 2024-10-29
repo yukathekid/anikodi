@@ -17,7 +17,7 @@ export default {
       }
 
       // Substitua a URL abaixo pela URL real da lista M3U
-      return fetch('https://cloud.anikodi.xyz/data/live/testan.m3u8');
+      return fetch('https://aniplace.me/');
     }
 
     return env.ASSETS.fetch(request);
