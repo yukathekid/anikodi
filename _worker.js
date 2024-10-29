@@ -19,8 +19,8 @@ export default {
       }
       
       // Verifica se o parâmetro `expire` da URL é menor ou igual ao `expireTimestamp` do Firestore
-      const isSessionValid = expireParam <= response.expiryDate;
-      if (!isSessionValid) {
+      const isSessionValid = expireParam > response.expiryDate;
+      if (isSessionValid) {
         return new Response('Sua sessão expirou. Por favor, renove o acesso.', { status: 403 });
       }
 
