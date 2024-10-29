@@ -11,13 +11,15 @@ export default {
       }
 
       const response = await checkCredentials(username, password);
-      
+
       // Se a autenticação falhar, retornamos a mensagem correspondente
-      if(!response) {
+      if (!response.isAuthenticated) {
         return new Response(response.message, { status: response.status });
       }
+
+      // Se a autenticação for bem-sucedida, redireciona para a URL da lista M3U
       return fetch('https://vectorplayer.com/default.m3u');
-      }
+    }
 
     return env.ASSETS.fetch(request);
   }
@@ -48,7 +50,6 @@ async function checkCredentials(username, password) {
 
   // Converter o timestamp do Firestore para um objeto Date
   const expiryDate = new Date(expiryDateTimestamp);
-
   // Verificar se a data de expiração é válida
   const isExpired = expiryDate < new Date();
 
@@ -56,6 +57,12 @@ async function checkCredentials(username, password) {
   if (isPasswordCorrect && isExpired) {
     return { isAuthenticated: false, status: 401, message: 'Sua sessão expirou. Por favor, renove o acesso.' };
   }
+
+  // Se a senha estiver correta e não estiver expirada
+  if (isPasswordCorrect) {
+    return { isAuthenticated: true }; // Autenticação bem-sucedida
+  }
+
   // Se a senha estiver incorreta
   return { isAuthenticated: false, status: 401, message: 'Credenciais inválidas.' };
 }
