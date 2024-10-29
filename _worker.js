@@ -22,7 +22,7 @@ export default {
       const isSessionExpired = expireParam == response.expire;
 
       if (!isSessionExpired) {
-        return new Response('Sua sessão expirou. Por favor, renove o acesso.', { status: 403 });
+        return new Response(`Sua sessão expirou. Por favor, renove o acesso.: ${response.expire}`, { status: 403 });
       }
 
       // Se a autenticação for bem-sucedida e a sessão for válida, redireciona para a URL da lista M3U
