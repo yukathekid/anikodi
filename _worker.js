@@ -7,16 +7,16 @@ export default {
       const password = url.searchParams.get('password');
 
       if (!username || !password) {
-        return new Response('Bad Request: Missing credentials', { status: 400 });
+        return new Response('Bad Request', { status: 400 });
       }
 
       const isAuthenticated = await checkCredentials(username, password);
 
       if (!isAuthenticated) {
-        return new Response('Unauthorized: Invalid credentials', { status: 401 });
+        return new Response('Unauthorized', { status: 401 });
       }
 
-      // URL da lista M3U se as credenciais estiverem corretas
+      // Substitua a URL abaixo pela URL real da lista M3U
       return fetch('https://cloud.anikodi.xyz/data/live/testan.m3u8');
     }
 
@@ -30,19 +30,20 @@ async function checkCredentials(username, password) {
 
   const response = await fetch(firestoreUrl);
   if (!response.ok) {
-    return false;  // Falha no acesso ao Firestore
+    return false;
   }
 
   const data = await response.json();
+
   if (!data || !data.fields) {
-    return false;  // Dados não encontrados ou estrutura inválida
+    return false;
   }
 
   const storedUsername = data.fields.username?.stringValue;
   const storedPassword = data.fields.password?.stringValue;
 
   if (!storedUsername || !storedPassword) {
-    return false;  // Dados ausentes no documento Firestore
+    return false;
   }
 
   // Verificar se a senha está correta
