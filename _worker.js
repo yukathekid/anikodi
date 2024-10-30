@@ -45,7 +45,7 @@ function getM3UUrl(listType) {
 // Função de verificação de credenciais e expiração
 async function checkCredentials(listType, expireParam) {
   const firestoreProjectId = 'hwfilm23';
-  const firestoreUrl = `https://firestore.googleapis.com/v1/projects/${firestoreProjectId}/databases/(default)/documents/users/daniel`;
+  const firestoreUrl = `https://firestore.googleapis.com/v1/projects/${firestoreProjectId}/databases/(default)/documents/users/${listType}`;
 
   const response = await fetch(firestoreUrl);
   const data = await response.json();
