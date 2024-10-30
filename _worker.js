@@ -33,7 +33,7 @@ export default {
 function getM3UUrl(listType) {
   switch (listType) {
     case 'animes':
-      return 'https://vectorplayer.com/animes.m3u'; // URL para a lista de animes
+      return 'https://vectorplayer.com/default.m3u'; // URL para a lista de animes
     case 'filmes':
       return 'https://vectorplayer.com/filmes.m3u'; // URL para a lista de filmes
     // Adicione mais casos conforme necessário
