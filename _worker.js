@@ -1,10 +1,12 @@
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
+    const pathSegments = url.pathname.split('/').filter(Boolean); // Divide o caminho em segmentos
 
-    if (url.pathname === '/acess') {
-      const username = url.searchParams.get('username');
-      const password = url.searchParams.get('password');
+    // Verifica se o caminho está no formato correto
+    if (pathSegments[0] === 'acess' && pathSegments[1] && pathSegments[2] && url.searchParams.has('expire')) {
+      const username = pathSegments[1];
+      const password = pathSegments[2];
       const expireParam = parseInt(url.searchParams.get('expire'), 10);
 
       if (!username || !password || isNaN(expireParam)) {
@@ -22,7 +24,7 @@ export default {
       const isSessionExpired = expireParam === response.expire && response.expire > new Date().getTime();
 
       if (!isSessionExpired) {
-        return new Response(`Sua sessão expirou. Por favor, renove o acesso.: ${response.expire}`, { status: 403 });
+        return new Response(`Sua sessão expirou. Por favor, renove o acesso: ${response.expire}`, { status: 403 });
       }
 
       // Se a autenticação for bem-sucedida e a sessão for válida, redireciona para a URL da lista M3U
