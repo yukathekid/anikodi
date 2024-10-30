@@ -4,40 +4,48 @@ export default {
     const pathSegments = url.pathname.split('/').filter(Boolean); // Divide o caminho em segmentos
 
     // Verifica se o caminho está no formato correto
-    if (pathSegments[0] === 'acess' && pathSegments[1] && pathSegments[2] && url.searchParams.has('expire')) {
-      const username = pathSegments[1];
-      const password = pathSegments[2];
-      const expireParam = parseInt(url.searchParams.get('expire'), 10);
+    if (pathSegments[0] === 'm3u' && pathSegments[1] && pathSegments[2]) {
+      const listType = pathSegments[1]; // Pode ser 'animes', 'filmes', etc.
+      const expireParam = parseInt(pathSegments[2], 10); // Obtém o expireParam dos segmentos da URL
 
-      if (!username || !password || isNaN(expireParam)) {
-        return new Response('Bad Request', { status: 400 });
+      if (isNaN(expireParam)) {
+        return new Response('Bad Request: expireParam is required and must be a number.', { status: 400 });
       }
 
-      const response = await checkCredentials(username, password);
+      // Aqui você pode chamar o Firestore para verificar as credenciais e a data de expiração
+      const response = await checkCredentials(listType, expireParam);
 
       // Se a autenticação falhar, retornamos a mensagem correspondente
       if (!response.isAuthenticated) {
         return new Response(response.message, { status: response.status });
       }
 
-      // Verifica se `expireParam` é igual a `expiryDate` e se a sessão não expirou
-      const isSessionExpired = expireParam === response.expire && response.expire > new Date().getTime();
-
-      if (!isSessionExpired) {
-        return new Response(`Sua sessão expirou. Por favor, renove o acesso: ${response.expire}`, { status: 403 });
-      }
-
       // Se a autenticação for bem-sucedida e a sessão for válida, redireciona para a URL da lista M3U
-      return fetch('https://vectorplayer.com/default.m3u');
+      const m3uUrl = getM3UUrl(listType); // Obtém a URL da lista M3U correspondente
+      return fetch(m3uUrl);
     }
 
     return env.ASSETS.fetch(request);
   }
 }
 
-async function checkCredentials(username, password) {
+// Função para obter a URL da lista M3U com base no tipo
+function getM3UUrl(listType) {
+  switch (listType) {
+    case 'animes':
+      return 'https://vectorplayer.com/animes.m3u'; // URL para a lista de animes
+    case 'filmes':
+      return 'https://vectorplayer.com/filmes.m3u'; // URL para a lista de filmes
+    // Adicione mais casos conforme necessário
+    default:
+      return 'https://vectorplayer.com/default.m3u'; // URL padrão
+  }
+}
+
+// Função de verificação de credenciais e expiração
+async function checkCredentials(listType, expireParam) {
   const firestoreProjectId = 'hwfilm23';
-  const firestoreUrl = `https://firestore.googleapis.com/v1/projects/${firestoreProjectId}/databases/(default)/documents/users/${username}`;
+  const firestoreUrl = `https://firestore.googleapis.com/v1/projects/${firestoreProjectId}/databases/(default)/documents/users/${listType}`;
 
   const response = await fetch(firestoreUrl);
   const data = await response.json();
@@ -47,25 +55,21 @@ async function checkCredentials(username, password) {
     return { isAuthenticated: false, status: 401, message: 'Credenciais inválidas.' };
   }
 
-  const storedUsername = data.fields.username.stringValue;
-  const storedPassword = data.fields.password.stringValue;
   const expiryDateISO = data.fields.expiryDate.timestampValue;
 
-  if (!storedUsername || !storedPassword || !expiryDateISO) {
+  if (!expiryDateISO) {
     return { isAuthenticated: false, status: 401, message: 'Credenciais inválidas.' };
   }
-
-  // Verificar se a senha está correta
-  const isPasswordCorrect = storedUsername === username && storedPassword === password;
 
   // Converter o `expiryDate` do Firestore para milissegundos
   const expiryDate = new Date(expiryDateISO).getTime();
 
-  // Se a senha estiver correta, retorna o status e a data de expiração
-  if (isPasswordCorrect) {
-    return { isAuthenticated: true, expire: expiryDate }; // Autenticação bem-sucedida
+  // Verifica se `expireParam` é igual à data de expiração e se não expirou
+  const isSessionValid = expireParam === expiryDate && expiryDate > new Date().getTime();
+
+  if (!isSessionValid) {
+    return { isAuthenticated: false, status: 403, message: 'Sua sessão expirou. Por favor, renove o acesso.' };
   }
 
-  // Se a senha estiver incorreta
-  return { isAuthenticated: false, status: 401, message: 'Credenciais inválidas.' };
+  return { isAuthenticated: true }; // Autenticação bem-sucedida
 }
