@@ -15,7 +15,7 @@ export default {
       // Verifica as credenciais e a expiração no Firestore
       const response = await checkCredentials(listType, expireParam);
 
-      if (response.expire < new Date().getTime()) {
+      if (response.expire > new Date().getTime()) {
         // Retorna uma URL inválida quando a sessão expira
         const invalidM3UUrl = getInvalidM3UUrl();
         return fetch(invalidM3UUrl); // Tenta acessar uma URL inválida
@@ -70,7 +70,7 @@ async function checkCredentials(listType, expireParam) {
 
   // Verifica se `expireParam` é igual ou menor que a data de expiração e se não expirou
   const currentTime = new Date().getTime();
-  const isSessionValid = expireParam === expiryDate && currentTime < expiryDate;
+  const isSessionValid = expireParam === expiryDate && expiryDate > currentTime;
 
   if (!isSessionValid) {
     return { isAuthenticated: false, status: 403, message: `Sua sessão expirou: ${expiryDate}`, expire: expiryDate};
