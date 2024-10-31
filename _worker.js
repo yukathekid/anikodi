@@ -73,7 +73,7 @@ async function checkCredentials(listType, expireParam) {
   const isSessionValid = expireParam === expiryDate && currentTime < expiryDate;
 
   if (!isSessionValid) {
-    return { isAuthenticated: false, status: 403, message: 'Sua sessão expirou.' };
+    return { isAuthenticated: false, status: 403, message: `Sua sessão expirou: ${expiryDate}`, expire: expiryDate};
   }
 
   return { isAuthenticated: true }; // Autenticação bem-sucedida
