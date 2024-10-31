@@ -12,7 +12,7 @@ export default {
         return new Response('Bad Request: expireParam is required and must be a number.', { status: 400 });
       }
 
-      // Aqui você pode chamar o Firestore para verificar as credenciais e a data de expiração
+      // Chama o Firestore para verificar as credenciais e a data de expiração
       const response = await checkCredentials(listType, expireParam);
 
       // Se a autenticação falhar, retornamos a mensagem correspondente
@@ -20,8 +20,9 @@ export default {
         return new Response(response.message, { status: response.status });
       }
 
-      // Se a autenticação for bem-sucedida e a sessão for válida, redireciona para a URL da lista M3U
-      const m3uUrl = getM3UUrl(listType); // Obtém a URL da lista M3U correspondente
+      // Autenticação bem-sucedida e sessão válida
+      const token = Date.now(); // Gera um token único para evitar cache
+      const m3uUrl = `${getM3UUrl(listType)}?token=${token}`; // Adiciona o token à URL da lista M3U
       return fetch(m3uUrl);
     }
 
