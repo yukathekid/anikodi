@@ -21,7 +21,7 @@ export default {
       }
 
       // Autenticação bem-sucedida e sessão válida
-      const token = Date.now(); // Gera um token único para evitar cache
+      const token = response.expire > Date.now(); // Gera um token único para evitar cache
       const m3uUrl = `${getM3UUrl(listType)}?token=${token}`; // Adiciona o token à URL da lista M3U
       return fetch(m3uUrl);
     }
@@ -69,7 +69,7 @@ async function checkCredentials(listType, expireParam) {
   const isSessionValid = expireParam === expiryDate && expiryDate > new Date().getTime();
 
   if (!isSessionValid) {
-    return { isAuthenticated: false, status: 403, message: `Sua sessão expirou. Por favor, renove o acesso: ${expiryDate}` };
+    return { isAuthenticated: false, status: 403, message: `Sua sessão expirou. Por favor, renove o acesso: ${expiryDate}`, expire: expiryDate };
   }
 
   return { isAuthenticated: true }; // Autenticação bem-sucedida
