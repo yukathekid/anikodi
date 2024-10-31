@@ -65,8 +65,12 @@ async function checkCredentials(listType, expireParam) {
     return { isAuthenticated: false, status: 401, message: 'Credenciais inválidas.' };
   }
 
+  // Converte a data de expiração do Firestore para milissegundos
   const expiryDate = new Date(expiryDateISO).getTime();
-  const isSessionValid = expireParam === expiryDate && expiryDate > new Date().getTime();
+
+  // Verifica se `expireParam` é igual ou menor que a data de expiração e se não expirou
+  const currentTime = new Date().getTime();
+  const isSessionValid = expireParam === expiryDate && currentTime < expiryDate;
 
   if (!isSessionValid) {
     return { isAuthenticated: false, status: 403, message: 'Sua sessão expirou.' };
