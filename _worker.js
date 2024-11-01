@@ -17,13 +17,13 @@ export default {
         "wind-breaker": {
           "S1": {
             "01": {
-              "group": "Wind Breaker",
-              "name": "Episódio 01",
+              "group": "Wind.Breaker",
+              "name": "Episodio01",
               "url": "https://betterserver.ga/playlist/W/GguO99RYyj/bNYBGTUgm4/03FsdulfkY/B3p87zuqPP/B3p87zuqPP.m3u8"
             },
             "02": {
-              "group": "Wind Breaker",
-              "name": "Episódio 02",
+              "group": "Wind.Breaker",
+              "name": "Episodio02",
               "url": "https://betterserver.ga/playlist/W/I6mTLjBdOE/bRieK1TZ7d/3oropbVnoq/PcEJTqRc3G/PcEJTqRc3G.m3u8"
             }
           }
@@ -49,7 +49,7 @@ export default {
         // Gera uma URL com o parâmetro de expiração
         const episodeUrl = `${episodeData.url}`;
 
-        m3u8Content += `#EXTINF:-1 tvg-id: "" tvg-name: "${episodeData.name}" tvg-logo: "" group-title="${episodeData.group}", ${episodeData.name}\n`;
+        m3u8Content += `#EXTINF:-1 tvg-id= "" tvg-name= "${episodeData.name}" tvg-logo= "" group-title="${episodeData.group}", ${episodeData.name}\n`;
         m3u8Content += `${episodeUrl}\n`;
       }
 
