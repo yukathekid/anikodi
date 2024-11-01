@@ -49,7 +49,7 @@ export default {
         // Gera uma URL com o parâmetro de expiração
         const episodeUrl = `${episodeData.url}?exp=${authResponse.expire}`;
 
-        m3u8Content += `#EXTINF:-1 group-title="${episodeData.group}", ${episodeData.name}\n`;
+        m3u8Content += `#EXTINF:-1 tvg-id: "" tvg-name: "${episodeData.name}" tvg-logo: "" group-title="${episodeData.group}", ${episodeData.name}\n`;
         m3u8Content += `${episodeUrl}\n`;
       }
 
