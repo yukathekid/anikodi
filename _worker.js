@@ -62,7 +62,7 @@ export default {
 
     // Lógica de redirecionamento
     if (pathSegments[0] === 'redirect') {
-      const targetUrl = url.searchParams.get('target');
+      const targetUrl = decodeURIComponent(url.searchParams.get('target'));
       const exp = parseInt(url.searchParams.get('exp'), 10);
 
       if (!targetUrl || !exp) {
