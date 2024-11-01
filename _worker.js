@@ -20,7 +20,7 @@ export default {
       }
 
       // Retorna o redirecionamento
-      return fetch('https://www.dropbox.com/scl/fi/9qjto6xpf0vt15ymsck8x/list3u.m3u8?rlkey=l7b87qglki0s4zeurhtj8wn0l&st=efbomwdz&RAW=1');
+      return fetch('https://anikodi.xyz/assets/list3u.m3u8');
     }
 
     return env.ASSETS.fetch(request);
