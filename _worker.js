@@ -41,16 +41,16 @@ export default {
         return new Response(authResponse.message, { status: authResponse.status });
       }
 
-      // Monta o conteúdo do M3U8 com links de episódio com expiração
+      // Monta o conteúdo do M3U8 com links temporários para redirecionamento
       let m3u8Content = "#EXTM3U\n";
       for (const episode in seasonData) {
         const episodeData = seasonData[episode];
 
-        // Gera uma URL com o parâmetro de expiração
-        const episodeUrl = `${episodeData.url}?exp=${authResponse.expire}`;
+        // Gera uma URL temporária em anikodi.xyz que redirecionará para o link original
+        const temporaryUrl = `https://anikodi.xyz/redirect?target=${encodeURIComponent(episodeData.url)}&exp=${authResponse.expire}`;
 
-        m3u8Content += `#EXTINF:-1 tvg-id= "" tvg-name= "${episodeData.name}" tvg-logo= "" group-title="${episodeData.group}", ${episodeData.name}\n`;
-        m3u8Content += `${episodeUrl}\n`;
+        m3u8Content += `#EXTINF:-1 tvg-id="" tvg-name="${episodeData.name}" tvg-logo="" group-title="${episodeData.group}", ${episodeData.name}\n`;
+        m3u8Content += `${temporaryUrl}\n`;
       }
 
       return new Response(m3u8Content, {
@@ -58,6 +58,24 @@ export default {
           'Content-Type': 'application/vnd.apple.mpegurl'
         }
       });
+    }
+
+    // Lógica de redirecionamento
+    if (pathSegments[0] === 'redirect') {
+      const targetUrl = url.searchParams.get('target');
+      const exp = parseInt(url.searchParams.get('exp'), 10);
+
+      if (!targetUrl || !exp) {
+        return new Response('Parâmetros de redirecionamento inválidos', { status: 400 });
+      }
+
+      const currentTime = Date.now();
+      if (currentTime > exp) {
+        return new Response('Link expirado', { status: 403 });
+      }
+
+      // Redireciona para a URL original
+      return Response.redirect(targetUrl, 302);
     }
 
     return new Response('Not found', { status: 404 });
