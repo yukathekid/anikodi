@@ -20,7 +20,7 @@ export default {
       }
 
       // Retorna o redirecionamento
-      return fetch('https://anikodi.xyz/assets/list3u.m3u8');
+      return fetch('https://anikodi.xyz/assets/list3u.m3u');
     }
 
     return env.ASSETS.fetch(request);
