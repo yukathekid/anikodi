@@ -35,9 +35,7 @@ export default {
         return new Response('Anime ou temporada não encontrados', { status: 404 });
       }
 
-      // Tempo de expiração do token em milissegundos (por exemplo, 1 hora)
-      const expirationTimeMs = 1 * 60 * 1000;
-      const expirationTimestamp = Date.now() + expirationTimeMs;
+      const response = await checkCredentials(listType);
 
       // Monta o conteúdo do M3U8 com links de episódio com expiração
       let m3u8Content = "#EXTM3U\n";
@@ -45,7 +43,7 @@ export default {
         const episodeData = seasonData[episode];
 
         // Gera uma URL com o parâmetro de expiração
-        const episodeUrl = `${episodeData.url}?exp=${expirationTimestamp}`;
+        const episodeUrl = `${episodeData.url}?exp=${response.expire}`;
         
         m3u8Content += `#EXTINF:-1 group-title="${episodeData.group}", ${episodeData.name}\n`;
         m3u8Content += `${episodeUrl}\n`;
@@ -61,3 +59,34 @@ export default {
     return new Response('Not found', { status: 404 });
   }
 };
+
+async function checkCredentials(anime) {
+  const firestoreProjectId = 'hwfilm23';
+  const firestoreUrl = `https://firestore.googleapis.com/v1/projects/${firestoreProjectId}/databases/(default)/documents/users/${anime}`;
+
+  const response = await fetch(firestoreUrl);
+  const data = await response.json();
+
+  if (!data || !data.fields) {
+    return { isAuthenticated: false, status: 401, message: 'Credenciais inválidas.' };
+  }
+
+  const expiryDateISO = data.fields.expiryDate.timestampValue;
+
+  if (!expiryDateISO) {
+    return { isAuthenticated: false, status: 401, message: 'Credenciais inválidas.' };
+  }
+
+  // Converte a data de expiração do Firestore para milissegundos
+  const expiryDate = new Date(expiryDateISO).getTime();
+
+  // Verifica se `expireParam` é igual ou menor que a data de expiração e se não expirou
+  const currentTime = new Date().getTime();
+  const isSessionValid = expiryDate > currentTime;
+
+  if (!isSessionValid) {
+    return { isAuthenticated: false, status: 403, message: `Sua sessão expirou: ${expiryDate}`, expire: isSessionValid};
+  }
+
+  return { isAuthenticated: true }; // Autenticação bem-sucedida
+}
