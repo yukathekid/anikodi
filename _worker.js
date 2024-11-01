@@ -36,7 +36,7 @@ export default {
       }
 
       // Verifica as credenciais e obtém a data de expiração
-      const authResponse = await checkCredentials(anime);
+      const authResponse = await checkCredentials();
       if (!authResponse.isAuthenticated) {
         return new Response(authResponse.message, { status: authResponse.status });
       }
@@ -65,9 +65,9 @@ export default {
 };
 
 // Função para verificar credenciais e retornar a data de expiração
-async function checkCredentials(anime) {
+async function checkCredentials() {
   const firestoreProjectId = 'hwfilm23';
-  const firestoreUrl = `https://firestore.googleapis.com/v1/projects/${firestoreProjectId}/databases/(default)/documents/users/${anime}`;
+  const firestoreUrl = `https://firestore.googleapis.com/v1/projects/${firestoreProjectId}/databases/(default)/documents/users/animes`;
 
   const response = await fetch(firestoreUrl);
   const data = await response.json();
