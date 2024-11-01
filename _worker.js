@@ -2,7 +2,7 @@ export default {
   async fetch(request) {
     const url = new URL(request.url);
     const pathSegments = url.pathname.split('/').filter(Boolean);
-    
+
     if (pathSegments[0] === 'm3u8') {
       // Extrai os parâmetros do caminho da URL (ex: /m3u8/wind-breaker/S1)
       const anime = pathSegments[1];
@@ -35,7 +35,11 @@ export default {
         return new Response('Anime ou temporada não encontrados', { status: 404 });
       }
 
-      const response = await checkCredentials(listType);
+      // Verifica as credenciais e obtém a data de expiração
+      const authResponse = await checkCredentials(anime);
+      if (!authResponse.isAuthenticated) {
+        return new Response(authResponse.message, { status: authResponse.status });
+      }
 
       // Monta o conteúdo do M3U8 com links de episódio com expiração
       let m3u8Content = "#EXTM3U\n";
@@ -43,8 +47,8 @@ export default {
         const episodeData = seasonData[episode];
 
         // Gera uma URL com o parâmetro de expiração
-        const episodeUrl = `${episodeData.url}?exp=${response.expire}`;
-        
+        const episodeUrl = `${episodeData.url}?exp=${authResponse.expire}`;
+
         m3u8Content += `#EXTINF:-1 group-title="${episodeData.group}", ${episodeData.name}\n`;
         m3u8Content += `${episodeUrl}\n`;
       }
@@ -60,6 +64,7 @@ export default {
   }
 };
 
+// Função para verificar credenciais e retornar a data de expiração
 async function checkCredentials(anime) {
   const firestoreProjectId = 'hwfilm23';
   const firestoreUrl = `https://firestore.googleapis.com/v1/projects/${firestoreProjectId}/databases/(default)/documents/users/${anime}`;
@@ -72,7 +77,6 @@ async function checkCredentials(anime) {
   }
 
   const expiryDateISO = data.fields.expiryDate.timestampValue;
-
   if (!expiryDateISO) {
     return { isAuthenticated: false, status: 401, message: 'Credenciais inválidas.' };
   }
@@ -81,12 +85,12 @@ async function checkCredentials(anime) {
   const expiryDate = new Date(expiryDateISO).getTime();
 
   // Verifica se `expireParam` é igual ou menor que a data de expiração e se não expirou
-  const currentTime = new Date().getTime();
+  const currentTime = Date.now();
   const isSessionValid = expiryDate > currentTime;
 
   if (!isSessionValid) {
-    return { isAuthenticated: false, status: 403, message: `Sua sessão expirou: ${expiryDate}`, expire: isSessionValid};
+    return { isAuthenticated: false, status: 403, message: `Sua sessão expirou`, expire: expiryDate };
   }
 
-  return { isAuthenticated: true }; // Autenticação bem-sucedida
+  return { isAuthenticated: true, expire: expiryDate }; // Autenticação bem-sucedida com expiração
 }
