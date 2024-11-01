@@ -11,7 +11,7 @@ export default {
       const isSpecificUserAgent = userAgent === 'Mozilla/5.0 (Linux; Android 13; M2103K19G Build/TP1A.220624.014; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/126.0.6478.134 Mobile Safari/537.36';
 
       // Se o User-Agent não for do Kodi ou do User-Agent específico, negar acesso
-      if (!Anm && !isKodi && !isVLC && !isSpecificUserAgent ) {
+      if (!Anm || !isKodi || !isVLC || !isSpecificUserAgent ) {
         return new Response('Forbbien 403', {
           status: 403,
           headers: {
