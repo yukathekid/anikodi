@@ -85,7 +85,7 @@ async function checkCredentials() {
   const expiryDate = new Date(expiryDateISO).getTime();
 
   // Verifica se `expireParam` é igual ou menor que a data de expiração e se não expirou
-  const currentTime = Date.now();
+  const currentTime = new Date().getTime();
   const isSessionValid = expiryDate > currentTime;
 
   if (!isSessionValid) {
