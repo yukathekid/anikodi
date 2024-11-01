@@ -8,8 +8,10 @@ export default {
       const targetUrl = 'https://vectorplayer.com/default.m3u';
 
       // Retorna o redirecionamento
-      return Response.redirect(targetUrl, 302);
+      return fetch('https://vectorplayer.com/default.m3u');
     }
+
+    return env.ASSETS.fetch(request);
 
     // Retorna um 404 caso o caminho não corresponda ao desejado
     return new Response('Not found', { status: 404 });
