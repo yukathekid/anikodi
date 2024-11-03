@@ -4,9 +4,9 @@ export default {
 
     // Verifica se a URL acessada é uma URL camuflada
     if (url.pathname.startsWith('/video/')) {
-      const pathParts = url.pathname.split('/'); // Divide o pathname por "/"
-      const name = pathParts[2]; // Extrai o nome do filme
-      const expireParam = parseInt(pathParts[3], 10); // Extrai o valor de expiração como número
+      const pathParts = url.pathname.split('/');
+      const name = pathParts[2];
+      const expireParam = parseInt(pathParts[3], 10);
 
       const firestoreUrl = `https://firestore.googleapis.com/v1/projects/hwfilm23/databases/(default)/documents/users/filmes`;
 
@@ -24,24 +24,25 @@ export default {
 
       const data = await response.json();
 
-      // Procura a URL do vídeo baseado no nome fornecido
-      const fields = data.fields;
+      // Verifica se o timestamp atual é válido em relação à data de expiração
+      const expireDate = new Date(data.fields.expiryDate.timestampValue).getTime();
+      if (expireParam !== expireDate || expireDate < Date.now()) {
+        return new Response('Expired or invalid link', { status: 403 });
+      }
+
+      // Procura a URL do vídeo pelo nome fornecido
       let videoUrl = null;
       let groupTitle = '';
-      const expireDate = fields.expiryDate.timestampValue;
-      const exp = new Date(expireDate).getTime();
-   
-      for (const category in fields) {
-        const movies = fields[category].mapValue.fields;
-        for (const movieId in movies) {
-          const movie = movies[movieId].mapValue.fields;
-          if (movieId === name && exp === expireParam && exp > new Date().getTime()) { // Compara com o nome passado na URL
-            videoUrl = movie.url.stringValue;
-            groupTitle = category; // Armazena o group-title
-            break;
-          }
+
+      for (const category in data.fields) {
+        if (category === "expiryDate") continue; // Ignora o campo expiryDate
+
+        const movies = data.fields[category].mapValue.fields;
+        if (movies[name]) {
+          videoUrl = movies[name].mapValue.fields.url.stringValue;
+          groupTitle = category;
+          break;
         }
-        if (videoUrl) break; // Sai do loop se encontrar a URL
       }
 
       // Se a URL do vídeo for encontrada, redireciona
@@ -52,7 +53,7 @@ export default {
       }
     }
 
-    // Verifica se a URL acessada é /m3u/animes
+    // Verifica se a URL acessada é /m3u/filmes
     if (url.pathname === '/m3u/filmes') {
       const firestoreUrl = 'https://firestore.googleapis.com/v1/projects/hwfilm23/databases/(default)/documents/users/filmes';
       const response = await fetch(firestoreUrl, {
@@ -70,22 +71,20 @@ export default {
 
       // Cria a lista M3U
       let m3uList = '#EXTM3U\n';
+      const expireDate = new Date(data.fields.expiryDate.timestampValue).getTime();
 
-      // Extrai as informações dos filmes
-      const fields = data.fields;
-      const expireDate = fields.expiryDate.timestampValue;
-      const exp = new Date(expireDate).getTime();
-   
-      for (const category in fields) {
-        const movies = fields[category].mapValue.fields;
+      for (const category in data.fields) {
+        if (category === "expiryDate") continue;
+
+        const movies = data.fields[category].mapValue.fields;
         for (const movieId in movies) {
           const movie = movies[movieId].mapValue.fields;
           const title = movie.title.stringValue;
-          const logo = movie.image.stringValue; // URL da imagem
+          const logo = movie.image.stringValue;
 
           // Adiciona a URL camuflada na lista M3U
           m3uList += `#EXTINF:-1 tvg-logo="${logo}" group-title="${category}", ${title}\n`;
-          m3uList += `${url.origin}/video/${movieId}/${exp}\n`; // URL camuflada
+          m3uList += `${url.origin}/video/${movieId}/${expireDate}\n`;
         }
       }
 
