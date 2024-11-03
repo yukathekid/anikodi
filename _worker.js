@@ -50,7 +50,7 @@ export default {
       if (videoUrl) {
         return Response.redirect(videoUrl, 302);
       } else {
-        return Response.redirect(urlAlt);
+        return Response.redirect(urlAlt, 302);
       }
     }
 
