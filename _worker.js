@@ -85,7 +85,7 @@ export default {
 
           // Adiciona a URL camuflada na lista M3U
           m3uList += `#EXTINF:-1 tvg-logo="${logo}" group-title="${category}", ${title}\n`;
-          m3uList += `${url.origin}/video/${movieId}/${expireDate}\n`;
+          m3uList += `${url.origin}/video/${movieId}\n`;
         }
       }
 
