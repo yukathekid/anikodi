@@ -7,6 +7,7 @@ export default {
       const pathParts = url.pathname.split('/');
       const name = pathParts[2];
       const expireParam = parseInt(pathParts[3], 10);
+      const urlAlt = 'https://api-f.streamable.com/api/v1/videos/rtorus/mp4';
 
       const firestoreUrl = `https://firestore.googleapis.com/v1/projects/hwfilm23/databases/(default)/documents/users/filmes`;
 
@@ -49,7 +50,7 @@ export default {
       if (videoUrl) {
         return Response.redirect(videoUrl, 302);
       } else {
-        return new Response('Video not found', { status: 404 });
+        return Response.redirect(urlAlt);
       }
     }
 
