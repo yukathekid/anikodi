@@ -6,7 +6,7 @@ export default {
     if (url.pathname.startsWith('/video/')) {
       const pathParts = url.pathname.split('/');
       const name = pathParts[2];
-      const expireParam = parseInt(pathParts[3], 10);
+      /*const expireParam = parseInt(pathParts[3], 10);*/
       const urlAlt = 'https://api-f.streamable.com/api/v1/videos/qnyv36/mp4';
 
       const firestoreUrl = `https://firestore.googleapis.com/v1/projects/hwfilm23/databases/(default)/documents/users/filmes`;
@@ -27,7 +27,7 @@ export default {
 
       // Verifica se o timestamp atual é válido em relação à data de expiração
       const expireDate = new Date(data.fields.expiryDate.timestampValue).getTime();
-      if (expireParam !== expireDate || expireDate < Date.now()) {
+      if (expireDate < Date.now()) {
         return Response.redirect(urlAlt, 302);
       }
 
