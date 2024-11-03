@@ -4,24 +4,47 @@ export default {
 
     // Verifica se a URL acessada é /m3u/animes
     if (url.pathname === '/m3u/animes') {
-      const userAgent = request.headers.get('User-Agent');
-      const isKodi = userAgent && /Kodi\/\d+\.\d+/i.test(userAgent);
-      const isVLC = userAgent && /VLC\/\d+\.\d+/i.test(userAgent);
-      const Anm = userAgent === "AnimeStream/1.0 (Android; Custom User-Agent)";
-      const isSpecificUserAgent = userAgent === 'Mozilla/5.0 (Linux; Android 13; M2103K19G Build/TP1A.220624.014; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/126.0.6478.134 Mobile Safari/537.36';
+      // Configuração do endpoint do Firestore
+      const firestoreUrl = 'https://firestore.googleapis.com/v1/projects/hwfilm23/databases/(default)/documents/users/filmes';
+      const response = await fetch(firestoreUrl, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
 
-      // Se o User-Agent não for do Kodi ou do User-Agent específico, negar acesso
-      if (!Anm || !isKodi || !isVLC || !isSpecificUserAgent ) {
-        return new Response('Forbbien 403', {
-          status: 403,
-          headers: {
-            'Content-Type': 'text/plain'
-          }
-        });
+      if (!response.ok) {
+        return new Response('Error fetching data from Firestore', { status: response.status });
       }
 
-      // Retorna o redirecionamento
-      return fetch('https://anikodi.xyz/assets/list3u.m3u');
+      const data = await response.json();
+
+      // Cria a lista M3U
+      let m3uList = '#EXTM3U\n';
+
+      // Extrai as informações dos filmes
+      const fields = data.fields;
+      for (const category in fields) {
+        const movies = fields[category].mapValue.fields;
+        for (const movieId in movies) {
+          const movie = movies[movieId].mapValue.fields;
+          const title = movie.title.stringValue;
+          const videoUrl = movie.url.stringValue;
+          const logo = movie.image.stringValue; // URL da imagem
+
+          // Adiciona as informações à lista M3U
+          m3uList += `#EXTINF:-1 tvg-logo="${logo}" group-title="${category}", ${title}\n`;
+          m3uList += `${videoUrl}\n`;
+        }
+      }
+
+      // Retorna a lista M3U
+      return new Response(m3uList, {
+        headers: {
+          'Content-Type': 'application/vnd.apple.mpegurl',
+          'Content-Disposition': 'attachment; filename="playlist.m3u"'
+        }
+      });
     }
 
     return env.ASSETS.fetch(request);
