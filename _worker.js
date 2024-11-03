@@ -5,6 +5,8 @@ export default {
     // Verifica se a URL acessada é uma URL camuflada
     if (url.pathname.startsWith('/video/')) {
       const name = url.pathname.split('/video/')[1]; // Extrai o nome do filme
+      const expireParam = parseInt(url.pathname.split('/video/')[2], 10);
+      
       const firestoreUrl = `https://firestore.googleapis.com/v1/projects/hwfilm23/databases/(default)/documents/users/filmes`;
 
       // Obtém os dados do Firestore
@@ -25,12 +27,14 @@ export default {
       const fields = data.fields;
       let videoUrl = null;
       let groupTitle = '';
-
+      const expireDate = fields.expiryDate.timestampValue;
+      const exp = new Date(expireDate).getTime();
+   
       for (const category in fields) {
         const movies = fields[category].mapValue.fields;
         for (const movieId in movies) {
           const movie = movies[movieId].mapValue.fields;
-          if (movieId === name) { // Compara com o nome passado na URL
+          if (movieId === name && exp === expireParam && exp > new Date().getTime()) { // Compara com o nome passado na URL
             videoUrl = movie.url.stringValue;
             groupTitle = category; // Armazena o group-title
             break;
@@ -48,7 +52,7 @@ export default {
     }
 
     // Verifica se a URL acessada é /m3u/animes
-    if (url.pathname === '/m3u/animes') {
+    if (url.pathname === '/m3u/filmes') {
       const firestoreUrl = 'https://firestore.googleapis.com/v1/projects/hwfilm23/databases/(default)/documents/users/filmes';
       const response = await fetch(firestoreUrl, {
         method: 'GET',
@@ -68,6 +72,9 @@ export default {
 
       // Extrai as informações dos filmes
       const fields = data.fields;
+      const expireDate = fields.expiryDate.timestampValue;
+      const exp = new Date(expireDate).getTime();
+   
       for (const category in fields) {
         const movies = fields[category].mapValue.fields;
         for (const movieId in movies) {
@@ -77,7 +84,7 @@ export default {
 
           // Adiciona a URL camuflada na lista M3U
           m3uList += `#EXTINF:-1 tvg-logo="${logo}" group-title="${category}", ${title}\n`;
-          m3uList += `${url.origin}/video/${movieId}\n`; // URL camuflada
+          m3uList += `${url.origin}/video/${movieId}/${exp}\n`; // URL camuflada
         }
       }
 
