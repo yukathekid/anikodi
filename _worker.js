@@ -4,9 +4,10 @@ export default {
 
     // Verifica se a URL acessada é uma URL camuflada
     if (url.pathname.startsWith('/video/')) {
-      const name = url.pathname.split('/video/')[1]; // Extrai o nome do filme
-      const expireParam = parseInt(url.pathname.split('/video/')[2], 10);
-      
+      const pathParts = url.pathname.split('/'); // Divide o pathname por "/"
+      const name = pathParts[2]; // Extrai o nome do filme
+      const expireParam = parseInt(pathParts[3], 10); // Extrai o valor de expiração como número
+
       const firestoreUrl = `https://firestore.googleapis.com/v1/projects/hwfilm23/databases/(default)/documents/users/filmes`;
 
       // Obtém os dados do Firestore
