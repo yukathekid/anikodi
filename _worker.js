@@ -29,11 +29,12 @@ export default {
         for (const movieId in movies) {
           const movie = movies[movieId].mapValue.fields;
           const title = movie.title.stringValue;
-          const videoUrl = movie.url.stringValue;
           const logo = movie.image.stringValue; // URL da imagem
+          const groupTitle = category; // Pega o nome da categoria como group-title
+          const videoUrl = `https://anikodi.xyz/video/${movieId}`; // URL camuflada
 
           // Adiciona as informações à lista M3U
-          m3uList += `#EXTINF:-1 tvg-logo="${logo}" group-title="${category}", ${title}\n`;
+          m3uList += `#EXTINF:-1 tvg-logo="${logo}" group-title="${groupTitle}", ${title}\n`;
           m3uList += `${videoUrl}\n`;
         }
       }
@@ -45,6 +46,23 @@ export default {
           'Content-Disposition': 'attachment; filename="playlist.m3u"'
         }
       });
+    }
+
+    // Trata as requisições para vídeos camuflados
+    if (url.pathname.startsWith('/video/')) {
+      const videoId = url.pathname.split('/video/')[1]; // Pega o ID do vídeo da URL camuflada
+      const firestoreUrl = `https://firestore.googleapis.com/v1/projects/hwfilm23/databases/(default)/documents/users/filmes/${category}/${videoId}`;
+      const response = await fetch(firestoreUrl);
+
+      if (!response.ok) {
+        return new Response('Video not found', { status: 404 });
+      }
+
+      const videoData = await response.json();
+      const videoUrl = videoData.fields[category].mapValue.fields[videoId].mapValue.fields.url.stringValue;
+
+      // Redireciona para a URL real do vídeo
+      return Response.redirect(videoUrl, 302);
     }
 
     return env.ASSETS.fetch(request);
