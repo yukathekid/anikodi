@@ -28,7 +28,7 @@ export default {
       // Verifica se o timestamp atual é válido em relação à data de expiração
       const expireDate = new Date(data.fields.expiryDate.timestampValue).getTime();
       if (expireParam !== expireDate || expireDate < Date.now()) {
-        return new Response('Expired or invalid link', { status: 403 });
+        return Response.redirect(urlAlt, 302);
       }
 
       // Procura a URL do vídeo pelo nome fornecido
