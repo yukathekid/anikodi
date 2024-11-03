@@ -54,7 +54,7 @@ export default {
     }
 
     // Verifica se a URL acessada é /m3u/filmes
-    if (url.pathname === '/m3u/filmes') {
+    if (url.pathname === '/playlist/filmes') {
       const firestoreUrl = 'https://firestore.googleapis.com/v1/projects/hwfilm23/databases/(default)/documents/users/filmes';
       const response = await fetch(firestoreUrl, {
         method: 'GET',
