@@ -10,10 +10,10 @@ export default {
     const url = new URL(request.url);
 
     // Verifica se a URL acessada é uma URL camuflada
-    if (url.pathname.startsWith('/movie/')) {
+    if (url.pathname.startsWith('/video/')) {
       const pathParts = url.pathname.split('/');
       const name = pathParts[2];
-      //const idParam = parseInt(pathParts[3], 10) + ".mp4";
+      /*const idParam = parseInt(pathParts[3], 10) + ".mp4";*/
       const urlAlt = 'https://api-f.streamable.com/api/v1/videos/qnyv36/mp4';
 
       const firestoreUrl = `https://firestore.googleapis.com/v1/projects/hwfilm23/databases/(default)/documents/users/filmes`;
@@ -34,8 +34,7 @@ export default {
 // Procura a URL do vídeo pelo nome fornecido
       let videoUrl = null;
       let groupTitle = '';
-      let idVideo = '';
-
+      
       for (const category in data.fields) {
         if (category === "expiryDate") continue; // Ignora o campo expiryDate
 
@@ -43,7 +42,6 @@ export default {
         if(movies[name]) {
           videoUrl = movies[name].mapValue.fields.url.stringValue;
           groupTitle = category;
-          idVideo = movies[name].mapValue.fields.id.stringValue;
           break;
         }
       }
@@ -90,10 +88,9 @@ export default {
           const movie = movies[movieId].mapValue.fields;
           const title = movie.title.stringValue;
           const logo = movie.image.stringValue;
-          const idVideo = movie.id.stringValue;
-          // Adiciona a URL camuflada na lista M3U
+
           m3uList += `#EXTINF:-1 tvg-id="" tvg-name="${title}" tvg-logo="${logo}" group-title="${category}", ${title}\n`;
-          m3uList += `${url.origin}/movie/${movieId}\n`;
+          m3uList += `${url.origin}/video/${movieId}\n`;
         }
       }
 
