@@ -14,7 +14,7 @@ export default {
       const pathParts = url.pathname.split('/');
       const rots = pathParts[2];
       const name = pathParts[3];
-      const idVideo = parseInt(pathParts[4]);
+      const idVideo = parseInt(pathParts[4]) + ".mp4" || ".ts";
      
       const urlAlt = 'https://api-f.streamable.com/api/v1/videos/qnyv36/mp4';
 
@@ -86,6 +86,7 @@ export default {
       for (const category in data.fields) {
         if (category === "expiryDate") continue;
         const rota = category === "Canais24h" ? "live" : "ondemand";
+        const ext = category === "Canais24h" ? ".ts" : ".mp4";
         const movies = data.fields[category].mapValue.fields;
         for (const movieId in movies) {
           const movie = movies[movieId].mapValue.fields;
