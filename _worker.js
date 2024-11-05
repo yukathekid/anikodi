@@ -13,7 +13,7 @@ export default {
     if (url.pathname.startsWith('/video/')) {
       const pathParts = url.pathname.split('/');
       const name = pathParts[2];
-      /*const idParam = parseInt(pathParts[3], 10) + ".mp4";*/
+     
       const urlAlt = 'https://api-f.streamable.com/api/v1/videos/qnyv36/mp4';
 
       const firestoreUrl = `https://firestore.googleapis.com/v1/projects/hwfilm23/databases/(default)/documents/users/filmes`;
@@ -39,7 +39,7 @@ export default {
         if (category === "expiryDate") continue; // Ignora o campo expiryDate
 
         const movies = data.fields[category].mapValue.fields;
-        if(movies[name]) {
+        if (movies[name]) {
           videoUrl = movies[name].mapValue.fields.url.stringValue;
           groupTitle = category;
           break;
