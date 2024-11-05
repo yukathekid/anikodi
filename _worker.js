@@ -4,7 +4,7 @@ export default {
 
     // Bloqueia User-Agents de navegadores comuns
     if (userAgent.includes('Mozilla') || userAgent.includes('Chrome') || userAgent.includes('Safari')) {
-      return new Response('This video cannot be played in a browser.', { status: 403 });
+      return new Response('Forbidden 403.', { status: 403 });
     }
 
     const url = new URL(request.url);
