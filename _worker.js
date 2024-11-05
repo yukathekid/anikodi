@@ -93,7 +93,7 @@ export default {
           const idVideo = movie.id.stringValue;
           // Adiciona a URL camuflada na lista M3U
           m3uList += `#EXTINF:-1 tvg-id="" tvg-name="${title}" tvg-logo="${logo}" group-title="${category}", ${title}\n`;
-          m3uList += `${url.origin}/movie/${moveId}\n`;
+          m3uList += `${url.origin}/movie/${movieId}\n`;
         }
       }
 
