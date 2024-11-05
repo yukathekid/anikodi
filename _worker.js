@@ -1,5 +1,19 @@
 export default {
   async fetch(request, env, ctx) {
+    const userAgent = request.headers.get('User-Agent') || '';
+
+    // Bloqueia User-Agents de navegadores comuns
+    if (userAgent.includes('Mozilla') || userAgent.includes('Chrome') || userAgent.includes('Safari')) {
+      return new Response('This video cannot be played in a browser.', { status: 403 });
+    }
+
+    // Permite apenas User-Agents de apps específicos (exemplo: Kodi)
+    if (userAgent.includes('Kodi') || userAgent.includes('VLC')) {
+      return fetch(request); // Permite a requisição normalmente
+    }
+
+    return new Response('Access restricted', { status: 403 });
+
     const url = new URL(request.url);
 
     // Verifica se a URL acessada é uma URL camuflada
