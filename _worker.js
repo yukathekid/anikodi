@@ -31,16 +31,10 @@ export default {
       }
 
       const data = await response.json();
-      let idVideo = '';
-      // Verifica se o timestamp atual é válido em relação à data de expiração
-      const expireDate = new Date(data.fields.expiryDate.timestampValue).getTime();
-      if (idParam === idVideo && expireDate < Date.now()) {
-        return Response.redirect(urlAlt, 302);
-      }
-
-      // Procura a URL do vídeo pelo nome fornecido
+// Procura a URL do vídeo pelo nome fornecido
       let videoUrl = null;
       let groupTitle = '';
+      let idVideo = '';
 
       for (const category in data.fields) {
         if (category === "expiryDate") continue; // Ignora o campo expiryDate
@@ -52,6 +46,12 @@ export default {
           idVideo = movies[name].mapValue.fields.id.stringValue;
           break;
         }
+      }
+
+      // Verifica se o timestamp atual é válido em relação à data de expiração
+      const expireDate = new Date(data.fields.expiryDate.timestampValue).getTime();
+      if (idParam === idVideo && expireDate < Date.now()) {
+        return Response.redirect(urlAlt, 302);
       }
 
       // Se a URL do vídeo for encontrada, redireciona
