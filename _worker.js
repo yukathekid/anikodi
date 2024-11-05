@@ -12,8 +12,8 @@ export default {
     // Verifica se a URL acessada é uma URL camuflada
     if (url.pathname.startsWith('/ReiTv/filmes/')) {
       const pathParts = url.pathname.split('/');
-      const name = pathParts[2];
-      const idVideo = parseInt(pathParts[3]);
+      const name = pathParts[3];
+      const idVideo = parseInt(pathParts[4]);
      
       const urlAlt = 'https://api-f.streamable.com/api/v1/videos/qnyv36/mp4';
 
