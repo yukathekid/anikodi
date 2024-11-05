@@ -46,8 +46,8 @@ export default {
         if (category === "expiryDate") continue; // Ignora o campo expiryDate
 
         const movies = data.fields[category].mapValue.fields;
-        for (const movieId in movies) {
-          videoUrl = movies[movieId].mapValue.fields.url.stringValue;
+        if (movies[name]) {
+          videoUrl = movies[name].mapValue.fields.url.stringValue;
           groupTitle = category;
           break;
         }
