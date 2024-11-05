@@ -13,7 +13,7 @@ export default {
     if (url.pathname.startsWith('/ReiTv/filmes/')) {
       const pathParts = url.pathname.split('/');
       //const name = pathParts[3];
-      const idVideo = parseInt(pathParts[3]) + ".mp4";
+      const idVideo = parseInt(pathParts[3]);
      
       const urlAlt = 'https://api-f.streamable.com/api/v1/videos/qnyv36/mp4';
 
@@ -92,7 +92,7 @@ export default {
           const logo = movie.image.stringValue;
           const idVideo = movie.id.stringValue;
           m3uList += `#EXTINF:-1 tvg-id="" tvg-name="${title}" tvg-logo="${logo}" group-title="${category}", ${title}\n`;
-          m3uList += `${url.origin}/ReiTv/filmes/${idVideo}.mp4\n`;
+          m3uList += `${url.origin}/ReiTv/filmes/${idVideo}\n`;
         }
       }
 
