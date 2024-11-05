@@ -42,13 +42,14 @@ export default {
       // Procura a URL do vídeo pelo nome fornecido
       let videoUrl = null;
       let groupTitle = '';
+      let name = '';
       
       for (const category in data.fields) {
         if (category === "expiryDate") continue; // Ignora o campo expiryDate
 
         const movies = data.fields[category].mapValue.fields;
-        for (const movieId in movies) {
-          videoUrl = movies[movieId].mapValue.fields.url.stringValue;
+        if (movies[name]) {
+          videoUrl = movies[name].mapValue.fields.url.stringValue;
           groupTitle = category;
           break;
         }
