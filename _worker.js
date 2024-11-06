@@ -46,7 +46,7 @@ export default {
       for (const category in data.fields) {
         if (category === "expiryDate") continue; // Ignora o campo expiryDate
 
-        const movies = data.fields.teste.arrayValue.values;
+        const movies = data.fields.Teste.arrayValue.values;
         if (movies[name]) {
          videoUrl = movies[name].mapValue.fields.url.stringValue;
          groupTitle = category; 
@@ -85,7 +85,7 @@ export default {
       for (const category in data.fields) {
         if (category === "expiryDate") continue;
         const rota = category === "Canais24h" ? "live" : "demand";
-        const movies = data.fields.teste.arrayValue.values;
+        const movies = data.fields.Teste.arrayValue.values;
         for (const movieId in movies) {
           const movie = movies[movieId].mapValue.fields;
           const title = movie.title.stringValue;
