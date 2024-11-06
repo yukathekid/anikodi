@@ -93,6 +93,7 @@ export default {
           const genero = movieF.gender.stringValue;
           m3uList += `#EXTINF:-1 tvg-id="${index}" tvg-name="${title}" tvg-logo="${logo}" group-title="${genero}", ${title}\n`;
           m3uList += `${url.origin}/ReiTv/${rota}/${index}\n`;
+         break;
         }
       }
 
