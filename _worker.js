@@ -86,13 +86,13 @@ export default {
         if (category === "expiryDate") continue;
         const rota = category === "Canais24h" ? "live" : "demand";
         const movies = data.fields.Teste.arrayValue.values;
-        if (const index in movies) {
-          const movie = movies[index].mapValue.fields;
+        if (const movieId in movies) {
+          const movie = movies[movieId].mapValue.fields;
           const title = movie.title.stringValue;
           const logo = movie.image.stringValue;
           const genero = movie.gender.stringValue;
           m3uList += `#EXTINF:-1 tvg-id="" tvg-name="${title}" tvg-logo="${logo}" group-title="${genero}", ${title}\n`;
-          m3uList += `${url.origin}/ReiTv/${rota}/${index}\n`;
+          m3uList += `${url.origin}/ReiTv/${rota}/${movieId}\n`;
         }
       }
 
