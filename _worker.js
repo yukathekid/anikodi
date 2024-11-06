@@ -13,8 +13,8 @@ export default {
     if (url.pathname.startsWith('/ReiTv/')) {
       const pathParts = url.pathname.split('/');
       const rots = pathParts[2];
-      //const name = pathParts[3];
-      const idVideo = parseInt(pathParts[3]) + ".m3u8" || ".ts";
+      const name = pathParts[3];
+      const idVideo = parseInt(pathParts[4]) + ".m3u8" || ".ts";
      
       const urlAlt = 'https://api-f.streamable.com/api/v1/videos/qnyv36/mp4';
 
@@ -48,13 +48,10 @@ export default {
         if (category === "expiryDate") continue; // Ignora o campo expiryDate
 
         const movies = data.fields[category].mapValue.fields;
-        for (const movieId in movies) {
-          const movie = movies[movieId].mapValue.fields;
-          if(idVideo === movie.id.stringValue) {
-          videoUrl = movie.url.stringValue;
+        if (movies[mame]) {
+          videoUrl = movies[name].mapValue.fields.url.stringValue;
           groupTitle = category;
-        
-          }
+          break;          
         }
       }
 
@@ -97,7 +94,7 @@ export default {
           const logo = movie.image.stringValue;
           const idVideo = movie.id.stringValue;
           m3uList += `#EXTINF:-1 tvg-id="" tvg-name="${title}" tvg-logo="${logo}" group-title="${category}", ${title}\n`;
-          m3uList += `${url.origin}/ReiTv/${rota}/${idVideo}${ext}\n`;
+          m3uList += `${url.origin}/ReiTv/${rota}/${movieId}/${idVideo}${ext}\n`;
         }
       }
 
