@@ -86,7 +86,7 @@ export default {
         if (category === "expiryDate") continue;
         const rota = category === "Canais24h" ? "live" : "demand";
         const movies = data.fields.Teste.arrayValue.values;
-        moveis.forEach((movie, index) => {
+        movies.forEach((movie, index) => {
           const movieFields = movie.mapValue.fields;
           const title = movieFields.title.stringValue;
           const logo = movieFields.image.stringValue;
