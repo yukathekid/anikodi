@@ -48,13 +48,10 @@ export default {
         if (category === "expiryDate") continue; // Ignora o campo expiryDate
 
         const movies = data.fields[category].mapValue.fields;
-        for (const movieId in movies) {
-         const movie = movies[movieId].mapValue.fields;
-         if (movie.id) {
-          videoUrl = movie.url.stringValue;
-          groupTitle = category;
-          break;   
-          }       
+        for (const movieKey in movies) {
+         const movieS = movies[movieKey].mapValue.fields;
+         videoUrl = movieS.url.stringValue;
+         groupTitle = category;                  
         }
       }
 
@@ -95,9 +92,9 @@ export default {
           const movie = movies[movieId].mapValue.fields;
           const title = movie.title.stringValue;
           const logo = movie.image.stringValue;
-          const idVideo = movie.id.stringValue;
+          const idVideo2 = movie.id.stringValue;
           m3uList += `#EXTINF:-1 tvg-id="" tvg-name="${title}" tvg-logo="${logo}" group-title="${category}", ${title}\n`;
-          m3uList += `${url.origin}/ReiTv/${rota}/${idVideo}${ext}\n`;
+          m3uList += `${url.origin}/ReiTv/${rota}/${idVideo2}${ext}\n`;
         }
       }
 
