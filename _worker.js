@@ -91,9 +91,9 @@ export default {
           const movie = movies[movieId].mapValue.fields;
           const title = movie.title.stringValue;
           const logo = movie.image.stringValue;
-          const idVideo2 = movie.id.stringValue;
+          const idVideo = movie.id.stringValue;
           m3uList += `#EXTINF:-1 tvg-id="" tvg-name="${title}" tvg-logo="${logo}" group-title="${category}", ${title}\n`;
-          m3uList += `${url.origin}/ReiTv/${rota}/${movieId}/${idVideo2}\n`;
+          m3uList += `${url.origin}/ReiTv/${rota}/${movieId}/${idVideo}\n`;
         }
       }
 
