@@ -91,7 +91,7 @@ export default {
         const rota = category === "Canais24h" ? "live" : "demand";
         const movies = data.fields.Teste.arrayValue.values;
         const movieF = movies.mapValue.fields;
-        if (const movie in movieF) {         
+        for (const movie in movieF) {         
           const title = movie.title.stringValue;
           const logo = movie.image.stringValue;
           const genero = movie.gender.stringValue;
