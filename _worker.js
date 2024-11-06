@@ -52,8 +52,6 @@ export default {
             groupTitle = category;
           
         }
-
-        if (videoUrl) break;
       }
 
       // Se a URL do vídeo for encontrada, redireciona
