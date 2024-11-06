@@ -92,9 +92,9 @@ export default {
         const movies = data.fields.Teste.arrayValue.values;
         const movieF = movies.mapValue.fields;
         for (const movie in movieF) {         
-          const title = movie.title.stringValue;
-          const logo = movie.image.stringValue;
-          const genero = movie.gender.stringValue;
+          const title = movie[movieF].title.stringValue;
+          const logo = movie[movieF].image.stringValue;
+          const genero = movie[movieF].gender.stringValue;
 
           m3uList += `#EXTINF:-1 tvg-id="${index}" tvg-name="${title}" tvg-logo="${logo}" group-title="${genero}", ${title}\n`;
           m3uList += `${url.origin}/ReiTv/${rota}/${title}\n`;
