@@ -47,13 +47,11 @@ export default {
         if (category === "expiryDate") continue; // Ignora o campo expiryDate
 
         const movies = data.fields.Teste.arrayValue.values;
-        movies.forEach((movie, index) => {
-        const title = movie.mapValue.fields.title.stringValue;
-          if (title === name) {
-            videoUrl = movie.mapValue.fields.url.stringValue;
+          for (const movieId in movies) {
+            videoUrl = movies[movieId].mapValue.fields.url.stringValue;
             groupTitle = category;
-          }
-        });
+          
+        }
 
         if (videoUrl) break;
       }
@@ -90,14 +88,14 @@ export default {
         if (category === "expiryDate") continue;
         const rota = category === "Canais24h" ? "live" : "demand";
         const movies = data.fields.Teste.arrayValue.values;
-        const movieF = movies.mapValue.fields;
-        for (const movie in movieF) {         
-          const title = movie[movieF].title.stringValue;
-          const logo = movie[movieF].image.stringValue;
-          const genero = movie[movieF].gender.stringValue;
-
-          m3uList += `#EXTINF:-1 tvg-id="${index}" tvg-name="${title}" tvg-logo="${logo}" group-title="${genero}", ${title}\n`;
-          m3uList += `${url.origin}/ReiTv/${rota}/${title}\n`;
+        for (const movieId in movies) {  
+          const movie = movies[movieId].mapValue.fields;       
+          const title = movie.title.stringValue;
+          const logo = movie.image.stringValue;
+          const genero = movie.gender.stringValue;
+          break;
+          m3uList += `#EXTINF:-1 tvg-id="${movieId}" tvg-name="${title}" tvg-logo="${logo}" group-title="${genero}", ${title}\n`;
+          m3uList += `${url.origin}/ReiTv/${rota}/${movieId}\n`;
         }
       }
 
