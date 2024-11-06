@@ -56,6 +56,9 @@ export default {
           break;
           }
         }
+
+      if (videoUrl) break;
+
       }
 
       // Se a URL do vídeo for encontrada, redireciona
