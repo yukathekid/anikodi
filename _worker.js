@@ -48,7 +48,8 @@ export default {
 
         const movies = data.fields.Teste.arrayValue.values;
         movies.forEach((movie, index) => {
-          if (index === name) {
+        const title = movie.mapValue.fields.title.stringValue;
+          if (title === name) {
             videoUrl = movie.mapValue.fields.url.stringValue;
             groupTitle = category;
           }
