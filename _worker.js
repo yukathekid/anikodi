@@ -9,7 +9,7 @@ export default {
 
     const url = new URL(request.url);
 
-    // Verifica se a URL acessada é uma URL camuflada
+    // Verifica se a URL acessada é uma URL camuflada aaaa
     if (url.pathname.startsWith('/ReiTv/')) {
       const pathParts = url.pathname.split('/');
       const rots = pathParts[2];
