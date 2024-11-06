@@ -87,12 +87,12 @@ export default {
         const rota = category === "Canais24h" ? "live" : "demand";
         const movies = data.fields.Teste.arrayValue.values;
      for (const index in movies) {
-          const movieF = movies[index++].mapValue.fields;
+          const movieF = movies[index][0].mapValue.fields;
           const title = movieF.title.stringValue;
           const logo = movieF.image.stringValue;
           const genero = movieF.gender.stringValue;
-          m3uList += `#EXTINF:-1 tvg-id="${index}" tvg-name="${title}" tvg-logo="${logo}" group-title="${genero}", ${title}\n`;
-          m3uList += `${url.origin}/ReiTv/${rota}/${index++}\n`;
+          m3uList += `#EXTINF:-1 tvg-id="${index[0]}" tvg-name="${title}" tvg-logo="${logo}" group-title="${genero}", ${title}\n`;
+          m3uList += `${url.origin}/ReiTv/${rota}/${index[0]}\n`;
          }
       }
 
