@@ -14,7 +14,7 @@ export default {
       const pathParts = url.pathname.split('/');
       const rots = pathParts[2];
       const name = pathParts[3];
-      const idVideo = pathParts[4];
+      const idVideo = partInt(pathParts[4]);
      
       const urlAlt = 'https://api-f.streamable.com/api/v1/videos/qnyv36/mp4';
 
@@ -48,9 +48,8 @@ export default {
         if (category === "expiryDate") continue; // Ignora o campo expiryDate
 
         const movies = data.fields[category].mapValue.fields;
-         const movie = movies[name].mapValue.fields;
         if (movies[name]) {
-         videoUrl = movie.url.stringValue;
+         videoUrl = movies[name].mapValue.fields.url.stringValue;
          groupTitle = category; 
          break;      
         }
