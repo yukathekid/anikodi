@@ -91,8 +91,8 @@ export default {
           const title = movieF.title.stringValue;
           const logo = movieF.image.stringValue;
           const genero = movieF.gender.stringValue;
-          m3uList += `#EXTINF:-1 tvg-id="" tvg-name="${title}" tvg-logo="${logo}" group-title="${genero}", ${title}\n`;
-          m3uList += `${url.origin}/ReiTv/${rota}/${index + 1}\n`;
+          m3uList += `#EXTINF:-1 tvg-id="${index}" tvg-name="${title}" tvg-logo="${logo}" group-title="${genero}", ${title}\n`;
+          m3uList += `${url.origin}/ReiTv/${rota}/${index}\n`;
         });
       }
 
