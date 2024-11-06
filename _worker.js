@@ -14,7 +14,7 @@ export default {
       const pathParts = url.pathname.split('/');
       const rots = pathParts[2];
       const name = pathParts[3];
-      const idVideo = partInt(pathParts[4]);
+      const idVideo = parseInt(pathParts[4]);
      
       const urlAlt = 'https://api-f.streamable.com/api/v1/videos/qnyv36/mp4';
 
