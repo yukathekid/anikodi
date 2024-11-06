@@ -9,12 +9,12 @@ export default {
 
     const url = new URL(request.url);
 
-    // Verifica se a URL acessada é uma URL camuflada aaaa
+    // Verifica se a URL acessada é uma URL camuflada
     if (url.pathname.startsWith('/ReiTv/')) {
       const pathParts = url.pathname.split('/');
       const rots = pathParts[2];
       const name = pathParts[3];
-     
+
       const urlAlt = 'https://api-f.streamable.com/api/v1/videos/qnyv36/mp4';
 
       const firestoreUrl = `https://firestore.googleapis.com/v1/projects/hwfilm23/databases/(default)/documents/users/filmes`;
@@ -42,16 +42,19 @@ export default {
       // Procura a URL do vídeo pelo nome fornecido
       let videoUrl = null;
       let groupTitle = '';
-      
+
       for (const category in data.fields) {
         if (category === "expiryDate") continue; // Ignora o campo expiryDate
 
         const movies = data.fields.Teste.arrayValue.values;
-        if (movies[name]) {
-         videoUrl = movies[name].mapValue.fields.url.stringValue;
-         groupTitle = category; 
-         break;      
-        }
+        movies.forEach((movie, index) => {
+          if (index === name) {
+            videoUrl = movie.mapValue.fields.url.stringValue;
+            groupTitle = category;
+          }
+        });
+
+        if (videoUrl) break;
       }
 
       // Se a URL do vídeo for encontrada, redireciona
@@ -62,7 +65,7 @@ export default {
       }
     }
 
-    // Verifica se a URL acessada é /m3u/filmes
+    // Verifica se a URL acessada é /playlist/filmes
     if (url.pathname === '/playlist/filmes') {
       const firestoreUrl = 'https://firestore.googleapis.com/v1/projects/hwfilm23/databases/(default)/documents/users/filmes';
       const response = await fetch(firestoreUrl, {
@@ -86,14 +89,16 @@ export default {
         if (category === "expiryDate") continue;
         const rota = category === "Canais24h" ? "live" : "demand";
         const movies = data.fields.Teste.arrayValue.values;
-     for (const index in movies) {
-          const movieF = movies[index][0].mapValue.fields;
+
+        movies.forEach((movie, index) => {
+          const movieF = movie.mapValue.fields;
           const title = movieF.title.stringValue;
           const logo = movieF.image.stringValue;
           const genero = movieF.gender.stringValue;
-          m3uList += `#EXTINF:-1 tvg-id="${index[0]}" tvg-name="${title}" tvg-logo="${logo}" group-title="${genero}", ${title}\n`;
-          m3uList += `${url.origin}/ReiTv/${rota}/${index[0]}\n`;
-         }
+
+          m3uList += `#EXTINF:-1 tvg-id="${index}" tvg-name="${title}" tvg-logo="${logo}" group-title="${genero}", ${title}\n`;
+          m3uList += `${url.origin}/ReiTv/${rota}/${index}\n`;
+        });
       }
 
       // Retorna a lista M3U
