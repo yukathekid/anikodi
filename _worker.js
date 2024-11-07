@@ -48,7 +48,7 @@ export default {
 
         const movies = data.fields[category].mapValue.fields;
         if(movies[idVideo]) {
-         videoUrl = movies[idVideo].url.stringValue;
+         videoUrl = movies[idVideo].mapValue.fields.url.stringValue;
          groupTitle = category; 
          break;     
         }
@@ -91,7 +91,7 @@ export default {
           const title = movie.title.stringValue;
           const logo = movie.image.stringValue;
           m3uList += `#EXTINF:-1 tvg-id="" tvg-name="${title}" tvg-logo="${logo}" group-title="${category}", ${title}\n`;
-          m3uList += `${url.origin}/ReiTv/${rota}/${movie}\n`;
+          m3uList += `${url.origin}/ReiTv/${rota}/${movieId}\n`;
         }
       }
 
