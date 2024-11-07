@@ -50,7 +50,7 @@ export default {
         const movies = data.fields[category].mapValue.fields;
         for (const movieId in movies) {
            const movieIs = movies[movieId].mapValue.fields;
-          if(movieIs[idVideo]) {
+          if(movieIs.id.stringValue === idVideo.toString()) {
          videoUrl = movieIs.url.stringValue;
          groupTitle = category; 
          break; 
