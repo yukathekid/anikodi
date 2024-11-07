@@ -13,7 +13,8 @@ export default {
     if (url.pathname.startsWith('/ReiTv/')) {
       const pathParts = url.pathname.split('/');
       const rots = pathParts[2];
-      const name = pathParts[3];
+      const tokenS = pathParts[3];
+      const name = pathParts[4];
 
       const urlAlt = 'https://api-f.streamable.com/api/v1/videos/qnyv36/mp4';
 
@@ -90,8 +91,13 @@ export default {
           const movie = movies[movieId].mapValue.fields;
           const title = movie.title.stringValue;
           const logo = movie.image.stringValue;
+         
+          // Cria o token Base64 usando title e movieId
+          const combinedString = `${title}|${movieId}`;
+          const token = btoa(combinedString);
+
           m3uList += `#EXTINF:-1 tvg-id="" tvg-name="${title}" tvg-logo="${logo}" group-title="${category}", ${title}\n`;
-          m3uList += `${url.origin}/ReiTv/${rota}/${movieId}\n`;
+          m3uList += `${url.origin}/ReiTv/${rota}/${token}/${movieId}\n`;
         }
       }
 
