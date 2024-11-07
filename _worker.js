@@ -13,7 +13,7 @@ export default {
     if (url.pathname.startsWith('/ReiTv/')) {
       const pathParts = url.pathname.split('/');
       const rots = pathParts[2];
-      const name = parseInt(pathParts[3]);
+      const name = pathParts[3];
 
       const urlAlt = 'https://api-f.streamable.com/api/v1/videos/qnyv36/mp4';
 
@@ -34,12 +34,12 @@ export default {
       const data = await response.json();
 
       // Verifica se o timestamp atual é válido em relação à data de expiração
-      const expireDate = new Date(data.fields.expiryDate.timestampValue).getTime();
+      const expireDate = new Date(data.fields.expiryDate?.timestampValue).getTime();
       if (expireDate < Date.now()) {
         return Response.redirect(urlAlt, 302);
       }
 
-      // Procura a URL do vídeo pelo nome fornecido
+      // Procura a URL do vídeo pelo ID fornecido
       let videoUrl = null;
       let groupTitle = '';
 
@@ -48,9 +48,9 @@ export default {
 
         const movies = data.fields[category].mapValue.fields;
         if (movies[name]) {
-         videoUrl = movies[name].mapValue.fields.url.stringValue;
-         groupTitle = category; 
-         break;      
+          videoUrl = movies[name].mapValue.fields.url.stringValue;
+          groupTitle = category;
+          break;
         }
       }
 
@@ -62,7 +62,7 @@ export default {
       }
     }
 
-    // Verifica se a URL acessada é /m3u/filmes
+    // Verifica se a URL acessada é /playlist/filmes
     if (url.pathname === '/playlist/filmes') {
       const firestoreUrl = 'https://firestore.googleapis.com/v1/projects/hwfilm23/databases/(default)/documents/reitvbr/filmes';
       const response = await fetch(firestoreUrl, {
@@ -80,18 +80,18 @@ export default {
 
       // Cria a lista M3U
       let m3uList = '#EXTM3U\n';
-      const expireDate = new Date(data.fields.expiryDate.timestampValue).getTime();
 
       for (const category in data.fields) {
         if (category === "expiryDate") continue;
         const rota = category === "Canais24h" ? "live" : "demand";
         const movies = data.fields[category].mapValue.fields;
+        
         for (const movieId in movies) {
           const movie = movies[movieId].mapValue.fields;
           const title = movie.title.stringValue;
           const logo = movie.image.stringValue;
           m3uList += `#EXTINF:-1 tvg-id="" tvg-name="${title}" tvg-logo="${logo}" group-title="${category}", ${title}\n`;
-          m3uList += `${url.origin}/ReiTv/${rota}/${movieId.toString()}\n`;
+          m3uList += `${url.origin}/ReiTv/${rota}/${movieId}\n`;
         }
       }
 
