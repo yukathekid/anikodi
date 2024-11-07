@@ -13,12 +13,11 @@ export default {
     if (url.pathname.startsWith('/ReiTv/')) {
       const pathParts = url.pathname.split('/');
       const rots = pathParts[2];
-      //const name = pathParts[3];
-      const idVideo = parseInt(pathParts[3]);
+      const idVideo = pathParts[3];
 
       const urlAlt = 'https://api-f.streamable.com/api/v1/videos/qnyv36/mp4';
 
-      const firestoreUrl = `https://firestore.googleapis.com/v1/projects/hwfilm23/databases/(default)/documents/users/filmes`;
+      const firestoreUrl = `https://firestore.googleapis.com/v1/projects/hwfilm23/databases/(default)/documents/iptv/reitv`;
 
       // Obtém os dados do Firestore
       const response = await fetch(firestoreUrl, {
@@ -48,13 +47,10 @@ export default {
         if (category === "expiryDate") continue; // Ignora o campo expiryDate
 
         const movies = data.fields[category].mapValue.fields;
-        for (const movieId in movies) {
-           const movieIs = movies[movieId].mapValue.fields;
-          if(movieIs.id.stringValue === idVideo.toString()) {
-         videoUrl = movieIs.url.stringValue;
+        if(movies[idVideo]) {
+         videoUrl = movies[idVideo].url.stringValue;
          groupTitle = category; 
-         break; 
-          }     
+         break;     
         }
       }
 
@@ -68,7 +64,7 @@ export default {
 
     // Verifica se a URL acessada é /m3u/filmes
     if (url.pathname === '/playlist/filmes') {
-      const firestoreUrl = 'https://firestore.googleapis.com/v1/projects/hwfilm23/databases/(default)/documents/users/filmes';
+      const firestoreUrl = 'https://firestore.googleapis.com/v1/projects/hwfilm23/databases/(default)/documents/iptv/reitv';
       const response = await fetch(firestoreUrl, {
         method: 'GET',
         headers: {
@@ -94,9 +90,8 @@ export default {
           const movie = movies[movieId].mapValue.fields;
           const title = movie.title.stringValue;
           const logo = movie.image.stringValue;
-          const idVideo = movie.id.stringValue;
           m3uList += `#EXTINF:-1 tvg-id="" tvg-name="${title}" tvg-logo="${logo}" group-title="${category}", ${title}\n`;
-          m3uList += `${url.origin}/ReiTv/${rota}/${idVideo}\n`;
+          m3uList += `${url.origin}/ReiTv/${rota}/${movieId}\n`;
         }
       }
 
