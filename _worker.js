@@ -13,7 +13,7 @@ export default {
     if (url.pathname.startsWith('/ReiTv/')) {
       const pathParts = url.pathname.split('/');
       const rots = pathParts[2];
-      const idVideo = pathParts[3];
+      const name = pathParts[3];
 
       const urlAlt = 'https://api-f.streamable.com/api/v1/videos/qnyv36/mp4';
 
@@ -47,10 +47,10 @@ export default {
         if (category === "expiryDate") continue; // Ignora o campo expiryDate
 
         const movies = data.fields[category].mapValue.fields;
-        if(movies[idVideo]) {
-         videoUrl = movies[idVideo].mapValue.fields.url.stringValue;
+        if (movies[name]) {
+         videoUrl = movies[name].mapValue.fields.url.stringValue;
          groupTitle = category; 
-         break;     
+         break;      
         }
       }
 
