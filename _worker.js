@@ -84,7 +84,8 @@ export default {
 
       for (const category in data.fields) {
         if (category === "expiryDate") continue;
-        const rota = category.includes("FILMES") ? "movie" : category.includes("SÉRIES") ? : "series" : "live";
+        const rota = category.includes("FILMES") ? "movie" : "live"; 
+        const rotas = category.includes("SÉRIES") ? : "series" : rota;
         const movies = data.fields[category].mapValue.fields;
         
         for (const movieId in movies) {
@@ -97,7 +98,7 @@ export default {
           const token = btoa(combinedString);
         
           m3uList += `#EXTINF:-1 tvg-id="" tvg-name="${title}" tvg-logo="${logo}" group-title="${category}", ${title}\n`;
-          m3uList += `${url.origin}/ReiTv/${rota}/${token}/${movieId}\n`;
+          m3uList += `${url.origin}/ReiTv/${rotas}/${token}/${movieId}\n`;
         }
       }
 
