@@ -95,7 +95,7 @@ export default {
           // Cria o token Base64 usando title e movieId
           const combinedString = `${title}|${movieId}`;
           const token = btoa(combinedString);
-          const rotas = title.includes(category) ? "séries" : rota;
+          const rotas = title.includes(category) ? "series" : rota;
           m3uList += `#EXTINF:-1 tvg-id="" tvg-name="${title}" tvg-logo="${logo}" group-title="${category}", ${title}\n`;
           m3uList += `${url.origin}/ReiTv/${rotas}/${token}/${movieId}\n`;
         }
