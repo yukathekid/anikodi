@@ -85,7 +85,7 @@ export default {
       for (const category in data.fields) {
         if (category === "expiryDate") continue;
         const rota = category.includes("FILMES") ? "movie" : "live"; 
-        const rotas = category.includes("SÉRIES") ? : "series" : rota;
+        const rotas = category.includes("SÉRIES") ? "series" : rota;
         const movies = data.fields[category].mapValue.fields;
         
         for (const movieId in movies) {
