@@ -17,8 +17,10 @@ export default {
       const name = pathParts[4];
 
       const urlAlt = 'https://api-f.streamable.com/api/v1/videos/qnyv36/mp4';
-
+      const typeS = rots.includes("series") ? "filmes" : "live";
+      const istypeS = rots.includes("movie") ? "filmes" : typeS; 
       const firestoreUrl = `https://firestore.googleapis.com/v1/projects/hwfilm23/databases/(default)/documents/reitvbr/filmes`;
+  
 
       // Obtém os dados do Firestore
       const response = await fetch(firestoreUrl, {
