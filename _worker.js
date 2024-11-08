@@ -86,19 +86,21 @@ export default {
         if (category === "expiryDate") continue;
         const rota = category.includes("FILMES") ? "movie" : "live"; 
         const rotas = category.includes("SÉRIES") ? "series" : rota;
+  
         const movies = data.fields[category].mapValue.fields;
         
         for (const movieId in movies) {
           const movie = movies[movieId].mapValue.fields;
           const title = movie.title.stringValue;
           const logo = movie.image.stringValue;
-         
+          const isRots = category.includes(title) ? "movie" : rotas;
+
           // Cria o token Base64 usando title e movieId
           const combinedString = `${title}|${movieId}`;
           const token = btoa(combinedString);
         
           m3uList += `#EXTINF:-1 tvg-id="" tvg-name="${title}" tvg-logo="${logo}" group-title="${category}", ${title}\n`;
-          m3uList += `${url.origin}/ReiTv/${rotas}/${token}/${movieId}\n`;
+          m3uList += `${url.origin}/ReiTv/${isRots}/${token}/${movieId}\n`;
         }
       }
 
