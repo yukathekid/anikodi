@@ -12,29 +12,27 @@ export default {
     // Verifica se o caminho começa com "/reiTv/"
     if (url.pathname.startsWith('/reiTv/')) {
       const pathParts = url.pathname.split('/');
-      const category = pathParts[2]; // filmes, series ou live
-      const token = pathParts[3]; // Token base64 com título e movieId
+      const category = pathParts[2]; // "filmes", "series" ou "live"
+      const token = pathParts[3]; // Token base64 com título e itemId
       const itemId = pathParts[4]; // Identificador único do vídeo
 
+      // URL alternativa caso o vídeo não esteja disponível
       const urlAlt = 'https://api-f.streamable.com/api/v1/videos/qnyv36/mp4';
+
       let firestoreUrl;
 
-      // Define a URL no Firestore com base na categoria
-      switch (category) {
-        case 'filmes':
-          firestoreUrl = 'https://firestore.googleapis.com/v1/projects/hwfilm23/databases/(default)/documents/reitvbr/filmes';
-          break;
-        case 'series':
-          firestoreUrl = 'https://firestore.googleapis.com/v1/projects/hwfilm23/databases/(default)/documents/reitvbr/series';
-          break;
-        case 'live':
-          firestoreUrl = 'https://firestore.googleapis.com/v1/projects/hwfilm23/databases/(default)/documents/reitvbr/live';
-          break;
-        default:
-          return new Response('Categoria não encontrada', { status: 404 });
+      // Define a URL do Firestore com base na categoria
+      if (category === 'filmes' || category === 'movie') {
+        firestoreUrl = 'https://firestore.googleapis.com/v1/projects/hwfilm23/databases/(default)/documents/reitvbr/filmes';
+      } else if (category === 'series') {
+        firestoreUrl = 'https://firestore.googleapis.com/v1/projects/hwfilm23/databases/(default)/documents/reitvbr/series';
+      } else if (category === 'live') {
+        firestoreUrl = 'https://firestore.googleapis.com/v1/projects/hwfilm23/databases/(default)/documents/reitvbr/live';
+      } else {
+        return new Response('Categoria não encontrada', { status: 404 });
       }
 
-      // Caso seja uma requisição para a lista (não tem o parâmetro `itemId`)
+      // Se não houver itemId, carrega a lista M3U completa
       if (!itemId) {
         // Faz as requisições para as categorias
         const responseFilmes = await fetch(firestoreUrl);
@@ -67,7 +65,7 @@ export default {
             const endpoint = rota === 'filmes' ? 'movie' : rota;
 
             m3uList += `#EXTINF:-1 tvg-id="" tvg-name="${title}" tvg-logo="${logo}" group-title="${itemId}", ${title}\n`;
-            m3uList += `${url.origin}/reiTv/${endpoint}/${token}/${item}\n`;
+            m3uList += `${url.origin}/reiTv/${endpoint}/${token}/${itemId}\n`;
           }
         };
 
@@ -85,7 +83,7 @@ export default {
         });
       }
 
-      // Caso seja uma requisição para um vídeo específico
+      // Se houver itemId, busca o vídeo específico
       const response = await fetch(firestoreUrl, {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' }
