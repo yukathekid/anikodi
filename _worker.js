@@ -93,13 +93,14 @@ export default {
         for (const movieId in movies) {
           const movie = movies[movieId].mapValue.fields;
           const title = movie.title.stringValue;
+          const tvgId = movie.tvg-id.stringValue || "";
           const logo = movie.image.stringValue;
 
           // Cria o token Base64 usando title e movieId
           const combinedString = `${title}|${movieId}`;
           const token = btoa(combinedString);
 
-          m3uList += `#EXTINF:-1 tvg-id="" tvg-name="${title}" tvg-logo="${logo}" group-title="${category}", ${title}\n`;
+          m3uList += `#EXTINF:-1 tvg-id="${tvgId}" tvg-name="${title}" tvg-logo="${logo}" group-title="${category}", ${title}\n`;
           m3uList += `${url.origin}/ReiTv/${rotas}/${token}/${movieId}\n`;
         }
       }
