@@ -6,7 +6,7 @@ export default {
    /* if (userAgent.includes('Mozilla') || userAgent.includes('Chrome') || userAgent.includes('Safari')) {
       return new Response(null, { status: 403 });
     }*/
-     if (userAgent.includes('XCIPTV')) {
+     if (!userAgent.includes('XCIPTV')) {
       return new Response(null, { status: 403 });
     }
 
