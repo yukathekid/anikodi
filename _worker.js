@@ -67,7 +67,7 @@ export default {
             const endpoint = rota === 'filmes' ? 'movie' : rota;
 
             m3uList += `#EXTINF:-1 tvg-id="" tvg-name="${title}" tvg-logo="${logo}" group-title="${itemId}", ${title}\n`;
-            m3uList += `${url.origin}/reiTv/${endpoint}/${token}/${itemId}\n`;
+            m3uList += `${url.origin}/reiTv/${endpoint}/${token}/${item}\n`;
           }
         };
 
