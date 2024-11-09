@@ -11,7 +11,7 @@ export default {
 
     // Verifica se a URL acessada é uma URL camuflada
      const pathParts = url.pathname.split('/');
-    if (pathParts[0] === 'reitv' && pathParts[1] && pathParts[3] && pathParts[4]) {
+    if (pathParts[1] === 'reitv' && pathParts[2] && pathParts[3] && pathParts[4]) {
       const rots = pathParts[2];
       const tokenS = pathParts[3];
       const name = pathParts[4];
@@ -65,7 +65,7 @@ export default {
     }
 
     // Verifica se a URL acessada é /playlist/filmes
-    if (pathParts[0] === 'reitv') {
+    if (pathParts[1] === 'reitv') {
       const firestoreUrl = 'https://firestore.googleapis.com/v1/projects/hwfilm23/databases/(default)/documents/reitvbr/filmes';
       const response = await fetch(firestoreUrl, {
         method: 'GET',
