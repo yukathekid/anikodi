@@ -3,7 +3,10 @@ export default {
     const userAgent = request.headers.get('User-Agent') || '';
 
     // Bloqueia User-Agents de navegadores comuns
-    if (userAgent.includes('Mozilla') || userAgent.includes('Chrome') || userAgent.includes('Safari')) {
+   /* if (userAgent.includes('Mozilla') || userAgent.includes('Chrome') || userAgent.includes('Safari')) {
+      return new Response(null, { status: 403 });
+    }*/
+     if (!userAgent.includes('XCIPTV'){
       return new Response(null, { status: 403 });
     }
 
