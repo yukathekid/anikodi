@@ -5,7 +5,8 @@ const users = {
 
 const BASE_SERVER_URL = "https://anikodi.xyz"; // URL do servidor com a lista M3U
 
-async function handleRequest(request) {
+export default {
+  async fetch(request, env, ctx) {
   const url = new URL(request.url);
   const pathParts = url.pathname.split("/");
 
@@ -61,8 +62,8 @@ http://hubby.bz/movie/Pdsrv-vods/kb6zityGEg/52486.mp4
   }
 
   return new Response("Não encontrado", { status: 404 });
+ }
 }
-
 addEventListener("fetch", event => {
   event.respondWith(handleRequest(event.request));
 });
