@@ -93,7 +93,7 @@ export default {
         for (const movieId in movies) {
           const movie = movies[movieId].mapValue.fields;
           const title = movie.title.stringValue;
-          const tvgId = movie.tvgid.stringValue || "";
+          const tvgId = movie.tvgid?.stringValue;
           const logo = movie.image.stringValue;
 
           // Cria o token Base64 usando title e movieId
