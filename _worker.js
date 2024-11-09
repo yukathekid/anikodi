@@ -6,8 +6,6 @@ export default {
     // Obter parâmetros do Xtream Codes
     const username = url.searchParams.get('username');
     const password = url.searchParams.get('password');
-    const type = url.searchParams.get('type');
-    const output = url.searchParams.get('output');
 
     // Verificar User-Agent para permitir apenas o XCIPTV
     if (!userAgent.includes('XCIPTV')) {
@@ -15,7 +13,7 @@ export default {
     }
 
     // Verificar credenciais
-    if (username === 'reitv' && password === 'OFFTV2424' && type === 'm3u_plus' && output === 'ts') {
+    if (username === 'reitv' && password === 'OFFTV2424') {
       // Retornar a lista M3U
       return fetch('https://raw.githubusercontent.com/JairPPereira/tvweb/refs/heads/main/jpiptv/playtv.m3u');
     } else {
