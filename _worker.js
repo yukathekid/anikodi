@@ -12,16 +12,16 @@ export default {
     // Verifica se o caminho começa com "/reiTv/"
     if (url.pathname.startsWith('/reiTv/')) {
       const pathParts = url.pathname.split('/');
-      const rots = pathParts[2]; // filmes, series ou live
-      const tokenS = pathParts[3]; // Token base64 com título e movieId
-      const name = pathParts[4]; // Identificador único do vídeo
+      const category = pathParts[2]; // filmes, series ou live
+      const token = pathParts[3]; // Token base64 com título e movieId
+      const itemId = pathParts[4]; // Identificador único do vídeo
 
       const urlAlt = 'https://api-f.streamable.com/api/v1/videos/qnyv36/mp4';
       let firestoreUrl;
 
-      // Define a URL no Firestore com base na categoria (rots)
-      switch (rots) {
-        case 'movie':
+      // Define a URL no Firestore com base na categoria
+      switch (category) {
+        case 'filmes':
           firestoreUrl = 'https://firestore.googleapis.com/v1/projects/hwfilm23/databases/(default)/documents/reitvbr/filmes';
           break;
         case 'series':
@@ -34,11 +34,12 @@ export default {
           return new Response('Categoria não encontrada', { status: 404 });
       }
 
-      // Caso seja um endpoint para a lista M3U
-      if (!name) {
-        const responseFilmes = await fetch(firestoreUrl.replace('movie', 'movie'));
-        const responseSeries = await fetch(firestoreUrl.replace('movie', 'series'));
-        const responseLive = await fetch(firestoreUrl.replace('movie', 'live'));
+      // Caso seja uma requisição para a lista (não tem o parâmetro `itemId`)
+      if (!itemId) {
+        // Faz as requisições para as categorias
+        const responseFilmes = await fetch(firestoreUrl);
+        const responseSeries = await fetch(firestoreUrl.replace('filmes', 'series'));
+        const responseLive = await fetch(firestoreUrl.replace('filmes', 'live'));
 
         if (!responseFilmes.ok || !responseSeries.ok || !responseLive.ok) {
           return new Response('Erro ao buscar dados das categorias', { status: 500 });
@@ -60,16 +61,18 @@ export default {
             const logo = item.image.stringValue;
 
             // Cria o token base64 combinando title e itemId
-            const combinedString = `${title}|${item}`;
+            const combinedString = `${title}|${itemId}`;
             const token = btoa(combinedString);
 
+            const endpoint = rota === 'filmes' ? 'movie' : rota;
+
             m3uList += `#EXTINF:-1 tvg-id="" tvg-name="${title}" tvg-logo="${logo}" group-title="${itemId}", ${title}\n`;
-            m3uList += `${url.origin}/reiTv/${rota}/${token}/${item}\n`;
+            m3uList += `${url.origin}/reiTv/${endpoint}/${token}/${itemId}\n`;
           }
         };
 
         // Adiciona cada categoria ao M3U
-        adicionarCategoria(filmesData, 'movie');
+        adicionarCategoria(filmesData, 'filmes');
         adicionarCategoria(seriesData, 'series');
         adicionarCategoria(liveData, 'live');
 
@@ -98,10 +101,10 @@ export default {
         return Response.redirect(urlAlt, 302);
       }
 
-      // Busca o vídeo pelo ID fornecido (name) na categoria correta
+      // Busca o vídeo pelo ID fornecido (itemId) na categoria correta
       let videoUrl = null;
-      if (data.fields[name]) {
-        videoUrl = data.fields[name].mapValue.fields.url.stringValue;
+      if (data.fields[itemId]) {
+        videoUrl = data.fields[itemId].mapValue.fields.url.stringValue;
       }
 
       // Redireciona para o vídeo ou para a URL alternativa
