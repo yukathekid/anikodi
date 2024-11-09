@@ -1,69 +1,119 @@
-const users = {
-  "reitv": { password: "teste123", name: "Reitv" },
-  "username2": { password: "password2", name: "User Two" }
-};
-
-const BASE_SERVER_URL = "https://anikodi.xyz"; // URL do servidor com a lista M3U
-
 export default {
   async fetch(request, env, ctx) {
-  const url = new URL(request.url);
-  const pathParts = url.pathname.split("/");
+    const userAgent = request.headers.get('User-Agent') || '';
 
-  // Verifica se a requisição é para a playlist M3U
-  if (pathParts.length === 3 && pathParts[2] === "list.m3u8") {
-    const username = pathParts[1];
+    // Bloqueia User-Agents de navegadores comuns
+    if (userAgent.includes('Mozilla') || userAgent.includes('Chrome') || userAgent.includes('Safari')) {
+      return new Response(null, { status: 403 });
+    }
 
-    // Verifica se o usuário existe
-    if (users[username]) {
-      // Conteúdo da lista M3U personalizada para o usuário
-      const m3uContent = `
-#EXTM3U
-#EXTINF:-1, Canal 1
-http://hubby.bz/movie/Pdsrv-vods/kb6zityGEg/52486.mp4
-#EXTINF:-1, Canal 2
-http://hubby.bz/movie/Pdsrv-vods/kb6zityGEg/52486.mp4
-#EXTINF:-1, Canal 3
-http://hubby.bz/movie/Pdsrv-vods/kb6zityGEg/52486.mp4
-`;
-      return new Response(m3uContent, {
-        headers: { "Content-Type": "application/vnd.apple.mpegurl" }
+    const url = new URL(request.url);
+
+    // Verifica se a URL acessada é uma URL camuflada
+    if (url.pathname.startsWith('/reitv/')) {
+      const pathParts = url.pathname.split('/');
+      const rots = pathParts[2];
+      const tokenS = pathParts[3];
+      const name = pathParts[4];
+
+      const urlAlt = 'https://api-f.streamable.com/api/v1/videos/qnyv36/mp4';
+
+      const firestoreUrl = `https://firestore.googleapis.com/v1/projects/hwfilm23/databases/(default)/documents/reitvbr/filmes`;
+
+
+      // Obtém os dados do Firestore
+      const response = await fetch(firestoreUrl, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
       });
-    } else {
-      return new Response("Usuário não encontrado", { status: 404 });
+
+      if (!response.ok) {
+        return new Response('Error fetching data from Firestore', { status: response.status });
+      }
+
+      const data = await response.json();
+
+      // Verifica se o timestamp atual é válido em relação à data de expiração
+      const expireDate = new Date(data.fields.expiryDate?.timestampValue).getTime();
+      if (expireDate < Date.now()) {
+        return Response.redirect(urlAlt, 302);
+      }
+
+      // Procura a URL do vídeo pelo ID fornecido
+      let videoUrl = null;
+      let groupTitle = '';
+
+      for (const category in data.fields) {
+        if (category === "expiryDate") continue; // Ignora o campo expiryDate
+
+        const movies = data.fields[category].mapValue.fields;
+        if (movies[name]) {
+          videoUrl = movies[name].mapValue.fields.url.stringValue;
+          groupTitle = category;
+          break;
+        }
+      }
+
+      // Se a URL do vídeo for encontrada, redireciona
+      if (videoUrl) {
+        return Response.redirect(videoUrl, 302);
+      } else {
+        return Response.redirect(urlAlt, 302);
+      }
     }
-  }
 
-  // Endpoint de autenticação
-  if (request.method === "POST" && url.pathname === "/login") {
-    const { username, password } = await request.json();
+    // Verifica se a URL acessada é /playlist/filmes
+    if (url.pathname === '/reitv/') {
+      const firestoreUrl = 'https://firestore.googleapis.com/v1/projects/hwfilm23/databases/(default)/documents/reitvbr/filmes';
+      const response = await fetch(firestoreUrl, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
 
-    // Verifica as credenciais do usuário
-    if (users[username] && users[username].password === password) {
-      return new Response(JSON.stringify({
-        user_info: {
-          username: username,
-          name: users[username].name,
-          status: "Active"
-        },
-        server_info: {
-          url: BASE_SERVER_URL,
-          port: "80",
-          https_port: "443",
-          server_protocol: "http",
-          rtmp_port: "1935"
-        },
-        playlist: `${BASE_SERVER_URL}/${username}/list.m3u8`,
-        epg_url: `${BASE_SERVER_URL}/epg.xml`, // URL do EPG, se disponível
-      }), { status: 200 });
-    } else {
-      return new Response(JSON.stringify({ error: "Usuário ou senha incorretos" }), { status: 403 });
+      if (!response.ok) {
+        return new Response('Error fetching data from Firestore', { status: response.status });
+      }
+
+      const data = await response.json();
+
+      // Cria a lista M3U
+      let m3uList = '#EXTM3U\n';
+
+      for (const category in data.fields) {
+        if (category === "expiryDate") continue;
+        const rota = category.includes("FILMES") ? "movie" : "live"; 
+        const rotas = category.includes("SÉRIES") ? "series" : rota;
+
+        const movies = data.fields[category].mapValue.fields;
+
+        for (const movieId in movies) {
+          const movie = movies[movieId].mapValue.fields;
+          const title = movie.title.stringValue;
+          const tvgId = movie.tvgid?.stringValue;
+          const logo = movie.image.stringValue;
+
+          // Cria o token Base64 usando title e movieId
+          const combinedString = `${title}|${movieId}`;
+          const token = btoa(combinedString);
+
+          m3uList += `#EXTINF:-1 tvg-id="${tvgId}" tvg-name="${title}" tvg-logo="${logo}" group-title="${category}", ${title}\n`;
+          m3uList += `${url.origin}/ReiTv/${rotas}/${token}/${movieId}\n`;
+        }
+      }
+
+      // Retorna a lista M3U
+      return new Response(m3uList, {
+        headers: {
+          'Content-Type': 'application/vnd.apple.mpegurl',
+          'Content-Disposition': 'attachment; filename="playlist.m3u"'
+        }
+      });
     }
-  }
 
-  return new Response("Não encontrado", { status: 404 });
- }
-}
-addEventListener("fetch", event => {
-  event.respondWith(handleRequest(event.request));
-});
+    return env.ASSETS.fetch(request);
+  }
+};
