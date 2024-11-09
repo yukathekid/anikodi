@@ -9,103 +9,54 @@ export default {
 
     const url = new URL(request.url);
 
-    // Verifica se o caminho começa com "/reiTv/"
-    if (url.pathname.startsWith('/reiTv/')) {
+    // Verifica se a URL acessada é uma URL camuflada
+    if (url.pathname.startsWith('/ReiTv/')) {
       const pathParts = url.pathname.split('/');
-      const category = pathParts[2]; // "filmes", "series" ou "live"
-      const token = pathParts[3]; // Token base64 com título e itemId
-      const itemId = pathParts[4]; // Identificador único do vídeo
+      const rots = pathParts[2];
+      const tokenS = pathParts[3];
+      const name = pathParts[4];
 
-      // URL alternativa caso o vídeo não esteja disponível
       const urlAlt = 'https://api-f.streamable.com/api/v1/videos/qnyv36/mp4';
 
-      let firestoreUrl;
+      const firestoreUrl = `https://firestore.googleapis.com/v1/projects/hwfilm23/databases/(default)/documents/reitvbr/filmes`;
 
-      // Define a URL do Firestore com base na categoria
-      if (category === 'filmes' || category === 'movie') {
-        firestoreUrl = 'https://firestore.googleapis.com/v1/projects/hwfilm23/databases/(default)/documents/reitvbr/filmes';
-      } else if (category === 'series') {
-        firestoreUrl = 'https://firestore.googleapis.com/v1/projects/hwfilm23/databases/(default)/documents/reitvbr/series';
-      } else if (category === 'live') {
-        firestoreUrl = 'https://firestore.googleapis.com/v1/projects/hwfilm23/databases/(default)/documents/reitvbr/live';
-      } else {
-        return new Response('Categoria não encontrada', { status: 404 });
-      }
 
-      // Se não houver itemId, carrega a lista M3U completa
-      if (!itemId) {
-        // Faz as requisições para as categorias
-        const responseFilmes = await fetch(firestoreUrl);
-        const responseSeries = await fetch(firestoreUrl.replace('filmes', 'series'));
-        const responseLive = await fetch(firestoreUrl.replace('filmes', 'live'));
-
-        if (!responseFilmes.ok || !responseSeries.ok || !responseLive.ok) {
-          return new Response('Erro ao buscar dados das categorias', { status: 500 });
-        }
-
-        const filmesData = await responseFilmes.json();
-        const seriesData = await responseSeries.json();
-        const liveData = await responseLive.json();
-
-        let m3uList = '#EXTM3U\n';
-
-        // Função para processar cada categoria e adicionar à lista M3U
-        const adicionarCategoria = (data, rota) => {
-          for (const itemId in data.fields) {
-            if (itemId === "expiryDate") continue;
-
-            const item = data.fields[itemId].mapValue.fields;
-            const title = item.title.stringValue;
-            const logo = item.image.stringValue;
-
-            // Cria o token base64 combinando title e itemId
-            const combinedString = `${title}|${itemId}`;
-            const token = btoa(combinedString);
-
-            const endpoint = rota === 'filmes' ? 'movie' : rota;
-
-            m3uList += `#EXTINF:-1 tvg-id="" tvg-name="${title}" tvg-logo="${logo}" group-title="${itemId}", ${title}\n`;
-            m3uList += `${url.origin}/reiTv/${endpoint}/${token}/${itemId}\n`;
-          }
-        };
-
-        // Adiciona cada categoria ao M3U
-        adicionarCategoria(filmesData, 'filmes');
-        adicionarCategoria(seriesData, 'series');
-        adicionarCategoria(liveData, 'live');
-
-        // Retorna a lista M3U
-        return new Response(m3uList, {
-          headers: {
-            'Content-Type': 'application/vnd.apple.mpegurl',
-            'Content-Disposition': 'attachment; filename="playlist.m3u"'
-          }
-        });
-      }
-
-      // Se houver itemId, busca o vídeo específico
+      // Obtém os dados do Firestore
       const response = await fetch(firestoreUrl, {
         method: 'GET',
-        headers: { 'Content-Type': 'application/json' }
+        headers: {
+          'Content-Type': 'application/json'
+        }
       });
 
       if (!response.ok) {
-        return new Response('Erro ao buscar dados do Firestore', { status: response.status });
+        return new Response('Error fetching data from Firestore', { status: response.status });
       }
 
       const data = await response.json();
+
+      // Verifica se o timestamp atual é válido em relação à data de expiração
       const expireDate = new Date(data.fields.expiryDate?.timestampValue).getTime();
       if (expireDate < Date.now()) {
         return Response.redirect(urlAlt, 302);
       }
 
-      // Busca o vídeo pelo ID fornecido (itemId) na categoria correta
+      // Procura a URL do vídeo pelo ID fornecido
       let videoUrl = null;
-      if (data.fields[itemId]) {
-        videoUrl = data.fields[itemId].mapValue.fields.url.stringValue;
+      let groupTitle = '';
+
+      for (const category in data.fields) {
+        if (category === "expiryDate") continue; // Ignora o campo expiryDate
+
+        const movies = data.fields[category].mapValue.fields;
+        if (movies[name]) {
+          videoUrl = movies[name].mapValue.fields.url.stringValue;
+          groupTitle = category;
+          break;
+        }
       }
 
-      // Redireciona para o vídeo ou para a URL alternativa
+      // Se a URL do vídeo for encontrada, redireciona
       if (videoUrl) {
         return Response.redirect(videoUrl, 302);
       } else {
@@ -113,7 +64,55 @@ export default {
       }
     }
 
-    // Caso o caminho não corresponda a "/reiTv/"
+    // Verifica se a URL acessada é /playlist/filmes
+    if (url.pathname === '/reiTv/') {
+      const firestoreUrl = 'https://firestore.googleapis.com/v1/projects/hwfilm23/databases/(default)/documents/reitvbr/filmes';
+      const response = await fetch(firestoreUrl, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (!response.ok) {
+        return new Response('Error fetching data from Firestore', { status: response.status });
+      }
+
+      const data = await response.json();
+
+      // Cria a lista M3U
+      let m3uList = '#EXTM3U\n';
+
+      for (const category in data.fields) {
+        if (category === "expiryDate") continue;
+        const rota = category.includes("FILMES") ? "movie" : "live"; 
+        const rotas = category.includes("SÉRIES") ? "series" : rota;
+
+        const movies = data.fields[category].mapValue.fields;
+
+        for (const movieId in movies) {
+          const movie = movies[movieId].mapValue.fields;
+          const title = movie.title.stringValue;
+          const logo = movie.image.stringValue;
+
+          // Cria o token Base64 usando title e movieId
+          const combinedString = `${title}|${movieId}`;
+          const token = btoa(combinedString);
+
+          m3uList += `#EXTINF:-1 tvg-id="" tvg-name="${title}" tvg-logo="${logo}" group-title="${category}", ${title}\n`;
+          m3uList += `${url.origin}/ReiTv/${rotas}/${token}/${movieId}\n`;
+        }
+      }
+
+      // Retorna a lista M3U
+      return new Response(m3uList, {
+        headers: {
+          'Content-Type': 'application/vnd.apple.mpegurl',
+          'Content-Disposition': 'attachment; filename="playlist.m3u"'
+        }
+      });
+    }
+
     return env.ASSETS.fetch(request);
   }
 };
