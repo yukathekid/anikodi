@@ -10,8 +10,9 @@ export default {
     const url = new URL(request.url);
 
     // Verifica se a URL acessada é uma URL camuflada
+     const svr = ['movie', 'series', 'live'];
      const pathParts = url.pathname.split('/');
-    if (pathParts[1] === 'reitv' && pathParts[2] && pathParts[3] && pathParts[4]) {
+    if (pathParts[1] && pathParts[2] === 'reitv' && pathParts[3] && pathParts[4]) {
       const rots = pathParts[2];
       const tokenS = pathParts[3];
       const name = pathParts[4];
@@ -101,7 +102,7 @@ export default {
           const token = btoa(combinedString);
 
           m3uList += `#EXTINF:-1 tvg-id="${tvgId}" tvg-name="${title}" tvg-logo="${logo}" group-title="${category}", ${title}\n`;
-          m3uList += `${url.origin}/${pathParts[1]}/${rotas}/${token}/${movieId}\n`;
+          m3uList += `${url.origin}/${rotas}/${pathParts[1]}/${token}/${movieId}\n`;
         }
       }
 
