@@ -24,10 +24,10 @@ export default {
    const url = new URL(request.url);
    const pathParts = url.pathname.split('/');
 if (pathParts[1] === 'newpass') {
-    const pass = getData(); // Obtém a senha codificada a partir de getData()
+    const exp = getData(pass); // Obtém a senha codificada a partir de getData()
     const responseObject = {
         username: 'reitv-vods',
-        password: pass
+        password: exp
     };
     
     return new Response(JSON.stringify(responseObject, null, 2), {
