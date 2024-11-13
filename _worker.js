@@ -1,10 +1,15 @@
+let pass;
+function getData() {
+      return pass;
+    }
+
 export default {
   async fetch(request, env, ctx) {
     const userAgent = request.headers.get('User-Agent') || '';
 
     // Bloqueia User-Agents de navegadores comuns
    if (userAgent.includes('Mozilla') || userAgent.includes('Chrome') || userAgent.includes('Safari')) {
-      return new Response(null, { status: 403 });
+      return new Response(getData(), { status: 403 });
     }
 
     const url = new URL(request.url);
@@ -42,6 +47,8 @@ export default {
         return Response.redirect(urlAlt, 302);
       }
 
+      pass = btoa(String(expireDate)).replace(/=+$/, '');
+
       // Procura a URL do vídeo pelo ID fornecido
       let videoUrl = null;
       let groupTitle = '';
@@ -66,8 +73,9 @@ export default {
     }
 
     // Verifica se a URL acessada é /playlist/filmes
-    const pass = btoa(String(expireDate)).replace(/=+$/, '');
-    if (pathParts[1] === 'reitv-vods' && pathParts[2] === pass) {      
+    
+    
+    if (pathParts[1] === 'reitv-vods' && pathParts[2] === getData()) {      
       const firestoreUrl = 'https://firestore.googleapis.com/v1/projects/hwfilm23/databases/(default)/documents/reitvbr/vods';
       const response = await fetch(firestoreUrl, {
         method: 'GET',
