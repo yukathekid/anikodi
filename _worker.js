@@ -21,16 +21,17 @@ export default {
       const expireDates = new Date(data2.fields.expiryDate?.timestampValue).getTime();
       const pass = btoa(String(expireDates)).replace(/=+$/, '');
 
-    // Bloqueia User-Agents de navegadores comuns
-   if (userAgent.includes('Mozilla') || userAgent.includes('Chrome') || userAgent.includes('Safari')) {
-      return new Response(getData(pass), { status: 403 });
+   const url = new URL(request.url);
+   const pathParts = url.pathname.split('/');
+   if (pathParts[1] === 'newpass') {
+       return new Response(getData(pass));
     }
 
-    const url = new URL(request.url);
+ // Bloqueia User-Agents de navegadores comuns
+   if (userAgent.includes('Mozilla') || userAgent.includes('Chrome') || userAgent.includes('Safari')) {
+      return new Response(null, { status: 403 });
+    }
 
-    // Verifica se a URL acessada é uma URL camuflada
-     const svr = ['movie', 'series', 'live'];
-     const pathParts = url.pathname.split('/');
     if (pathParts[1] && pathParts[2] && pathParts[3] && pathParts[4]) {
       const rots = pathParts[2];
       const tokenS = pathParts[3];
