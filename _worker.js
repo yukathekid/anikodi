@@ -24,8 +24,13 @@ export default {
    const url = new URL(request.url);
    const pathParts = url.pathname.split('/');
    if (pathParts[1] === 'newpass') {
-       return new Response({'username': 'reitv-vods', 'password': \'getData(pass)\'});
-    }
+    const pass = getData(); // Obtém a senha codificada
+    const jsonResponse = JSON.stringify({ username: 'reitv-vods', password: pass });
+    
+    return new Response(jsonResponse, {
+        headers: { 'Content-Type': 'application/json' }
+    });
+}
 
  // Bloqueia User-Agents de navegadores comuns
    if (userAgent.includes('Mozilla') || userAgent.includes('Chrome') || userAgent.includes('Safari')) {
