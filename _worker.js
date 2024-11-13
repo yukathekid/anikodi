@@ -19,7 +19,7 @@ export default {
 
       const urlAlt = 'https://api-f.streamable.com/api/v1/videos/qnyv36/mp4';
 
-      const firestoreUrl = `https://firestore.googleapis.com/v1/projects/hwfilm23/databases/(default)/documents/reitvbr/filmes`;
+      const firestoreUrl = `https://firestore.googleapis.com/v1/projects/hwfilm23/databases/(default)/documents/reitvbr/vods`;
 
 
       // Obtém os dados do Firestore
@@ -67,7 +67,7 @@ export default {
 
     // Verifica se a URL acessada é /playlist/filmes
     if (pathParts[1] === 'reitv') {
-      const firestoreUrl = 'https://firestore.googleapis.com/v1/projects/hwfilm23/databases/(default)/documents/reitvbr/filmes';
+      const firestoreUrl = 'https://firestore.googleapis.com/v1/projects/hwfilm23/databases/(default)/documents/reitvbr/vods';
       const response = await fetch(firestoreUrl, {
         method: 'GET',
         headers: {
@@ -86,23 +86,22 @@ export default {
 
       for (const category in data.fields) {
         if (category === "expiryDate") continue;
-        const rota = category.includes("FILMES") ? "movie" : "live"; 
-        const rotas = category.includes("SÉRIES") ? "series" : rota;
+        const rota = category.includes("movie") ? "movie" : "series"; 
+        //const rotas = category.includes("SÉRIES") ? "series" : rota;
 
         const movies = data.fields[category].mapValue.fields;
 
         for (const movieId in movies) {
           const movie = movies[movieId].mapValue.fields;
           const title = movie.title.stringValue;
-          const tvgId = movie.tvgid?.stringValue;
           const logo = movie.image.stringValue;
-
+          const group = movie.group.stringValue;
           // Cria o token Base64 usando title e movieId
           const combinedString = `${title}|${movieId}`;
           const token = btoa(combinedString);
 
-          m3uList += `#EXTINF:-1 tvg-id="${tvgId}" tvg-name="${title}" tvg-logo="${logo}" group-title="${category}", ${title}\n`;
-          m3uList += `${url.origin}/${rotas}/${pathParts[1]}/${token}/${movieId}\n`;
+          m3uList += `#EXTINF:-1 tvg-id="" tvg-name="${title}" tvg-logo="${logo}" group-title="${group}", ${title}\n`;
+          m3uList += `${url.origin}/${rota}/${pathParts[1]}/${token}/${movieId}\n`;
         }
       }
 
