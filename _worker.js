@@ -12,7 +12,7 @@ export default {
     // Verifica se a URL acessada é uma URL camuflada
      const svr = ['movie', 'series', 'live'];
      const pathParts = url.pathname.split('/');
-    if (pathParts[1] && pathParts[2] === 'reitv' && pathParts[3] && pathParts[4]) {
+    if (pathParts[1] && pathParts[2] && pathParts[3] && pathParts[4]) {
       const rots = pathParts[2];
       const tokenS = pathParts[3];
       const name = pathParts[4];
