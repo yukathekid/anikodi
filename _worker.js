@@ -1,15 +1,29 @@
-let pass;
-function getData() {
-      return pass;
-    }
-
 export default {
   async fetch(request, env, ctx) {
     const userAgent = request.headers.get('User-Agent') || '';
+   
+    const firestoreUrl2 = `https://firestore.googleapis.com/v1/projects/hwfilm23/databases/(default)/documents/reitvbr/vods`;
+      // Obtém os dados do Firestore
+      const response2 = await fetch(firestoreUrl2, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (!response2.ok) {
+        return new Response('Error fetching data from Firestore', { status: response.status });
+      }
+
+      const data2 = await response2.json();
+
+      // Verifica se o timestamp atual é válido em relação à data de expiração
+      const expireDates = new Date(data2.fields.expiryDate?.timestampValue).getTime();
+      const pass = btoa(String(expireDates)).replace(/=+$/, '');
 
     // Bloqueia User-Agents de navegadores comuns
    if (userAgent.includes('Mozilla') || userAgent.includes('Chrome') || userAgent.includes('Safari')) {
-      return new Response(getData(), { status: 403 });
+      return new Response(getData(pass), { status: 403 });
     }
 
     const url = new URL(request.url);
@@ -47,7 +61,7 @@ export default {
         return Response.redirect(urlAlt, 302);
       }
 
-      pass = btoa(String(expireDate)).replace(/=+$/, '');
+      const pass = btoa(String(expireDate)).replace(/=+$/, '');
 
       // Procura a URL do vídeo pelo ID fornecido
       let videoUrl = null;
@@ -75,7 +89,7 @@ export default {
     // Verifica se a URL acessada é /playlist/filmes
     
     
-    if (pathParts[1] === 'reitv-vods' && pathParts[2] === getData()) {      
+    if (pathParts[1] === 'reitv-vods' && pathParts[2] === getData(pass)) {      
       const firestoreUrl = 'https://firestore.googleapis.com/v1/projects/hwfilm23/databases/(default)/documents/reitvbr/vods';
       const response = await fetch(firestoreUrl, {
         method: 'GET',
@@ -126,3 +140,7 @@ export default {
     return env.ASSETS.fetch(request);
   }
 };
+
+function getData(date) {
+      return date;
+    }
