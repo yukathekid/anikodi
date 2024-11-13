@@ -1,0 +1,11 @@
+#EXTM3U
+#EXT-X-VERSION:3
+#EXT-X-TARGETDURATION:603
+#EXT-X-MEDIA-SEQUENCE:0
+#EXTINF:600.474878,
+https://api-f.streamable.com/api/v1/videos/6g2exc/mp4
+#EXTINF:602.893956,
+https://api-f.streamable.com/api/v1/videos/us2v02/mp4
+#EXTINF:231.663511,
+https://api-f.streamable.com/api/v1/videos/fb7578/mp4
+#EXT-X-ENDLIST
