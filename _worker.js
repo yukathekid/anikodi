@@ -66,8 +66,8 @@ export default {
     }
 
     // Verifica se a URL acessada é /playlist/filmes
-    const pass = btoa(expireDate.toString()).replace(/=+$/, '');
-    if (pathParts[1] === 'reitv-vods' && pathParts[2] === pass.toString()) {      
+    const pass = btoa(String(expireDate)).replace(/=+$/, '');
+    if (pathParts[1] === 'reitv-vods' && pathParts[2] === pass) {      
       const firestoreUrl = 'https://firestore.googleapis.com/v1/projects/hwfilm23/databases/(default)/documents/reitvbr/vods';
       const response = await fetch(firestoreUrl, {
         method: 'GET',
