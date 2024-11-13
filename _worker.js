@@ -24,7 +24,7 @@ export default {
    const url = new URL(request.url);
    const pathParts = url.pathname.split('/');
    if (pathParts[1] === 'newpass') {
-       return new Response(getData(pass));
+       return new Response({'username': 'reitv-vods', 'password': \'getData(pass)\'});
     }
 
  // Bloqueia User-Agents de navegadores comuns
