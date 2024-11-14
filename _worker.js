@@ -123,7 +123,7 @@ export default {
 };
 
 async function getUser(user) {
-      const db = `https://firestore.googleapis.com/v1/projects/hwfilm23/databases/(default)/documents/reitvbr/users/${user}`;
+      const db = `https://firestore.googleapis.com/v1/projects/hwfilm23/databases/(default)/documents/reitvbr/users`;
       const response = await fetch(db, {
         method: 'GET',
         headers: {
@@ -136,7 +136,7 @@ async function getUser(user) {
       }
 
       const data = await response.json();
-      const usuario = data.fields;
+      const usuario = data.fields[user].mapValue.fields;
       const senha = usuario.password.stringValue;
       return {usuario, senha};
 }
