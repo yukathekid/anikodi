@@ -23,10 +23,11 @@ export default {
       for (const users in user) {
       const expireDate = new Date(user[users].mapValue.fields.exp_date?.timestampValue).getTime();
       const password = btoa(String(expireDate)).replace(/=+$/, '');
-      
+      const active = expireDate < Date.now() ? 'Expired' : 'Active';
       userData.push({
           username: users,
           password: password,
+          status: active,
           exp_timestamp: expireDate,
           timestamp_now: Date.now()
       });     
