@@ -59,7 +59,7 @@ export default {
           exp_date: userInfo.exp_date ? Math.floor(new Date(userInfo.exp_date.timestampValue).getTime() / 1000): null,
           is_trial: userInfo.is_trial ? userInfo.is_trial.stringValue : "0",
           active_cons: userInfo.active_cons ? userInfo.active_cons.stringValue : "0",
-          created_at: userInfo.created_at ? new Date(userInfo.created_at.timestampValue).getTime() : null,
+          created_at: userInfo.created_at ? Math.floor(new Date(userInfo.created_at.timestampValue).getTime() / 1000) : null,
           max_connections: userInfo.max_connections ? userInfo.max_connections.stringValue : "1",
           allowed_output_formats: userInfo.allowed_output_formats ? userInfo.allowed_output_formats.arrayValue.values.map(v => v.stringValue) : ["m3u8", "ts", "rtmp"]
         },
@@ -72,7 +72,7 @@ export default {
           https_port: "443",
           server_protocol: "http",
           rtmp_port: "8880",
-          timestamp_now: Date.now() / 1000, // Timestamp atual em segundos
+          timestamp_now: Math.floor(Date.now() / 1000), // Timestamp atual em segundos
           time_now: new Date().toISOString().slice(0, 19).replace('T', ' '), // Data atual formatada
           timezone: "UTC"
         }
