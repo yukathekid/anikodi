@@ -43,9 +43,8 @@ export default {
       const status = expireDate < Date.now() ? 'Expired' : 'Active';
 
       // Verifica se a senha corresponde
-      const passwordValid = btoa(String(expireDate)).replace(/=+$/, '');
-      const isPass = passwordValid === password;
-      if (!isPass) {
+      const passwordValid = btoa(String(expireDate)).replace(/=+$/, '') === password;
+      if (!passValid) {
         return new Response(`Invalid password: ${passwordValid}`, { status: 403 });
       }
 
