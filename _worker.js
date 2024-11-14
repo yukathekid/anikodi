@@ -1,3 +1,4 @@
+
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
@@ -29,44 +30,43 @@ export default {
       }
 
       const data = await res.json();
-      const users = data.fields;
+      const user = data.fields;
 
-      // Verifica se o usuário existe
-      if (!users[username]) {
+      if (!user[username]) {
         return new Response("User not found", { status: 404 });
       }
 
-      const userInfo = users[username].mapValue.fields;
+      const userInfo = user[username].mapValue.fields;
       const expireDate = new Date(userInfo.exp_date?.timestampValue).getTime();
       const status = expireDate < Date.now() ? 'Expired' : 'Active';
 
-      // Valida a senha
       const passwordValid = btoa(String(expireDate)).replace(/=+$/, '') === password;
       if (!passwordValid) {
         return new Response(`Invalid password`, { status: 403 });
       }
 
-      // Proxy para obter informações do VOD
       if (action === 'get_vod_info' && vodId) {
-        const apiUrl = `http://cdn22.cc/player_api.php?username=6705646555&password=60670&action=get_vod_info&vod_id=${vodId}`;
-        const vodResponse = await fetch(apiUrl);
-        const vodData = await vodResponse.json();
-        return new Response(JSON.stringify(vodData), {
+        // Requisita as informações do vídeo diretamente da API da cdn22.cc sem redirecionar
+        const infoUrl = `http://cdn22.cc/player_api.php?username=6705646555&password=60670&get_vods=546&action=get_vod_info&vod_id=${vodId}`;
+        const videoInfoRes = await fetch(infoUrl);
+        const videoInfo = await videoInfoRes.json();
+
+        return new Response(JSON.stringify(videoInfo), {
           headers: { 'Content-Type': 'application/json' }
         });
       }
 
-      // Proxy para obter informações da série
       if (action === 'get_series_info' && seriesId) {
-        const apiUrl = `http://cdn22.cc/player_api.php?username=6705646555&password=60670&action=get_series_info&series_id=${seriesId}`;
-        const seriesResponse = await fetch(apiUrl);
-        const seriesData = await seriesResponse.json();
-        return new Response(JSON.stringify(seriesData), {
+        // Requisita as informações da série diretamente da API da cdn22.cc sem redirecionar
+        const infoUrl = `http://cdn22.cc/player_api.php?username=6705646555&password=60670&get_vods=546&action=get_series_info&series_id=${seriesId}`;
+        const seriesInfoRes = await fetch(infoUrl);
+        const seriesInfo = await seriesInfoRes.json();
+
+        return new Response(JSON.stringify(seriesInfo), {
           headers: { 'Content-Type': 'application/json' }
         });
       }
 
-      // Resposta com informações do usuário autenticado
       const responseData = {
         user_info: {
           username: username,
@@ -79,29 +79,41 @@ export default {
           active_cons: userInfo.active_cons ? userInfo.active_cons.stringValue : "0",
           created_at: userInfo.created_at ? Math.floor(new Date(userInfo.created_at.timestampValue).getTime() / 1000) : null,
           max_connections: userInfo.max_connections ? userInfo.max_connections.stringValue : "1",
-          allowed_output_formats: userInfo.allowed_output_formats ? userInfo.allowed_output_formats.arrayValue.values.map(v => v.stringValue) : ["m3u8", "ts"]
+          allowed_output_formats: userInfo.allowed_output_formats ? userInfo.allowed_output_formats.arrayValue.values.map(v => v.stringValue) : ["m3u8", "ts", "rtmp"]
+        },
+        server_info: {
+          xui: true,
+          version: "1.5.5",
+          revision: 2,
+          url: "anikodi.xyz",
+          port: "80",
+          https_port: "443",
+          server_protocol: "http",
+          rtmp_port: "8880",
+          timestamp_now: Math.floor(Date.now() / 1000),
+          time_now: new Date().toISOString().slice(0, 19).replace('T', ' '),
+          timezone: "UTC"
         }
       };
 
-      return new Response(JSON.stringify(responseData), {
+      return new Response(JSON.stringify(responseData, null, 2), {
         headers: { 'Content-Type': 'application/json' }
       });
     }
 
-    // Rotas para servir vídeos de filmes e séries
+    // Rotas para filmes e séries (com redirecionamento)
     const isMovieRoute = pathParts[1] === "movie";
     const isSeriesRoute = pathParts[1] === "series";
 
     if (isMovieRoute || isSeriesRoute) {
       const username = pathParts[2];
       const password = pathParts[3];
-      const videoId = pathParts[4]?.split(".")[0]; // ID do vídeo sem a extensão
+      const videoId = pathParts[4]?.split(".")[0];
 
       if (!username || !password || !videoId) {
         return new Response('Username, password, and video ID are required', { status: 400 });
       }
 
-      // URL do Firestore para autenticar o usuário
       const userDB = `https://firestore.googleapis.com/v1/projects/hwfilm23/databases/(default)/documents/reitvbr/users`;
 
       const res = await fetch(userDB, {
@@ -114,37 +126,28 @@ export default {
       }
 
       const data = await res.json();
-      const users = data.fields;
+      const user = data.fields;
 
-      // Verifica se o usuário existe
-      if (!users[username]) {
+      if (!user[username]) {
         return new Response("User not found", { status: 404 });
       }
 
-      const userInfo = users[username].mapValue.fields;
+      const userInfo = user[username].mapValue.fields;
       const expireDate = new Date(userInfo.exp_date?.timestampValue).getTime();
       const status = expireDate < Date.now() ? 'Expired' : 'Active';
 
-      // Valida a senha
       const passwordValid = btoa(String(expireDate)).replace(/=+$/, '') === password;
       if (!passwordValid) {
         return new Response(`Invalid password`, { status: 403 });
       }
 
-      // Monta a URL do vídeo na CDN, mas sem redirecionar
-      const videoUrl = `http://cdn22.cc:80/${isMovieRoute ? "movie" : "series"}/6705646555/60670/${videoId}.mp4`;
-      const videoResponse = await fetch(videoUrl);
+      const redirectUrl = `http://cdn22.cc:80/${isMovieRoute ? "movie" : "series"}/6705646555/60670/${videoId}.mp4`;
+      return Response.redirect(redirectUrl, 302);
+    }
 
-      if (!videoResponse.ok) {
-        return new Response("Video not found", { status: 404 });
-      }
-
-      return new Response(videoResponse.body, {
-        headers: {
-          'Content-Type': 'video/mp4',
-          'Content-Disposition': `inline; filename="${videoId}.mp4"`
-        }
-      });
+    const userAgent = request.headers.get('User-Agent') || '';
+    if (userAgent.includes('Mozilla') || userAgent.includes('Chrome') || userAgent.includes('Safari')) {
+      return new Response(null, { status: 403 });
     }
 
     return new Response("Not found", { status: 404 });
