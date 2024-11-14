@@ -66,11 +66,10 @@ export default {
 
     // Verifica se a URL acessada é /playlist/filmes    
     const user = pathParts[1];
-    const passwrd = pathParts[2];
     const userData = await getUser(user);
     const usuario = userData.usuario;
     const senha = userData.senha;
-    if (pathParts[1] === usuario && pathParts[2] === senha) {      
+    if (pathParts[1] === usuario) {      
       const firestoreUrl = 'https://firestore.googleapis.com/v1/projects/hwfilm23/databases/(default)/documents/reitvbr/vods';
       const response = await fetch(firestoreUrl, {
         method: 'GET',
@@ -105,7 +104,7 @@ export default {
           const token = btoa(combinedString);
 
           m3uList += `#EXTINF:-1 tvg-id="" tvg-name="${title}" tvg-logo="${logo}" group-title="${group}", ${title}\n`;
-          m3uList += `${url.origin}/${rota}/${pathParts[1]}/${pathParts[2]}/${movieId}\n`;
+          m3uList += `${url.origin}/${rota}/${pathParts[1]}/${token}/${movieId}\n`;
         }
       }
 
