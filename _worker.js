@@ -6,7 +6,9 @@ export default {
    if (userAgent.includes('Mozilla') || userAgent.includes('Chrome') || userAgent.includes('Safari')) {
       return new Response(null, { status: 403 });
     }
-
+    
+    const url = new URL(request.url);
+    const pathParts = url.pathname.split('/');
     if (pathParts[1] && pathParts[2] && pathParts[3] && pathParts[4]) {
       const rots = pathParts[2];
       const tokenS = pathParts[3];
