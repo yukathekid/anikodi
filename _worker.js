@@ -64,10 +64,10 @@ export default {
       }
     }
 
-    // Verifica se a URL acessada é /playlist/filmes
-    const userData = await getUser(user);
+    // Verifica se a URL acessada é /playlist/filmes    
     const user = pathParts[1];
     const passwrd = pathParts[2];
+    const userData = await getUser(user);
     const usuario = userData.usuario;
     const senha = userData.senha;
     if (usuario === user && senha === passwrd) {      
