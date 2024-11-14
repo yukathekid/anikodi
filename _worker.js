@@ -25,11 +25,15 @@ export default {
    const pathParts = url.pathname.split('/');
 if (pathParts[1] === 'newpass') {
     const exp = getData(pass); // Obtém a senha codificada a partir de getData()
+    for (const user in data.fields) {
     const responseObject = {
-        username: 'reitv-vods',
+        username: data.fields[user].mapValue.fields,
         password: exp,
-        date_now: Date.now()
+        timestamp_now: Date.now(),
+        exp_timestamp: expireDates
+        
     };
+    }
     
     return new Response(JSON.stringify(responseObject, null, 2), {
         headers: { 'Content-Type': 'application/json' }
