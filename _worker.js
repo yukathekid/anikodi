@@ -25,7 +25,7 @@ export default {
    const pathParts = url.pathname.split('/');
 if (pathParts[1] === 'newpass') {
     const exp = getData(pass); // Obtém a senha codificada a partir de getData()
-    for (const user in data.fields) {
+    for (const user in data2.fields) {
     const responseObject = {
         username: data.fields[user].mapValue.fields,
         password: exp,
