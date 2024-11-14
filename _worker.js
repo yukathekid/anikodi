@@ -70,7 +70,7 @@ export default {
     const userData = await getUser(user);
     const usuario = userData.usuario;
     const senha = userData.senha;
-    if (pathParts[1] === user && pathParts[2] === passwrd) {      
+    if (pathParts[1] === usuario && pathParts[2] === passwrd) {      
       const firestoreUrl = 'https://firestore.googleapis.com/v1/projects/hwfilm23/databases/(default)/documents/reitvbr/vods';
       const response = await fetch(firestoreUrl, {
         method: 'GET',
