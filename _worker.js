@@ -27,7 +27,7 @@ if (pathParts[1] === 'newpass') {
     const exp = getData(pass); // Obtém a senha codificada a partir de getData()
     for (const user in data2.fields) {
     const responseObject = {
-        username: data.fields[user].mapValue.fields,
+        username: data2.fields[user].mapValue.fields,
         password: exp,
         timestamp_now: Date.now(),
         exp_timestamp: expireDates
