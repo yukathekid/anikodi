@@ -27,7 +27,8 @@ if (pathParts[1] === 'newpass') {
     const exp = getData(pass); // Obtém a senha codificada a partir de getData()
     const responseObject = {
         username: 'reitv-vods',
-        password: exp
+        password: exp,
+        date_now: Date.now()
     };
     
     return new Response(JSON.stringify(responseObject, null, 2), {
