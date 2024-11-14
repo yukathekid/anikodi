@@ -59,7 +59,7 @@ export default {
       // Se a URL do vídeo for encontrada, redireciona
       if (videoUrl) {
         return Response.redirect(videoUrl, 302);
-      } else {
+      } else(!videoUrl && expireDate < Date.now()){
         return Response.redirect(urlAlt, 302);
       }
     }
