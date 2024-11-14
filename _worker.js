@@ -67,7 +67,7 @@ export default {
     // Verifica se a URL acessada é /playlist/filmes    
     const user = pathParts[1];
     const userData = await getUser(user);
-    const usuario = userData.usuario;
+    const usuario = userData.users.usuario;
     const senha = userData.senha;
     if (pathParts[1] === usuario) {      
       const firestoreUrl = 'https://firestore.googleapis.com/v1/projects/hwfilm23/databases/(default)/documents/reitvbr/vods';
