@@ -105,7 +105,7 @@ export default {
           const token = btoa(combinedString);
 
           m3uList += `#EXTINF:-1 tvg-id="" tvg-name="${title}" tvg-logo="${logo}" group-title="${group}", ${title}\n`;
-          m3uList += `${url.origin}/${rota}/${pathParts[1]}/${token}/${movieId}\n`;
+          m3uList += `${url.origin}/${rota}/${pathParts[1]}/${pathParts[2]}/${movieId}\n`;
         }
       }
 
