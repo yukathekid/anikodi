@@ -12,9 +12,9 @@ export default {
       const action = searchParams.get('action');
       const vod_id = searchParams.get('vod_id');
 
-      if (!username || !password || !action || !vod_id) {
+      /*if (!username || !password || !action || !vod_id) {
         return new Response('Missing parameters', { status: 400 });
-      }
+      }*/
 
       // URL do banco de dados Firestore para autenticar o usuário
       const userDB = `https://firestore.googleapis.com/v1/projects/hwfilm23/databases/(default)/documents/reitvbr/users`;
