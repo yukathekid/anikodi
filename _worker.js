@@ -2,40 +2,44 @@ export default {
   async fetch(request, env, ctx) {
     const userAgent = request.headers.get('User-Agent') || '';
    
-    const firestoreUrl2 = `https://firestore.googleapis.com/v1/projects/hwfilm23/databases/(default)/documents/reitvbr/users`;
-      // Obtém os dados do Firestore
-      const response2 = await fetch(firestoreUrl2, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
+ const firestoreUrl2 = `https://firestore.googleapis.com/v1/projects/hwfilm23/databases/(default)/documents/reitvbr/users`;
 
-      if (!response2.ok) {
-        return new Response('Error fetching data from Firestore', { status: response.status });
-      }
-
-      const data2 = await response2.json();
-
-      // Verifica se o timestamp atual é válido em relação à data de expiração
-      
-   const url = new URL(request.url);
-   const pathParts = url.pathname.split('/');
-if (pathParts[1] === 'newpass') {
-    for (const user in data2.fields) {
-    const expireDates = new Date(data2.fields[user].mapValue.fields.exp_date?.timestampValue).getTime();
-    const pass = btoa(String(expireDates)).replace(/=+$/, '');
-
-    const responseObject = {
-        username: data2.fields[user].mapValue.fields,
-        password: pass,
-        timestamp_now: Date.now(),
-        exp_timestamp: expireDates
-        
-    };
+// Obtém os dados do Firestore
+const response2 = await fetch(firestoreUrl2, {
+    method: 'GET',
+    headers: {
+        'Content-Type': 'application/json'
     }
-    
-    return new Response(JSON.stringify(responseObject, null, 2), {
+});
+
+if (!response2.ok) {
+    return new Response('Error fetching data from Firestore', { status: response2.status });
+}
+
+const data2 = await response2.json();
+
+// Verifica se o timestamp atual é válido em relação à data de expiração
+const url = new URL(request.url);
+const pathParts = url.pathname.split('/');
+
+if (pathParts[1] === 'newpass') {
+    const usersData = [];
+
+    for (const user in data2.fields) {
+        const expireDates = new Date(data2.fields[user].mapValue.fields.exp_date?.timestampValue).getTime();
+        const pass = btoa(String(expireDates)).replace(/=+$/, '');
+
+        // Adiciona cada usuário ao array `usersData`
+        usersData.push({
+            username: user,
+            password: pass,
+            timestamp_now: Date.now(),
+            exp_timestamp: expireDates
+        });
+    }
+
+    // Retorna todos os dados dos usuários em um JSON
+    return new Response(JSON.stringify(usersData, null, 2), {
         headers: { 'Content-Type': 'application/json' }
     });
 }
