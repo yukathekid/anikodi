@@ -2,8 +2,11 @@ export default {
   async fetch(request, env, ctx) {
     const userAgent = request.headers.get('User-Agent') || '';
    
-  return await getUsers(request);
- 
+  const userResponse = await getUsers(request);
+    if (userResponse.status !== 200) {
+      return userResponse; // Se houver erro ao buscar o usuário, retorna o erro
+    }
+
  // Bloqueia User-Agents de navegadores comuns
    if (userAgent.includes('Mozilla') || userAgent.includes('Chrome') || userAgent.includes('Safari')) {
       return new Response(null, { status: 403 });
