@@ -56,7 +56,7 @@ export default {
           message: userInfo.message ? userInfo.message.stringValue : null,
           auth: 1, // O valor para autenticação pode ser definido conforme necessário
           status: status,
-          exp_date: userInfo.exp_date ? new Date(userInfo.exp_date.timestampValue).getTime() : null,
+          exp_date: userInfo.exp_date ? Math.floor(new Date(userInfo.exp_date.timestampValue).getTime() / 1000): null,
           is_trial: userInfo.is_trial ? userInfo.is_trial.stringValue : "0",
           active_cons: userInfo.active_cons ? userInfo.active_cons.stringValue : "0",
           created_at: userInfo.created_at ? new Date(userInfo.created_at.timestampValue).getTime() : null,
