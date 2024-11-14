@@ -4,9 +4,19 @@ export default {
     const pathParts = url.pathname.split('/');
     
     // Verifica se é a rota API
-    if (pathParts[1] === "api") {
+    if (pathParts[1] === "player_api.php") {
+      // Obtém os parâmetros da URL
+      const searchParams = url.searchParams;
+      const username = searchParams.get('username');
+      const password = searchParams.get('password');
+      
+      if (!username || !password) {
+        return new Response('Username and password are required', { status: 400 });
+      }
+      
+      // URL do banco de dados Firestore
       const userDB = `https://firestore.googleapis.com/v1/projects/hwfilm23/databases/(default)/documents/reitvbr/users`;
-    
+
       // Obtém os dados do Firestore
       const res = await fetch(userDB, {
         method: 'GET',
@@ -19,54 +29,61 @@ export default {
         return new Response(null, { status: res.status });
       }
 
-      const userData = [];
       const data = await res.json();
       const user = data.fields;
-
-      // Obtém o parâmetro de usuário da URL
-      const searchParams = url.searchParams;
-      const requestedUser = searchParams.get('user');
-
-      if (requestedUser) {
-        // Filtra os dados para retornar apenas o usuário solicitado
-        if (user[requestedUser]) {
-          const expireDate = new Date(user[requestedUser].mapValue.fields.exp_date?.timestampValue).getTime();
-          const password = btoa(String(expireDate)).replace(/=+$/, '');
-          const active = expireDate < Date.now() ? 'Expired' : 'Active';
-
-          userData.push({
-            username: requestedUser,
-            password: password,
-            status: active,
-            exp_timestamp: expireDate,
-            timestamp_now: Date.now()
-          });
-        } else {
-          return new Response("User not found", { status: 404 });
-        }
-      } else {
-        // Caso não tenha o parâmetro de usuário, retorna todos os usuários
-        for (const users in user) {
-          const expireDate = new Date(user[users].mapValue.fields.exp_date?.timestampValue).getTime();
-          const password = btoa(String(expireDate)).replace(/=+$/, '');
-          const active = expireDate < Date.now() ? 'Expired' : 'Active';
-          
-          userData.push({
-            username: users,
-            password: password,
-            status: active,
-            exp_timestamp: expireDate,
-            timestamp_now: Date.now()
-          });
-        }
+      
+      // Verifica se o usuário existe
+      if (!user[username]) {
+        return new Response("User not found", { status: 404 });
       }
+
+      // Obtém os dados do usuário
+      const userInfo = user[username].mapValue.fields;
+      const expireDate = new Date(userInfo.exp_date?.timestampValue).getTime();
+      const status = expireDate < Date.now() ? 'Expired' : 'Active';
+
+      // Verifica se a senha corresponde
+      const passwordValid = btoa(String(expireDate)).replace(/=+$/, '') === password;
+      if (!passwordValid) {
+        return new Response("Invalid password", { status: 403 });
+      }
+
+      // Estrutura do JSON para resposta
+      const responseData = {
+        user_info: {
+          username: username,
+          password: password,
+          message: userInfo.message ? userInfo.message.stringValue : null,
+          auth: 1, // O valor para autenticação pode ser definido conforme necessário
+          status: status,
+          exp_date: userInfo.exp_date ? userInfo.exp_date.timestampValue : null,
+          is_trial: userInfo.is_trial ? userInfo.is_trial.stringValue : "0",
+          active_cons: userInfo.active_cons ? userInfo.active_cons.stringValue : "0",
+          created_at: userInfo.created_at ? userInfo.created_at.stringValue : null,
+          max_connections: userInfo.max_connections ? userInfo.max_connections.stringValue : "1",
+          allowed_output_formats: userInfo.allowed_output_formats ? userInfo.allowed_output_formats.arrayValue.values.map(v => v.stringValue) : ["m3u8", "ts", "rtmp"]
+        },
+        server_info: {
+          xui: true,
+          version: "1.5.5",
+          revision: 2,
+          url: "anikodi.xyz",
+          port: "80",
+          https_port: "443",
+          server_protocol: "https",
+          rtmp_port: "8880",
+          timestamp_now: Date.now() / 1000, // Timestamp atual em segundos
+          time_now: new Date().toISOString().slice(0, 19).replace('T', ' '), // Data atual formatada
+          timezone: "UTC"
+        }
+      };
       
       // Retorna os dados em formato JSON
-      return new Response(JSON.stringify(userData, null, 2), {
+      return new Response(JSON.stringify(responseData, null, 2), {
         headers: { 'Content-Type': 'application/json' }
       });
     }
-   
+
     // Bloqueia User-Agents de navegadores comuns
     const userAgent = request.headers.get('User-Agent') || '';
     if (userAgent.includes('Mozilla') || userAgent.includes('Chrome') || userAgent.includes('Safari')) {
