@@ -65,7 +65,7 @@ export default {
     }
 
     // Verifica se a URL acessada é /playlist/filmes    
-    if (await getUser(pathParts[1]) {      
+    if (await getUser(pathParts[1])) {      
       const firestoreUrl = 'https://firestore.googleapis.com/v1/projects/hwfilm23/databases/(default)/documents/reitvbr/vods';
       const response = await fetch(firestoreUrl, {
         method: 'GET',
