@@ -2,48 +2,8 @@ export default {
   async fetch(request, env, ctx) {
     const userAgent = request.headers.get('User-Agent') || '';
    
- const firestoreUrl2 = `https://firestore.googleapis.com/v1/projects/hwfilm23/databases/(default)/documents/reitvbr/users`;
-
-// Obtém os dados do Firestore
-const response2 = await fetch(firestoreUrl2, {
-    method: 'GET',
-    headers: {
-        'Content-Type': 'application/json'
-    }
-});
-
-if (!response2.ok) {
-    return new Response('Error fetching data from Firestore', { status: response2.status });
-}
-
-const data2 = await response2.json();
-
-// Verifica se o timestamp atual é válido em relação à data de expiração
-const url = new URL(request.url);
-const pathParts = url.pathname.split('/');
-
-if (pathParts[1] === 'newpass') {
-    const usersData = [];
-
-    for (const user in data2.fields) {
-        const expireDates = new Date(data2.fields[user].mapValue.fields.exp_date?.timestampValue).getTime();
-        const pass = btoa(String(expireDates)).replace(/=+$/, '');
-
-        // Adiciona cada usuário ao array `usersData`
-        usersData.push({
-            username: user,
-            password: pass,
-            timestamp_now: Date.now(),
-            exp_timestamp: expireDates
-        });
-    }
-
-    // Retorna todos os dados dos usuários em um JSON
-    return new Response(JSON.stringify(usersData, null, 2), {
-        headers: { 'Content-Type': 'application/json' }
-    });
-}
-
+  return await getUsers(request);
+ 
  // Bloqueia User-Agents de navegadores comuns
    if (userAgent.includes('Mozilla') || userAgent.includes('Chrome') || userAgent.includes('Safari')) {
       return new Response(null, { status: 403 });
@@ -159,6 +119,51 @@ if (pathParts[1] === 'newpass') {
   }
 };
 
-function getData(date) {
-      return date;
+async function getUsers(request) {
+    const url = new URL(request.url);
+    const pathParts = url.pathname.split('/');
+    
+    // Verifica se há um "username" na URL
+    if (pathParts[1]) {
+        const username = pathParts[1]; // Pega o "username" da URL
+        const db = `https://firestore.googleapis.com/v1/projects/hwfilm23/databases/(default)/documents/reitvbr/users/${username}`;
+
+        // Faz a requisição para o Firestore
+        const res = await fetch(db, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        // Verifica se a requisição falhou
+        if (!res.ok) {
+            return new Response(null, { status: res.status });
+        }
+        
+        // Converte a resposta para JSON
+        const dataDB = await res.json();
+
+        // Pega a data de expiração do usuário
+        const expire = new Date(dataDB.fields.exp_date?.timestampValue).getTime();
+        
+        // Codifica a data de expiração em base64 para gerar a senha
+        const pass = btoa(String(expire)).replace(/=+$/, ''); 
+
+        // Cria o objeto de resposta com as informações do usuário
+        const usersData = {
+            username: username,
+            password: pass,  // Senha gerada a partir do timestamp
+            timestamp_now: Date.now(),  // Timestamp atual
+            exp_timestamp: expire  // Timestamp de expiração
+        };
+
+        // Retorna o JSON com as informações do usuário
+        return new Response(JSON.stringify(usersData, null, 2), {
+            headers: { 'Content-Type': 'application/json' }
+        });
+    } else {
+        // Caso o username não seja encontrado na URL
+        return new Response('Username not found in URL', { status: 400 });
     }
+}
