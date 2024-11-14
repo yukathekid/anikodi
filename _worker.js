@@ -44,7 +44,7 @@ export default {
 
       // Verifica se a senha corresponde
       const passwordValid = btoa(String(expireDate)).replace(/=+$/, '') === password;
-      if (!passValid) {
+      if (!passwordValid) {
         return new Response(`Invalid password: ${passwordValid}`, { status: 403 });
       }
 
@@ -56,7 +56,7 @@ export default {
           message: userInfo.message ? userInfo.message.stringValue : null,
           auth: 1, // O valor para autenticação pode ser definido conforme necessário
           status: status,
-          exp_date: userInfo.exp_date ? userInfo.exp_date.timestampValue: null,
+          exp_date: userInfo.exp_date ? userInfo.exp_date.timestampValue : null,
           is_trial: userInfo.is_trial ? userInfo.is_trial.stringValue : "0",
           active_cons: userInfo.active_cons ? userInfo.active_cons.stringValue : "0",
           created_at: userInfo.created_at ? userInfo.created_at.timestampValue : null,
