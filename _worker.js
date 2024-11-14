@@ -2,7 +2,7 @@ export default {
   async fetch(request, env, ctx) {
     const userAgent = request.headers.get('User-Agent') || '';
    
-    const firestoreUrl2 = `https://firestore.googleapis.com/v1/projects/hwfilm23/databases/(default)/documents/reitvbr/vods`;
+    const firestoreUrl2 = `https://firestore.googleapis.com/v1/projects/hwfilm23/databases/(default)/documents/reitvbr/users`;
       // Obtém os dados do Firestore
       const response2 = await fetch(firestoreUrl2, {
         method: 'GET',
@@ -18,17 +18,17 @@ export default {
       const data2 = await response2.json();
 
       // Verifica se o timestamp atual é válido em relação à data de expiração
-      const expireDates = new Date(data2.fields.expiryDate?.timestampValue).getTime();
-      const pass = btoa(String(expireDates)).replace(/=+$/, '');
-
+      
    const url = new URL(request.url);
    const pathParts = url.pathname.split('/');
 if (pathParts[1] === 'newpass') {
-    const exp = getData(pass); // Obtém a senha codificada a partir de getData()
     for (const user in data2.fields) {
+    const expireDates = new Date(data2.fields[user].mapValue.fields.exp_date?.timestampValue).getTime();
+    const pass = btoa(String(expireDates)).replace(/=+$/, '');
+
     const responseObject = {
         username: data2.fields[user].mapValue.fields,
-        password: exp,
+        password: pass,
         timestamp_now: Date.now(),
         exp_timestamp: expireDates
         
