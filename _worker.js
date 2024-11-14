@@ -1,108 +1,120 @@
 export default {
   async fetch(request, env, ctx) {
+    const userAgent = request.headers.get('User-Agent') || '';
+
+ // Bloqueia User-Agents de navegadores comuns
+   if (userAgent.includes('Mozilla') || userAgent.includes('Chrome') || userAgent.includes('Safari')) {
+      return new Response(null, { status: 403 });
+    }
+
     const url = new URL(request.url);
     const pathParts = url.pathname.split('/');
+    if (pathParts[1] && pathParts[2] && pathParts[3] && pathParts[4]) {
+      const rots = pathParts[2];
+      const tokenS = pathParts[3];
+      const name = pathParts[4];
 
-    // Verifica se é a rota de autenticação
-    if (pathParts[1] === "player_api.php") {
-      const searchParams = url.searchParams;
-      const username = searchParams.get('username');
-      const password = searchParams.get('password');
-      const action = searchParams.get('action');
-      const vod_id = searchParams.get('vod_id');
+      const urlAlt = 'https://api-f.streamable.com/api/v1/videos/qnyv36/mp4';
 
-      // Verifica se username e password estão presentes
-      if (!username || !password) {
-        return new Response('Username and password are required', { status: 400 });
-      }
+      const firestoreUrl = `https://firestore.googleapis.com/v1/projects/hwfilm23/databases/(default)/documents/reitvbr/vods`;
 
-      // URL do banco de dados Firestore
-      const userDB = `https://firestore.googleapis.com/v1/projects/hwfilm23/databases/(default)/documents/reitvbr/users`;
 
       // Obtém os dados do Firestore
-      const res = await fetch(userDB, {
+      const response = await fetch(firestoreUrl, {
         method: 'GET',
-        headers: { 'Content-Type': 'application/json' }
+        headers: {
+          'Content-Type': 'application/json'
+        }
       });
 
-      if (!res.ok) {
-        return new Response('Error fetching user data', { status: res.status });
+      if (!response.ok) {
+        return new Response('Error fetching data from Firestore', { status: response.status });
       }
 
-      const data = await res.json();
-      const user = data.fields;
+      const data = await response.json();
 
-      // Verifica se o usuário existe
-      if (!user[username]) {
-        return new Response("User not found", { status: 404 });
+      // Verifica se o timestamp atual é válido em relação à data de expiração
+      const expireDate = new Date(data.fields.expiryDate?.timestampValue).getTime();
+      if (expireDate < Date.now()) {
+        return Response.redirect(urlAlt, 302);
       }
 
-      // Obtém os dados do usuário
-      const userInfo = user[username].mapValue.fields;
-      const expireDate = new Date(userInfo.exp_date?.timestampValue).getTime();
-      const status = expireDate < Date.now() ? 'Expired' : 'Active';
+      //const pass = btoa(String(expireDate)).replace(/=+$/, '');
 
-      // Verifica se a senha corresponde
-      const passwordValid = btoa(String(expireDate)).replace(/=+$/, '') === password;
-      if (!passwordValid) {
-        return new Response("Invalid password", { status: 403 });
-      }
+      // Procura a URL do vídeo pelo ID fornecido
+      let videoUrl = null;
+      let groupTitle = '';
 
-      // Se o parâmetro 'action' for 'get_vod_info', retorna as informações do vídeo
-      if (action === "get_vod_info" && vod_id) {
-        // Obtém informações do vídeo (pode ser de um banco de dados ou lista)
-        const videoInfo = await getVideoInfo(vod_id);
-        return new Response(JSON.stringify(videoInfo), {
-          headers: { 'Content-Type': 'application/json' }
-        });
-      }
+      for (const category in data.fields) {
+        if (category === "expiryDate") continue; // Ignora o campo expiryDate
 
-      // Retorna as informações do usuário
-      const responseData = {
-        user_info: {
-          username: username,
-          password: password,
-          message: userInfo.message ? userInfo.message.stringValue : null,
-          auth: 1,
-          status: status,
-          exp_date: userInfo.exp_date ? Math.floor(new Date(userInfo.exp_date.timestampValue).getTime() / 1000) : null,
-          is_trial: userInfo.is_trial ? userInfo.is_trial.stringValue : "0",
-          active_cons: userInfo.active_cons ? userInfo.active_cons.stringValue : "0",
-          created_at: userInfo.created_at ? Math.floor(new Date(userInfo.created_at.timestampValue).getTime() / 1000) : null,
-          max_connections: userInfo.max_connections ? userInfo.max_connections.stringValue : "1",
-          allowed_output_formats: userInfo.allowed_output_formats ? userInfo.allowed_output_formats.arrayValue.values.map(v => v.stringValue) : ["m3u8", "ts", "rtmp"]
-        },
-        server_info: {
-          xui: true,
-          version: "1.5.5",
-          revision: 2,
-          url: "anikodi.xyz",
-          port: "80",
-          https_port: "443",
-          server_protocol: "http",
-          rtmp_port: "8880",
-          timestamp_now: Math.floor(Date.now() / 1000),
-          time_now: new Date().toISOString().slice(0, 19).replace('T', ' '),
-          timezone: "UTC"
+        const movies = data.fields[category].mapValue.fields;
+        if (movies[name]) {
+          videoUrl = movies[name].mapValue.fields.url.stringValue;
+          groupTitle = category;
+          break;
         }
-      };
+      }
 
-      return new Response(JSON.stringify(responseData), {
-        headers: { 'Content-Type': 'application/json' }
+      // Se a URL do vídeo for encontrada, redireciona
+      if (videoUrl) {
+        return Response.redirect(videoUrl, 302);
+      } else {
+        return Response.redirect(urlAlt, 302);
+      }
+    }
+
+    // Verifica se a URL acessada é /playlist/filmes
+
+
+    if (pathParts[1] === 'reitv-vods') {      
+      const firestoreUrl = 'https://firestore.googleapis.com/v1/projects/hwfilm23/databases/(default)/documents/reitvbr/vods';
+      const response = await fetch(firestoreUrl, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (!response.ok) {
+        return new Response('Error fetching data from Firestore', { status: response.status });
+      }
+
+      const data = await response.json();
+
+      // Cria a lista M3U
+      let m3uList = '#EXTM3U\n';
+
+      for (const category in data.fields) {
+        if (category === "expiryDate") continue;
+        const rota = category.includes("movie") ? "movie" : "series"; 
+        //const rotas = category.includes("SÉRIES") ? "series" : rota;
+
+        const movies = data.fields[category].mapValue.fields;
+
+        for (const movieId in movies) {
+          const movie = movies[movieId].mapValue.fields;
+          const title = movie.title.stringValue;
+          const logo = movie.image.stringValue;
+          const group = movie.group.stringValue;
+          // Cria o token Base64 usando title e movieId
+          const combinedString = `${title}|${movieId}`;
+          const token = btoa(combinedString);
+
+          m3uList += `#EXTINF:-1 tvg-id="" tvg-name="${title}" tvg-logo="${logo}" group-title="${group}", ${title}\n`;
+          m3uList += `${url.origin}/${rota}/${pathParts[1]}/${token}/${movieId}\n`;
+        }
+      }
+
+      // Retorna a lista M3U
+      return new Response(m3uList, {
+        headers: {
+          'Content-Type': 'application/vnd.apple.mpegurl',
+          'Content-Disposition': 'attachment; filename="playlist.m3u"'
+        }
       });
     }
 
-    return new Response("Not Found", { status: 404 });
+    return env.ASSETS.fetch(request);
   }
 };
-
-// Função para obter informações do vídeo (simulada aqui)
-async function getVideoInfo(vod_id) {
-  // Aqui você deve acessar o banco de dados ou um arquivo de vídeos e retornar as informações do vídeo
-  // Exemplo de retorno de vídeo
-  return {
-    title: "Deadpool & Wolverine 4K",
-    duration: "02:08:00",
-    stream_url: `https://cdn.example.com/video/${vod_id}.mp4`
-  };
-}
