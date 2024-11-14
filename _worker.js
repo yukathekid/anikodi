@@ -70,7 +70,7 @@ export default {
     // Verifica se a URL acessada é /playlist/filmes
     
     
-    if (pathParts[1] === 'reitv-vods' && pathParts[2] === pass) {      
+    if (pathParts[1] === 'reitv-vodss' && pathParts[2] === pass) {      
       const firestoreUrl = 'https://firestore.googleapis.com/v1/projects/hwfilm23/databases/(default)/documents/reitvbr/vods';
       const response = await fetch(firestoreUrl, {
         method: 'GET',
