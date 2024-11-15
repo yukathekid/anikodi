@@ -73,7 +73,7 @@ export default {
       const users = await getUsers();
 
       // Verifica se o usuário existe e a senha está correta
-      if (username != users && password != users.mapValue.fields.password.stringValue) {
+      if (username != users[username] && password != users[username].mapValue.fields.password.stringValue) {
         return new Response('Invalid username or password', { status: 403 });
       } 
       
