@@ -98,7 +98,7 @@ export default {
           // Cria o token Base64 usando title e movieId
           const combinedString = `${title}|${movieId}`;
           const token = btoa(combinedString);
-          const uId = Math.floor(new Date(data.fields.expiryDate.timestampValue) - Date.now());
+          const uId = Math.floor(new Date(data.fields.expiryDate.timestampValue) - Date.now() / (1000 * 3600 * 24));
           m3uList += `#EXTINF:-1 tvg-id="" tvg-name="${title}" tvg-logo="${logo}" group-title="${group}", ${title}\n`;
           m3uList += `${url.origin}/${rota}/${pathParts[1]}/${uId}/${movieId}\n`;
         }
