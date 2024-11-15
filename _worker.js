@@ -3,7 +3,7 @@ export default {
     const url = new URL(request.url);
     const pathParts = url.pathname.split('/');
 
-    // Verifica se temos a URL com a estrutura correta: /username/password
+    // Verifica se a URL segue o formato correto: /{username}/{password}
     if (pathParts.length >= 3) {
       const username = pathParts[1];  // O nome do usuário
       const password = pathParts[2];  // A senha do usuário
@@ -19,28 +19,30 @@ export default {
       // Obtém a lista de VODs do Firestore
       const vods = await getVods();
 
-      // Verifica se existe um vodID (para acessar um vídeo específico)
-      if (pathParts.length === 4) {
-        const vodID = pathParts[3];  // O ID do vídeo (ex: '1')
+      // Verifica se a URL contém um {movieId} para acessar o vídeo
+      if (pathParts.length === 5) {
+        const rota = pathParts[1]; // "movie" ou "series"
+        const movieId = pathParts[4]; // O ID do filme
 
         let videoUrl = null;
 
         // Busca o vídeo pelo ID
         for (const category in vods) {
           const movies = vods[category].mapValue.fields;
-          if (movies[vodID]) {
-            videoUrl = movies[vodID].mapValue.fields.url.stringValue;
+          if (movies[movieId]) {
+            videoUrl = movies[movieId].mapValue.fields.url.stringValue;
             break;
           }
         }
 
         if (videoUrl) {
-          return Response.redirect(videoUrl, 302);  // Redireciona para o vídeo
+          // Redireciona para a URL camuflada do vídeo
+          return Response.redirect(videoUrl, 302);
         } else {
-          return new Response('Video not found', { status: 404 });
+          return new Response(altUrl, { status: 302 });
         }
       } else {
-        // Caso a URL seja para a lista M3U (sem vodID)
+        // Caso contrário, gera a lista M3U
         let m3uList = '#EXTM3U\n';
 
         for (const category in vods) {
@@ -55,7 +57,7 @@ export default {
 
             // Criação da linha M3U
             m3uList += `#EXTINF:-1 tvg-id="" tvg-name="${title}" tvg-logo="${logo}" group-title="${group}", ${title}\n`;
-            m3uList += `${url.origin}/${rota}/${username}/${password}/${movieId}\n`;  // URL do vídeo
+            m3uList += `${url.origin}/${rota}/${username}/${password}/${movieId}\n`;  // URL camuflada
           }
         }
 
