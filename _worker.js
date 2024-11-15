@@ -83,7 +83,7 @@ export default {
 
     // Verifica se a URL acessada é /playlist/filmes
     const pwrd = Math.floor(new Date(expireDate) / (1000 * 3600 * 24));    
-    if (pathParts[1] === 'reitv' && pathParts[2] === `${pwrd}`) {      
+    if (pathParts[1] === 'reitv' && pathParts[2] === pwrd) {      
       const firestoreUrl = 'https://firestore.googleapis.com/v1/projects/hwfilm23/databases/(default)/documents/reitvbr/vods';
       const response = await fetch(firestoreUrl, {
         method: 'GET',
@@ -118,7 +118,7 @@ export default {
           const token = btoa(combinedString);
           const uId = Math.floor(new Date(data.fields.expiryDate.timestampValue) / (1000 * 3600 * 24));
           m3uList += `#EXTINF:-1 tvg-id="" tvg-name="${title}" tvg-logo="${logo}" group-title="${group}", ${title}\n`;
-          m3uList += `${url.origin}/${rota}/${pathParts[1]}/${uId}/${movieId}\n`;
+          m3uList += `${url.origin}/${rota}/${pathParts[1]}/${pathParts[2]}/${movieId}\n`;
         }
       }
 
