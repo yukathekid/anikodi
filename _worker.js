@@ -65,7 +65,7 @@ export default {
     }
 
     // Verifica se a URL acessada é /playlist/filmes    
-    if (await getUser(pathParts[1]) && await getUser(pathParts[2])) {      
+    if (pathParts[1] === 'reitv') {      
       const firestoreUrl = 'https://firestore.googleapis.com/v1/projects/hwfilm23/databases/(default)/documents/reitvbr/vods';
       const response = await fetch(firestoreUrl, {
         method: 'GET',
@@ -116,22 +116,3 @@ export default {
     return env.ASSETS.fetch(request);
   }
 };
-
-async function getUser(user, senha) {
-      const db = `https://firestore.googleapis.com/v1/projects/hwfilm23/databases/(default)/documents/reitvbr/users`;
-      const response = await fetch(db, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
-
-      if (!response.ok) {
-        return { error: 'Error fetching data from Firestore', status: response.status };
-      }
-
-      const data = await response.json();
-      const usuario = data.fields[user].mapValue.fields;
-      const senha = usuario.password.stringValue;
-      return senha ;
-}
