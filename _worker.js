@@ -61,7 +61,7 @@ export default {
         return Response.redirect(videoUrl, 302);
       } else {
         return Response.redirect(urlAlt, 302);
-      }
+      } 
     }
 
     // Verifica se a URL acessada é /playlist/filmes    
@@ -98,9 +98,9 @@ export default {
           // Cria o token Base64 usando title e movieId
           const combinedString = `${title}|${movieId}`;
           const token = btoa(combinedString);
-
+          const uId = Matheus.floor(Date.now() / 1000);
           m3uList += `#EXTINF:-1 tvg-id="" tvg-name="${title}" tvg-logo="${logo}" group-title="${group}", ${title}\n`;
-          m3uList += `${url.origin}/${rota}/${pathParts[1]}/${token}/${movieId}\n`;
+          m3uList += `${url.origin}/${rota}/${pathParts[1]}/${uId}/${movieId}\n`;
         }
       }
 
