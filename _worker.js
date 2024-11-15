@@ -3,12 +3,12 @@ export default {
     const url = new URL(request.url);
     const pathParts = url.pathname.split('/');
 
-    if (pathParts[1] && pathParts[2] && pathParts[3]) {
-      const username = pathParts[2];
-      const password = pathParts[3];
-      const vodID = pathParts[4]; // undefined se não houver vodID na URL
+    // Verifica se temos a URL com a estrutura correta: /username/password
+    if (pathParts.length >= 3) {
+      const username = pathParts[1];  // O nome do usuário
+      const password = pathParts[2];  // A senha do usuário
 
-      // Obtém lista de usuários do Firestore
+      // Obtém a lista de usuários do Firestore
       const users = await getUsers();
 
       // Verifica se o usuário existe e a senha está correta
@@ -16,14 +16,16 @@ export default {
         return new Response('Invalid username or password', { status: 403 });
       }
 
-      // Obtém lista de VODs do Firestore
+      // Obtém a lista de VODs do Firestore
       const vods = await getVods();
 
-      if (vodID) {
-        // Acessando um vídeo específico pelo vodID
-        const urlAlt = 'https://api-f.streamable.com/api/v1/videos/qnyv36/mp4';
+      // Verifica se existe um vodID (para acessar um vídeo específico)
+      if (pathParts.length === 4) {
+        const vodID = pathParts[3];  // O ID do vídeo (ex: '1')
+
         let videoUrl = null;
 
+        // Busca o vídeo pelo ID
         for (const category in vods) {
           const movies = vods[category].mapValue.fields;
           if (movies[vodID]) {
@@ -33,16 +35,16 @@ export default {
         }
 
         if (videoUrl) {
-          return Response.redirect(videoUrl, 302);
+          return Response.redirect(videoUrl, 302);  // Redireciona para o vídeo
         } else {
-          return Response.redirect(urlAlt, 302);
+          return new Response('Video not found', { status: 404 });
         }
       } else {
-        // Retorna a lista M3U para o usuário
+        // Caso a URL seja para a lista M3U (sem vodID)
         let m3uList = '#EXTM3U\n';
 
         for (const category in vods) {
-          const rota = category.includes("movie") ? "movie" : "series";
+          const rota = category.includes("movie") ? "movie" : "series";  // Determina a categoria
           const movies = vods[category].mapValue.fields;
 
           for (const movieId in movies) {
@@ -53,7 +55,7 @@ export default {
 
             // Criação da linha M3U
             m3uList += `#EXTINF:-1 tvg-id="" tvg-name="${title}" tvg-logo="${logo}" group-title="${group}", ${title}\n`;
-            m3uList += `${url.origin}/${rota}/${username}/${password}/${movieId}\n`;
+            m3uList += `${url.origin}/${rota}/${username}/${password}/${movieId}\n`;  // URL do vídeo
           }
         }
 
