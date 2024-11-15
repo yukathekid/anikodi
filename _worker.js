@@ -32,9 +32,9 @@ export default {
       }
 
       const data = await response.json();
-
+      const users = await getUsers();
       // Verifica se o timestamp atual é válido em relação à data de expiração
-      const expireDate = new Date(data.fields.expiryDate?.timestampValue).getTime();
+      const expireDate = new Date(users[pathParts[2]].mapValue.fields.exp_date?.timestampValue).getTime();
       if (expireDate < Date.now()) {
         return Response.redirect(urlAlt, 302);
       }
