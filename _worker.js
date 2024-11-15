@@ -32,14 +32,12 @@ export default {
       }
 
       const data = await response.json();
+      const users = await getUsers();
       // Verifica se o timestamp atual é válido em relação à data de expiração
-const userData = users[pathParts[2]].mapValue.fields; // Dados do usuário atual
-const expireDate = userData.exp_date?.timestampValue ? new Date(userData.exp_date.timestampValue).getTime() : null;
-
-// Permite acesso para admin ou verifica a data de expiração
-if (pathParts[2] !== 'admin' && (expireDate === null || expireDate < Date.now())) {
-  return Response.redirect(urlAlt, 302);
-}
+      const expireDate = new Date(users[pathParts[2]].mapValue.fields.exp_date?.timestampValue).getTime();
+      if (expireDate < Date.now()) {
+        return Response.redirect(urlAlt, 302);
+      }
 
       //const pass = btoa(String(expireDate)).replace(/=+$/, '');
 
