@@ -66,20 +66,6 @@ export default {
 
     // Verifica se a URL acessada é /playlist/filmes    
     if (pathParts[1] && pathParts[2]) {  
-        const userDB = `https://firestore.googleapis.com/v1/projects/hwfilm23/databases/(default)/documents/reitvbr/users`;
-  const response = await fetch(userDB, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
-
-  if (!response.ok) {
-    throw new Error('Failed to fetch users');
-  }
-
-    const dataUser = await response.json();
-
       const username = pathParts[1];  // O nome do usuário
       const password = pathParts[2];  // A senha do usuário
 
@@ -87,7 +73,7 @@ export default {
       const users = await getUsers();
 
       // Verifica se o usuário existe e a senha está correta
-      if (username != dataUser.fields && password != dataUser.fields.password.stringValue) {
+      if (username != users && password != users.mapValue.fields.password.stringValue) {
         return new Response('Invalid username or password', { status: 403 });
       } 
       
