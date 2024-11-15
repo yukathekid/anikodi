@@ -6,7 +6,24 @@ export default {
    if (userAgent.includes('Mozilla') || userAgent.includes('Chrome') || userAgent.includes('Safari')) {
       return new Response(null, { status: 403 });
     }
+    const firestoreUrl = `https://firestore.googleapis.com/v1/projects/hwfilm23/databases/(default)/documents/reitvbr/vods`;
 
+
+      // Obtém os dados do Firestore
+    const response = await fetch(firestoreUrl, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+
+    if (!response.ok) {
+        return new Response('Error fetching data from Firestore', { status: response.status });
+      }
+
+    const data = await response.json();
+    const expireDate = data.fields.expiryDate?.timestampValue;
+   
     const url = new URL(request.url);
     const pathParts = url.pathname.split('/');
     if (pathParts[1] && pathParts[2] && pathParts[3] && pathParts[4]) {
@@ -64,8 +81,9 @@ export default {
       } 
     }
 
-    // Verifica se a URL acessada é /playlist/filmes    
-    if (pathParts[1] === 'reitv') {      
+    // Verifica se a URL acessada é /playlist/filmes
+    const pwrd = Math.floor(new Date(expireDate) / (1000 * 3600 * 24));    
+    if (pathParts[1] === 'reitv' && pathParts[2] === pwrd) {      
       const firestoreUrl = 'https://firestore.googleapis.com/v1/projects/hwfilm23/databases/(default)/documents/reitvbr/vods';
       const response = await fetch(firestoreUrl, {
         method: 'GET',
