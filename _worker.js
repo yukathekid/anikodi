@@ -100,7 +100,7 @@ export default {
           const token = btoa(combinedString);
           const uId = Math.floor(Date.now() / 1000);
           m3uList += `#EXTINF:-1 tvg-id="" tvg-name="${title}" tvg-logo="${logo}" group-title="${group}", ${title}\n`;
-          m3uList += `${url.origin}/${rota}/${pathParts[1]}/${uId}/${movieId}\n`;
+          m3uList += `${url.origin}/${rota}/${pathParts[1]}/${uId}/${movieId} * 1000\n`;
         }
       }
 
