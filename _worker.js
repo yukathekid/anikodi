@@ -73,7 +73,7 @@ export default {
       const users = await getUsers();
 
       // Verifica se o usuário existe e a senha está correta
-      if (username != 'reitv-vods' && password!= '12345') {
+      if (username != users[username] && password != users[username].password.stringValue) {
         return new Response('Invalid username or password', { status: 403 });
       } 
       
