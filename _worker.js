@@ -65,7 +65,7 @@ export default {
     }
 
     // Verifica se a URL acessada é /playlist/filmes    
-    if (pathParts.length == 2 && pathParts[1] && pathParts[2]) {  
+    if (pathParts[1] && pathParts[2]) {  
       const username = pathParts[1];  // O nome do usuário
       const password = pathParts[2];  // A senha do usuário
 
