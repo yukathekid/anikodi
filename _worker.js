@@ -104,9 +104,9 @@ export default {
 
         for (const movieId in movies) {
           const movie = movies[movieId].mapValue.fields;
-          const title = movie.title.stringValue || movie[movieId].mapValue.fields.title.stringValue;
-          const logo = movie.image.stringValue || movie[movieId].mapValue.fields.image.stringValue;
-          const group = movie.group.stringValue || movie[movieId].mapValue.fields;
+          const title = movie.title.stringValue;
+          const logo = movie.image.stringValue;
+          const group = movie.group.stringValue;
           // Cria o token Base64 usando title e movieId
           const combinedString = `${title}|${movieId}`;
           const token = btoa(combinedString);
