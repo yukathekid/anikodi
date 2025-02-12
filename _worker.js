@@ -14,7 +14,7 @@ export default {
       const tokenS = pathParts[3];
       const name = pathParts[4];
 
-      const urlAlt = 'https://api-f.streamable.com/api/v1/videos/qnyv36/mp4';
+      const urlAlt = 'https://cdn.pixabay.com/video/2019/08/01/25694-352026464_large.mp4';
 
       const firestoreUrl = `https://firestore.googleapis.com/v1/projects/hwfilm23/databases/(default)/documents/reitvbr/vods`;
 
