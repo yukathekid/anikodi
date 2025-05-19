@@ -74,7 +74,7 @@ export default {
 
       // Verifica se o usuário existe e a senha está correta
       if (username != users[username] && password != users[username].mapValue.fields.password.stringValue) {
-        return new Response('Invalid username or password', { status: 403 });
+        return new Response('Invalid username or password', { status: users[username] });
       } 
       
          
