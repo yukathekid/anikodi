@@ -45,7 +45,7 @@ export default {
         }
       }
 
-      if (videoUrl || await isUrlOnline(videoUrl)) {
+      if (videoUrl) {
         return Response.redirect(videoUrl, 302);
       } else {
         return Response.redirect(urlAlt, 302);
