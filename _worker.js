@@ -15,9 +15,9 @@ export default {
 
     // --- ACESSO A UM VÍDEO ESPECÍFICO ---
     if (pathParts[1] && pathParts[2] && pathParts[3] && pathParts[4]) {
-      const rota = pathParts[1];
+      const rota = pathParts[2];
       const username = pathParts[2];
-      const movieId = pathParts[3];
+      const movieId = pathParts[4];
 
       const user = users[username];
       /*if (!user || !user.mapValue.fields.exp_date?.timestampValue) {
