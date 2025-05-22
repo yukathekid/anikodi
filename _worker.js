@@ -14,7 +14,7 @@ export default {
     const users = await getUsers();
 
     // --- ACESSO A UM VÍDEO ESPECÍFICO ---
-    if (pathParts[1] && pathParts[2] && pathParts[3]) {
+    if (pathParts[1] && pathParts[2] && pathParts[3] && pathParts[4]) {
       const rota = pathParts[1];
       const username = pathParts[2];
       const movieId = pathParts[3];
