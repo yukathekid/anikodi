@@ -13,7 +13,7 @@ export default {
 
     const users = await getUsers();
 
-    // Acesso a vídeo específico
+    // --- ACESSO A UM VÍDEO ESPECÍFICO ---
     if (pathParts[1] && pathParts[2] && pathParts[3] && pathParts[4]) {
       const rota = pathParts[2];
       const username = pathParts[3];
@@ -29,13 +29,18 @@ export default {
         return Response.redirect(urlAlt, 302);
       }
 
-      const vods = await getVods();
+      const firestoreUrl = `https://firestore.googleapis.com/v1/projects/hwfilm23/databases/(default)/documents/reitvbr/vods`;
+      const response = await fetch(firestoreUrl);
+      const data = await response.json();
+
       let videoUrl = null;
 
-      for (const category in vods) {
-        const movies = vods[category];
+      for (const category in data.fields) {
+        if (category === "expiryDate") continue;
+
+        const movies = data.fields[category].mapValue.fields;
         if (movies[movieId]) {
-          videoUrl = movies[movieId].url?.stringValue;
+          videoUrl = movies[movieId].mapValue.fields.url?.stringValue;
           break;
         }
       }
@@ -47,7 +52,7 @@ export default {
       }
     }
 
-    // Acesso à lista M3U (ex: /username/senha)
+    // --- GERAR LISTA M3U ---
     if (pathParts[1] && pathParts[2]) {
       const username = pathParts[1];
       const password = pathParts[2];
@@ -57,20 +62,23 @@ export default {
         return new Response('Invalid username or password', { status: 401 });
       }
 
-      const vods = await getVods();
+      const firestoreUrl = `https://firestore.googleapis.com/v1/projects/hwfilm23/databases/(default)/documents/reitvbr/vods`;
+      const response = await fetch(firestoreUrl);
+      const data = await response.json();
+
       let m3uList = '#EXTM3U\n';
 
-      for (const category in vods) {
+      for (const category in data.fields) {
         if (category === "expiryDate") continue;
-        const rota = category.includes('movie') ? 'movie' : 'series';
-        const movies = vods[category];
+
+        const rota = category.includes("movie") ? "movie" : "series";
+        const movies = data.fields[category].mapValue.fields;
 
         for (const movieId in movies) {
-          const movie = movies[movieId];
-
-          const title = movie.title?.stringValue || 'Sem título';
+          const movie = movies[movieId].mapValue.fields;
+          const title = movie.title?.stringValue || movieId;
           const logo = movie.image?.stringValue || '';
-          const group = movie.group?.stringValue || 'Sem grupo';
+          const group = movie.group?.stringValue || category;
 
           m3uList += `#EXTINF:-1 tvg-id="" tvg-name="${title}" tvg-logo="${logo}" group-title="${group}", ${title}\n`;
           m3uList += `${url.origin}/${rota}/${username}/${password}/${movieId}\n`;
@@ -103,14 +111,6 @@ async function isUrlOnline(url) {
 async function getUsers() {
   const userDB = `https://firestore.googleapis.com/v1/projects/hwfilm23/databases/(default)/documents/reitvbr/users`;
   const response = await fetch(userDB);
-  const data = await response.json();
-  return data.fields || {};
-}
-
-// Obter VODs do Firestore (estrutura original)
-async function getVods() {
-  const vodDB = `https://firestore.googleapis.com/v1/projects/hwfilm23/databases/(default)/documents/reitvbr/vods`;
-  const response = await fetch(vodDB);
   const data = await response.json();
   return data.fields || {};
 }
