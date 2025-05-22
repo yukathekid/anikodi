@@ -13,18 +13,18 @@ export default {
 
     const users = await getUsers();
 
-    // Se for um acesso a um vídeo específico
+    // Acesso a vídeo específico
     if (pathParts[1] && pathParts[2] && pathParts[3] && pathParts[4]) {
       const rota = pathParts[2];
       const username = pathParts[3];
       const movieId = pathParts[4];
 
       const user = users[username];
-      if (!user || !user.exp_date?.timestampValue) {
+      if (!user || !user.mapValue.fields.exp_date?.timestampValue) {
         return Response.redirect(urlAlt, 302);
       }
 
-      const expireDate = new Date(user.exp_date.timestampValue).getTime();
+      const expireDate = new Date(user.mapValue.fields.exp_date.timestampValue).getTime();
       if (expireDate < Date.now()) {
         return Response.redirect(urlAlt, 302);
       }
@@ -40,7 +40,6 @@ export default {
         }
       }
 
-      // Verifica se a URL do vídeo é válida
       if (videoUrl && await isUrlOnline(videoUrl)) {
         return Response.redirect(videoUrl, 302);
       } else {
@@ -48,21 +47,21 @@ export default {
       }
     }
 
-    // Se for pedido de M3U (ex: /username/senha)
+    // Acesso à lista M3U (ex: /username/senha)
     if (pathParts[1] && pathParts[2]) {
       const username = pathParts[1];
       const password = pathParts[2];
 
       const user = users[username];
-      if (!user || password !== user.password?.stringValue) {
+      if (!user || password !== user.mapValue.fields.password?.stringValue) {
         return new Response('Invalid username or password', { status: 401 });
       }
 
       const vods = await getVods();
-      const expiryDate = new Date(user.exp_date?.timestampValue || Date.now());
-
       let m3uList = '#EXTM3U\n';
+
       for (const category in vods) {
+        if (category === "expiryDate") continue;
         const rota = category.includes('movie') ? 'movie' : 'series';
         const movies = vods[category];
 
@@ -90,7 +89,7 @@ export default {
   }
 };
 
-// Função para verificar se uma URL está online
+// Verifica se uma URL está online
 async function isUrlOnline(url) {
   try {
     const response = await fetch(url, { method: 'HEAD' });
@@ -100,41 +99,18 @@ async function isUrlOnline(url) {
   }
 }
 
-// Função para obter usuários do Firestore
+// Obter usuários do Firestore
 async function getUsers() {
-  const url = `https://firestore.googleapis.com/v1/projects/hwfilm23/databases/(default)/documents/reitvbr/users`;
-  const response = await fetch(url);
+  const userDB = `https://firestore.googleapis.com/v1/projects/hwfilm23/databases/(default)/documents/reitvbr/users`;
+  const response = await fetch(userDB);
   const data = await response.json();
-  const users = {};
-
-  for (const doc of data.documents || []) {
-    const userId = doc.name.split('/').pop();
-    users[userId] = doc.fields;
-  }
-
-  return users;
+  return data.fields || {};
 }
 
-// Função para obter VODs do Firestore
+// Obter VODs do Firestore (estrutura original)
 async function getVods() {
-  const url = `https://firestore.googleapis.com/v1/projects/hwfilm23/databases/(default)/documents/reitvbr/vods`;
-  const response = await fetch(url);
+  const vodDB = `https://firestore.googleapis.com/v1/projects/hwfilm23/databases/(default)/documents/reitvbr/vods`;
+  const response = await fetch(vodDB);
   const data = await response.json();
-  const categories = {};
-
-  for (const doc of data.documents || []) {
-    const vodData = doc.fields;
-    for (const category in vodData) {
-      if (!categories[category]) {
-        categories[category] = {};
-      }
-
-      const movies = vodData[category].mapValue.fields;
-      for (const movieId in movies) {
-        categories[category][movieId] = movies[movieId].mapValue.fields;
-      }
-    }
-  }
-
-  return categories;
+  return data.fields || {};
 }
