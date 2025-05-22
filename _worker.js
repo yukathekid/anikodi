@@ -7,9 +7,9 @@ export default {
     const urlAlt = 'https://cdn.pixabay.com/video/2019/08/01/25694-352026464_large.mp4';
 
     // Bloqueia User-Agents de navegadores comuns
-    if (userAgent.includes('Mozilla') || userAgent.includes('Chrome') || userAgent.includes('Safari')) {
-      return new Response(null, { status: 403 });
-    }
+   // if (userAgent.includes('Mozilla') || userAgent.includes('Chrome') || userAgent.includes('Safari')) {
+     // return new Response(null, { status: 403 });
+    //}
 
     const users = await getUsers();
 
