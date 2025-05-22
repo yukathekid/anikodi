@@ -100,12 +100,19 @@ export default {
 // Verifica se uma URL está online
 async function isUrlOnline(url) {
   try {
-    const response = await fetch(url, { method: 'HEAD' });
-    return response.ok;
+    const response = await fetch(url, {
+      method: 'GET',
+      redirect: 'manual',
+      headers: {
+        'Range': 'bytes=0-1'  // Para não baixar tudo
+      }
+    });
+    return response.ok || response.status === 206; // 206 = resposta parcial (vídeo)
   } catch (err) {
     return false;
   }
 }
+
 
 // Obter usuários do Firestore
 async function getUsers() {
