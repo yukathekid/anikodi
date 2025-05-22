@@ -45,7 +45,7 @@ export default {
         }
       }
 
-      if (videoUrl) {
+      if (videoUrl && await isUrlOnline(videoUrl)) {
         return Response.redirect(videoUrl, 302);
       } else {
         return Response.redirect(urlAlt, 302);
@@ -97,6 +97,15 @@ export default {
   }
 };
 
+// Verifica se uma URL está online
+async function isUrlOnline(url) {
+  try {
+    const response = await fetch(url, { method: 'HEAD' });
+    return response.ok;
+  } catch (err) {
+    return false;
+  }
+}
 
 // Obter usuários do Firestore
 async function getUsers() {
