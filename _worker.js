@@ -19,7 +19,7 @@ export default {
       const username = pathParts[3];
       const movieId = pathParts[4];
 
-      const user = users[rota];
+      const user = users[username];
       if (!user || !user.mapValue.fields.exp_date?.timestampValue) {
         return Response.redirect(urlAlt, 302);
       }
