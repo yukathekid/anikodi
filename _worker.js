@@ -32,12 +32,17 @@ export default {
       let videoUrl = null;
 
       // Apenas busca no grupo correto (movie ou series)
-      if (data.fields[rota]) {
-        const categoryItems = data.fields[rota].mapValue.fields;
-        if (categoryItems[movieId]) {
-          videoUrl = categoryItems[movieId].mapValue.fields.url?.stringValue;
-        }
-      }
+if (data.fields[rota]) {
+  const categoryItems = data.fields[rota].mapValue.fields;
+  if (categoryItems[movieId]) {
+    const movie = categoryItems[movieId].mapValue.fields;
+    const possibleUrl = movie.url?.stringValue?.trim();
+
+    if (possibleUrl) {
+      videoUrl = possibleUrl;
+    }
+  }
+}
 
       if (videoUrl && await isUrlOnline(videoUrl)) {
         return Response.redirect(videoUrl, 302);
