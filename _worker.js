@@ -105,7 +105,7 @@ export default {
         return Response.redirect(contExp, 302);
       }
 
-      const firestoreUrl = `https://firestore.googleapis.com/v1/projects/hwfilm23/databases/(default)/documents/reitvbr/anim3u8`;
+      const firestoreUrl = env.DBPLAY;
       const response = await fetch(firestoreUrl);
       const data = await response.json();
 
