@@ -64,12 +64,12 @@ export default {
 
           videoList.forEach((item, index) => {
             const movie = item.mapValue.fields;
-            const title = movie.title?.stringValue || `Video ${index + 1}`;
+            const title = movie.title?.stringValue || `Video ${index}`;
             const logo = movie.image?.stringValue || '';
             const group = movie.group?.stringValue || categoria;
 
             m3uList += `#EXTINF:-1 tvg-id="" tvg-name="${title}" tvg-logo="${logo}" group-title="${group}", ${title}\n`;
-            m3uList += `${url.origin}/${rota}/${username}/${password}/${categoria}/${index + 1}\n`;
+            m3uList += `${url.origin}/${rota}/${username}/${password}/${categoria}/${index}\n`;
           });
         }
       }
