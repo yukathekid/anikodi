@@ -41,6 +41,11 @@ export default {
       const username = pathParts[1];
       const password = pathParts[2];
 
+      const userAgent = request.headers.get('User-Agent') || '';
+      if (userAgent.includes('Mozilla') || userAgent.includes('Chrome') || userAgent.includes('Safari')) {
+        return new Response(null, { status: 403 });
+      }
+
       const user = users[username];
       if (!user || password !== user.mapValue.fields.password?.stringValue) {
         return new Response('Invalid username or password', { status: 401 });
