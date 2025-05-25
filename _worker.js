@@ -83,8 +83,8 @@ export default {
     }
 
     // ✅ ACESSO A VÍDEO (com User-Agent bloqueado)
-    /*if (pathParts.length >= 6) {
-      const userAgent = request.headers.get('User-Agent') || '';
+    if (pathParts.length >= 6) {
+      /*const userAgent = request.headers.get('User-Agent') || '';
       if (userAgent.includes('Mozilla') || userAgent.includes('Chrome') || userAgent.includes('Safari')) {
         return new Response(null, { status: 403 });
       }*/
