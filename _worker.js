@@ -31,18 +31,20 @@ export default {
 
       let videoUrl = null;
 
-      // Apenas busca no grupo correto (movie ou series)
-if (data.fields[rota]) {
-  const categoryItems = data.fields[rota].mapValue.fields;
-  if (categoryItems[movieId]) {
-    const movie = categoryItems[movieId].mapValue.fields;
-    const possibleUrl = movie.url?.stringValue?.trim();
+      // Acesso ao item pelo índice
+      if (data.fields[rota]) {
+        const seriesArray = data.fields[rota].arrayValue?.values || [];
+        const index = parseInt(movieId);
 
-    if (possibleUrl) {
-      videoUrl = possibleUrl;
-    }
-  }
-}
+        if (!isNaN(index) && index >= 0 && index < seriesArray.length) {
+          const movie = seriesArray[index].mapValue.fields;
+          const possibleUrl = movie.url?.stringValue?.trim();
+
+          if (possibleUrl) {
+            videoUrl = possibleUrl;
+          }
+        }
+      }
 
       if (videoUrl && await isUrlOnline(videoUrl)) {
         return Response.redirect(videoUrl, 302);
@@ -61,7 +63,7 @@ if (data.fields[rota]) {
         return new Response('Invalid username or password', { status: 401 });
       }
 
-      const firestoreUrl = `https://firestore.googleapis.com/v1/projects/hwfilm23/databases/(default)/documents/reitvbr/vods`;
+      const firestoreUrl = `https://firestore.googleapis.com/v1/projects/hwfilm23/databases/(default)/documents/reitvbr/anim3u8`;
       const response = await fetch(firestoreUrl);
       const data = await response.json();
 
@@ -71,17 +73,17 @@ if (data.fields[rota]) {
         if (category === "expiryDate") continue;
 
         const rota = category.includes("movie") ? "movie" : "series";
-        const movies = data.fields[category].mapValue.fields;
+        const videosArray = data.fields[category].arrayValue?.values || [];
 
-        for (const movieId in movies) {
-          const movie = movies[movieId].mapValue.fields;
-          const title = movie.title?.stringValue || movieId;
+        videosArray.forEach((item, index) => {
+          const movie = item.mapValue.fields;
+          const title = movie.title?.stringValue || `Video ${index}`;
           const logo = movie.image?.stringValue || '';
           const group = movie.group?.stringValue || category;
 
           m3uList += `#EXTINF:-1 tvg-id="" tvg-name="${title}" tvg-logo="${logo}" group-title="${group}", ${title}\n`;
-          m3uList += `${url.origin}/${rota}/${username}/${password}/${movieId}\n`;
-        }
+          m3uList += `${url.origin}/${rota}/${username}/${password}/${index}\n`;
+        });
       }
 
       return new Response(m3uList, {
