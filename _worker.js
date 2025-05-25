@@ -39,7 +39,7 @@ export default {
       const allowedAgent = 'anikodi-agent'; // coloque o user-agent do seu app aqui
 
       if (!userAgent.includes(allowedAgent)) {
-        return new Response('Acesso não autorizado (User-Agent inválido)', { status: 403 });
+        return new Response(null, { status: 403 });
       }
 
       const username = pathParts[1];
