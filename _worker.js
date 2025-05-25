@@ -1,5 +1,3 @@
-import { createHmac } from 'crypto';
-
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
@@ -32,7 +30,7 @@ export default {
       }
 
       // Verifica token
-      const validToken = generateToken(username, categoria, indexId, SECRET_KEY);
+      const validToken = await generateToken(username, categoria, indexId, SECRET_KEY);
       if (token !== validToken) {
         return new Response('Token inválido', { status: 403 });
       }
@@ -84,16 +82,18 @@ export default {
         for (const categoria in categorias) {
           const videoList = categorias[categoria]?.arrayValue?.values || [];
 
-          videoList.forEach((item, index) => {
+          for (let index = 0; index < videoList.length; index++) {
+            const item = videoList[index];
             const movie = item.mapValue.fields;
             const title = movie.title?.stringValue || `Video ${index}`;
             const logo = movie.image?.stringValue || '';
             const group = movie.group?.stringValue || categoria;
 
-            const token = generateToken(username, categoria, index, SECRET_KEY);
+            const token = await generateToken(username, categoria, index, SECRET_KEY);
+
             m3uList += `#EXTINF:-1 tvg-id="" tvg-name="${title}" tvg-logo="${logo}" group-title="${group}", ${title}\n`;
             m3uList += `${url.origin}/${rota}/${username}/${password}/${categoria}/${index}/${token}\n`;
-          });
+          }
         }
       }
 
@@ -109,11 +109,25 @@ export default {
   }
 };
 
-function generateToken(username, categoria, index, secret) {
+async function generateToken(username, categoria, index, secret) {
+  const encoder = new TextEncoder();
+  const keyData = encoder.encode(secret);
   const payload = `${username}:${categoria}:${index}`;
-  const hmac = createHmac('sha256', secret);
-  hmac.update(payload);
-  return hmac.digest('hex');
+  const data = encoder.encode(payload);
+
+  const cryptoKey = await crypto.subtle.importKey(
+    "raw",
+    keyData,
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign"]
+  );
+
+  const signature = await crypto.subtle.sign("HMAC", cryptoKey, data);
+
+  return Array.from(new Uint8Array(signature))
+    .map(b => b.toString(16).padStart(2, '0'))
+    .join('');
 }
 
 async function isUrlOnline(url) {
