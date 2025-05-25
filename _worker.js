@@ -84,10 +84,12 @@ export default {
 
     // ✅ ACESSO A VÍDEO (com User-Agent bloqueado)
     if (pathParts.length >= 6) {
-      /*const userAgent = request.headers.get('User-Agent') || '';
-      if (userAgent.includes('Mozilla') || userAgent.includes('Chrome') || userAgent.includes('Safari')) {
-        return new Response(null, { status: 403 });
-      }*/
+       const userAgent = request.headers.get('User-Agent') || '';
+       const allowedAgent = 'anikodi-agent'; // <- só esse é permitido
+
+       if (!userAgent.includes(allowedAgent)) {
+    return new Response('Acesso não autorizado (User-Agent inválido)', { status: 403 });
+  }
 
       const rota = pathParts[1];
       const username = pathParts[2];
