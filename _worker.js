@@ -1,25 +1,26 @@
 export default {
   async fetch(request, env, ctx) {
+    const userAgent = request.headers.get('User-Agent') || '';
     const url = new URL(request.url);
     const pathParts = url.pathname.split('/');
 
     const urlAlt = 'https://cdn.pixabay.com/video/2019/08/01/25694-352026464_large.mp4';
     const contExp = 'https://firebasestorage.googleapis.com/v0/b/hwfilm23.appspot.com/o/Hotwheels%20Filmes%2Fse%C3%A7%C3%A3o%20expirou.mp4?alt=media&token=c6ffc0b5-05b3-40a0-b7a5-2ed742c7fbf0';
+
+     // Bloqueia User-Agents de navegadores comuns
     if (userAgent.includes('Mozilla') || userAgent.includes('Chrome') || userAgent.includes('Safari')) {
         return new Response(null, { status: 403 });
     }
-    const SECRET_KEY = env.SECRET_KEY;
 
     const users = await getUsers();
 
-    // --- ACESSO A UM VÍDEO ESPECÍFICO COM TOKEN ---
-    if (pathParts.length >= 7) {
+    // --- ACESSO A UM VÍDEO ESPECÍFICO ---
+    if (pathParts.length >= 6) {
       const rota = pathParts[1];         // 'series'
       const username = pathParts[2];
       const password = pathParts[3];
       const categoria = pathParts[4];    // 'firefirce3'
       const indexId = parseInt(pathParts[5]);
-      const token = pathParts[6];
 
       const user = users[username];
       if (!user || password !== user.mapValue.fields.password?.stringValue) {
@@ -29,12 +30,6 @@ export default {
       const expireDate = new Date(user.mapValue.fields.exp_date.timestampValue).getTime();
       if (expireDate < Date.now()) {
         return Response.redirect(contExp, 302);
-      }
-
-      // Verifica token
-      const validToken = await generateToken(username, categoria, indexId, SECRET_KEY);
-      if (token !== validToken) {
-        return new Response('Token inválido', { status: 403 });
       }
 
       const firestoreUrl = `https://firestore.googleapis.com/v1/projects/hwfilm23/databases/(default)/documents/reitvbr/anim3u8`;
@@ -84,18 +79,15 @@ export default {
         for (const categoria in categorias) {
           const videoList = categorias[categoria]?.arrayValue?.values || [];
 
-          for (let index = 0; index < videoList.length; index++) {
-            const item = videoList[index];
+          videoList.forEach((item, index) => {
             const movie = item.mapValue.fields;
             const title = movie.title?.stringValue || `Video ${index}`;
             const logo = movie.image?.stringValue || '';
             const group = movie.group?.stringValue || categoria;
 
-            const token = await generateToken(username, categoria, index, SECRET_KEY);
-
             m3uList += `#EXTINF:-1 tvg-id="" tvg-name="${title}" tvg-logo="${logo}" group-title="${group}", ${title}\n`;
-            m3uList += `${url.origin}/${rota}/${username}/${password}/${categoria}/${index + 1}/${token}\n`;
-          }
+            m3uList += `${url.origin}/${rota}/${username}/${password}/${categoria}/${index + 1}\n`;
+          });
         }
       }
 
@@ -111,27 +103,7 @@ export default {
   }
 };
 
-async function generateToken(username, categoria, index, secret) {
-  const encoder = new TextEncoder();
-  const keyData = encoder.encode(secret);
-  const payload = `${username}:${categoria}:${index}`;
-  const data = encoder.encode(payload);
-
-  const cryptoKey = await crypto.subtle.importKey(
-    "raw",
-    keyData,
-    { name: "HMAC", hash: "SHA-256" },
-    false,
-    ["sign"]
-  );
-
-  const signature = await crypto.subtle.sign("HMAC", cryptoKey, data);
-
-  return Array.from(new Uint8Array(signature))
-    .map(b => b.toString(16).padStart(2, '0'))
-    .join('');
-}
-
+// Verifica se uma URL está online
 async function isUrlOnline(url) {
   try {
     const response = await fetch(url, { method: 'HEAD' });
@@ -141,6 +113,7 @@ async function isUrlOnline(url) {
   }
 }
 
+// Obter usuários do Firestore
 async function getUsers() {
   const userDB = `https://firestore.googleapis.com/v1/projects/hwfilm23/databases/(default)/documents/reitvbr/users`;
   const response = await fetch(userDB);
