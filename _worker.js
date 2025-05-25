@@ -89,7 +89,9 @@ export default {
 
     // --- ROTA VÍDEO: /rota/usuario/senha/categoria/index (bloquear navegadores comuns)
     if (pathParts.length >= 6) {
-      if (userAgent.includes('Mozilla') || userAgent.includes('Chrome') || userAgent.includes('Safari')) {
+      const allowedAgent = 'anikodi-agent'; // coloque o user-agent do seu app aqui
+
+      if (!userAgent.includes(allowedAgent) && userAgent.includes('Mozilla') || userAgent.includes('Chrome') || userAgent.includes('Safari')) {
         return new Response(null, { status: 403 });
       }
 
