@@ -9,35 +9,39 @@ export default {
 
     const users = await getUsers();
 
-    // ✅ ROTA DE INFO: /usuario/senha
+    // --- ROTA INFORMAÇÕES USUÁRIO: /usuario/senha (liberar para todos User-Agent)
     if (pathParts.length === 3) {
       const username = pathParts[1];
       const password = pathParts[2];
 
       const user = users[username];
       if (!user || password !== user.mapValue.fields.password?.stringValue) {
-        return new Response(JSON.stringify({ error: 'Invalid username or password' }), { status: 401 });
+        return new Response('Invalid username or password', { status: 401 });
       }
 
       const expireDate = new Date(user.mapValue.fields.exp_date.timestampValue);
-      const remainingSeconds = Math.floor((expireDate - Date.now()) / 1000);
-      const status = remainingSeconds > 0 ? 'ativo' : 'expirado';
+      const remainingSeconds = Math.floor((expireDate.getTime() - Date.now()) / 1000);
 
-      const expiraEmTexto = formatarTempo(remainingSeconds);
+      const remainingHuman = formatRemainingTime(remainingSeconds);
 
       return new Response(JSON.stringify({
         username,
         expireDate: expireDate.toISOString(),
         remainingSeconds,
-        expiraEmTexto,
-        status
+        remainingHuman
       }), {
         headers: { 'Content-Type': 'application/json' }
       });
     }
 
-    // ✅ ROTA M3U8: /usuario/senha/playlist.m3u8
+    // --- ROTA PLAYLIST: /usuario/senha/playlist.m3u8 (liberar só para userAgent do app)
     if (pathParts.length === 4 && pathParts[3] === 'playlist.m3u8') {
+      const allowedAgent = 'anikodi-agent'; // coloque o user-agent do seu app aqui
+
+      if (!userAgent.includes(allowedAgent)) {
+        return new Response('Acesso não autorizado (User-Agent inválido)', { status: 403 });
+      }
+
       const username = pathParts[1];
       const password = pathParts[2];
 
@@ -51,7 +55,8 @@ export default {
         return Response.redirect(contExp, 302);
       }
 
-      const firestoreUrl = env.DBPLAY;
+      // Busca lista no Firestore
+      const firestoreUrl = `https://firestore.googleapis.com/v1/projects/hwfilm23/databases/(default)/documents/reitvbr/anim3u8`;
       const response = await fetch(firestoreUrl);
       const data = await response.json();
 
@@ -69,7 +74,7 @@ export default {
             const group = movie.group?.stringValue || categoria;
 
             m3uList += `#EXTINF:-1 tvg-id="" tvg-name="${title}" tvg-logo="${logo}" group-title="${group}", ${title}\n`;
-            m3uList += `${url.origin}/${rota}/${username}/${password}/${categoria}/${index}\n`;
+            m3uList += `${url.origin}/${rota}/${username}/${password}/${categoria}/${index + 1}\n`;
           });
         }
       }
@@ -77,21 +82,18 @@ export default {
       return new Response(m3uList, {
         headers: {
           'Content-Type': 'application/vnd.apple.mpegurl',
-          'Content-Disposition': 'attachment; filename="playlist.m3u8"'
+          'Content-Disposition': 'attachment; filename="playlist.m3u"'
         }
       });
     }
 
-    // ✅ ACESSO A VÍDEO (com User-Agent bloqueado)
+    // --- ROTA VÍDEO: /rota/usuario/senha/categoria/index (bloquear navegadores comuns)
     if (pathParts.length >= 6) {
-       const userAgent = request.headers.get('User-Agent') || '';
-       const allowedAgent = 'anikodi-agent'; // <- só esse é permitido
+      if (userAgent.includes('Mozilla') || userAgent.includes('Chrome') || userAgent.includes('Safari')) {
+        return new Response(null, { status: 403 });
+      }
 
-       if (!userAgent.includes(allowedAgent)) {
-    return new Response('Acesso não autorizado (User-Agent inválido)', { status: 403 });
-  }
-
-      const rota = pathParts[1];
+      const rota = pathParts[1];         // 'series'
       const username = pathParts[2];
       const password = pathParts[3];
       const categoria = pathParts[4];
@@ -102,12 +104,12 @@ export default {
         return Response.redirect(urlAlt, 302);
       }
 
-      const expireDate = new Date(user.mapValue.fields.exp_date.timestampValue);
+      const expireDate = new Date(user.mapValue.fields.exp_date.timestampValue).getTime();
       if (expireDate < Date.now()) {
         return Response.redirect(contExp, 302);
       }
 
-      const firestoreUrl = env.DBPLAY;
+      const firestoreUrl = `https://firestore.googleapis.com/v1/projects/hwfilm23/databases/(default)/documents/reitvbr/anim3u8`;
       const response = await fetch(firestoreUrl);
       const data = await response.json();
 
@@ -115,9 +117,14 @@ export default {
 
       if (data.fields[rota]?.mapValue?.fields?.[categoria]?.arrayValue?.values) {
         const videoList = data.fields[rota].mapValue.fields[categoria].arrayValue.values;
+
         if (!isNaN(indexId) && indexId >= 0 && indexId < videoList.length) {
           const movie = videoList[indexId].mapValue.fields;
-          videoUrl = movie.url?.stringValue?.trim() || null;
+          const possibleUrl = movie.url?.stringValue?.trim();
+
+          if (possibleUrl) {
+            videoUrl = possibleUrl;
+          }
         }
       }
 
@@ -128,26 +135,26 @@ export default {
       }
     }
 
-    // ROTA DEFAULT (homepage ou estático)
+    // --- PARA QUALQUER OUTRO PEDIDO --- 
     return env.ASSETS.fetch(request);
   }
 };
 
-// 🔧 UTILITÁRIOS
+function formatRemainingTime(seconds) {
+  if (seconds <= 0) return 'expirado';
 
-function formatarTempo(segundos) {
-  if (segundos <= 0) return 'expirado';
+  const days = Math.floor(seconds / 86400);
+  const hours = Math.floor((seconds % 86400) / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+  const secs = seconds % 60;
 
-  const dias = Math.floor(segundos / 86400);
-  const horas = Math.floor((segundos % 86400) / 3600);
-  const minutos = Math.floor((segundos % 3600) / 60);
+  let result = '';
+  if (days > 0) result += `${days} dia${days > 1 ? 's' : ''} `;
+  if (hours > 0) result += `${hours} hora${hours > 1 ? 's' : ''} `;
+  if (minutes > 0) result += `${minutes} minuto${minutes > 1 ? 's' : ''} `;
+  if (secs > 0) result += `${secs} segundo${secs > 1 ? 's' : ''} `;
 
-  let partes = [];
-  if (dias) partes.push(`${dias} dia${dias > 1 ? 's' : ''}`);
-  if (horas) partes.push(`${horas} hora${horas > 1 ? 's' : ''}`);
-  if (minutos) partes.push(`${minutos} minuto${minutos > 1 ? 's' : ''}`);
-
-  return `expira em ${partes.join(', ')}`;
+  return result.trim();
 }
 
 async function isUrlOnline(url) {
@@ -160,7 +167,7 @@ async function isUrlOnline(url) {
 }
 
 async function getUsers() {
-  const userDB = 'https://firestore.googleapis.com/v1/projects/hwfilm23/databases/(default)/documents/reitvbr/users';
+  const userDB = `https://firestore.googleapis.com/v1/projects/hwfilm23/databases/(default)/documents/reitvbr/users`;
   const response = await fetch(userDB);
   const data = await response.json();
   return data.fields || {};
