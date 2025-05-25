@@ -158,7 +158,7 @@ async function isUrlOnline(url) {
 }
 
 async function getUsers() {
-  const userDB = env.DBUSER;
+  const userDB = 'https://firestore.googleapis.com/v1/projects/hwfilm23/databases/(default)/documents/reitvbr/users';
   const response = await fetch(userDB);
   const data = await response.json();
   return data.fields || {};
