@@ -23,13 +23,12 @@ export default {
       const remainingSeconds = Math.floor((expireDate - Date.now()) / 1000);
       const status = remainingSeconds > 0 ? 'ativo' : 'expirado';
 
-      const expiraEmTexto = formatarTempo(remainingSeconds);
+      const exp_date = formatarTempo(remainingSeconds);
 
       return new Response(JSON.stringify({
         username,
-        expireDate: expireDate.toISOString(),
-        remainingSeconds,
-        expiraEmTexto,
+        exp_dateISO: expireDate.toISOString(),
+        exp_date,
         status
       }), {
         headers: { 'Content-Type': 'application/json' }
