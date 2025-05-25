@@ -9,11 +9,12 @@ export default {
     const users = await getUsers();
 
     // --- ACESSO A UM VÍDEO ESPECÍFICO ---
-    if (pathParts[1] && pathParts[2] && pathParts[3] && pathParts[4]) {
-      const rota = pathParts[1]; // movie ou series
+    if (pathParts.length >= 6) {
+      const rota = pathParts[1];         // 'series'
       const username = pathParts[2];
       const password = pathParts[3];
-      const movieId = pathParts[4];
+      const categoria = pathParts[4];    // 'firefirce3'
+      const indexId = parseInt(pathParts[5]);
 
       const user = users[username];
       if (!user || password !== user.mapValue.fields.password?.stringValue) {
@@ -25,19 +26,17 @@ export default {
         return Response.redirect(contExp, 302);
       }
 
-      const firestoreUrl = `https://firestore.googleapis.com/v1/projects/hwfilm23/databases/(default)/documents/reitvbr/vods`;
+      const firestoreUrl = `https://firestore.googleapis.com/v1/projects/hwfilm23/databases/(default)/documents/reitvbr/anim3u8`;
       const response = await fetch(firestoreUrl);
       const data = await response.json();
 
       let videoUrl = null;
 
-      // Acesso ao item pelo índice
-      if (data.fields[rota]) {
-        const seriesArray = data.fields[rota].arrayValue?.values || [];
-        const index = parseInt(movieId);
+      if (data.fields[rota]?.mapValue?.fields?.[categoria]?.arrayValue?.values) {
+        const videoList = data.fields[rota].mapValue.fields[categoria].arrayValue.values;
 
-        if (!isNaN(index) && index >= 0 && index < seriesArray.length) {
-          const movie = seriesArray[index].mapValue.fields;
+        if (!isNaN(indexId) && indexId >= 0 && indexId < videoList.length) {
+          const movie = videoList[indexId].mapValue.fields;
           const possibleUrl = movie.url?.stringValue?.trim();
 
           if (possibleUrl) {
@@ -69,21 +68,21 @@ export default {
 
       let m3uList = '#EXTM3U\n';
 
-      for (const category in data.fields) {
-        if (category === "expiryDate") continue;
+      for (const rota in data.fields) {
+        const categorias = data.fields[rota]?.mapValue?.fields || {};
+        for (const categoria in categorias) {
+          const videoList = categorias[categoria]?.arrayValue?.values || [];
 
-        const rota = category.includes("movie") ? "movie" : "series";
-        const videosArray = data.fields[category].arrayValue?.values || [];
+          videoList.forEach((item, index) => {
+            const movie = item.mapValue.fields;
+            const title = movie.title?.stringValue || `Video ${index}`;
+            const logo = movie.image?.stringValue || '';
+            const group = movie.group?.stringValue || categoria;
 
-        videosArray.forEach((item, index) => {
-          const movie = item.mapValue.fields;
-          const title = movie.title?.stringValue || `Video ${index}`;
-          const logo = movie.image?.stringValue || '';
-          const group = movie.group?.stringValue || category;
-
-          m3uList += `#EXTINF:-1 tvg-id="" tvg-name="${title}" tvg-logo="${logo}" group-title="${group}", ${title}\n`;
-          m3uList += `${url.origin}/${rota}/${username}/${password}/${index}\n`;
-        });
+            m3uList += `#EXTINF:-1 tvg-id="" tvg-name="${title}" tvg-logo="${logo}" group-title="${group}", ${title}\n`;
+            m3uList += `${url.origin}/${rota}/${username}/${password}/${categoria}/${index}\n`;
+          });
+        }
       }
 
       return new Response(m3uList, {
