@@ -5,7 +5,7 @@ export default {
     const pathParts = url.pathname.split('/');
 
     const urlAlt = 'https://cdn.pixabay.com/video/2019/08/01/25694-352026464_large.mp4';
-    const contExp = env.EXP_VIDEO;
+    const contExp = 'https://firebasestorage.googleapis.com/v0/b/hwfilm23.appspot.com/o/Hotwheels%20Filmes%2Fse%C3%A7%C3%A3o%20expirou.mp4?alt=media&token=c6ffc0b5-05b3-40a0-b7a5-2ed742c7fbf0';
 
     const users = await getUsers();
 
